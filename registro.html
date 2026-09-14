@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Registro - CONTASYS</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="bg-finance">
+
+<div class="container-center">
+    <div class="card-register">
+
+        <h1>CONTASYS</h1>
+        <h2>Crear cuenta</h2>
+
+        <form id="registroForm">
+
+            <div class="row">
+                <input type="text" id="nombre" placeholder="Nombres">
+                <input type="text" id="apellido" placeholder="Apellidos">
+            </div>
+
+            <input type="text" id="cedula" placeholder="Cédula">
+            <input type="date" id="fecha">
+
+            <input type="password" id="password" placeholder="Contraseña">
+            <input type="password" id="confirmPassword" placeholder="Confirmar contraseña">
+
+            <select id="rol">
+                <option value="">Seleccionar rol</option>
+                <option>Administrador</option>
+                <option>Contador</option>
+            </select>
+
+            <p id="errorRegistro" class="error-text"></p>
+
+            <button type="submit">Registrarse</button>
+        </form>
+
+        <a href="index.html" class="back-link">← Volver al login</a>
+
+    </div>
+</div>
+
+<script src="app.js"></script>
+
+<script>
+document.getElementById("registroForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let usuario = {
+        nombre: document.getElementById("nombre").value.trim(),
+        apellido: document.getElementById("apellido").value.trim(),
+        cedula: document.getElementById("cedula").value.trim(),
+        fecha: document.getElementById("fecha").value,
+        rol: document.getElementById("rol").value,
+        password: document.getElementById("password").value
+    };
+
+    let confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (Object.values(usuario).includes("") || !confirmPassword) {
+        mostrarNotificacion("Todos los campos son obligatorios", "error");
+        return;
+    }
+
+    if (usuario.password !== confirmPassword) {
+        mostrarNotificacion("Las contraseñas no coinciden", "error");
+        return;
+    }
+
+    let guardado = registrarUsuario(usuario);
+
+    if (guardado) {
+        mostrarNotificacion("Registro exitoso", "ok");
+        setTimeout(() => {
+            window.location.href = "index.html";
+        }, 1500);
+    }
+});
+</script>
+
+</body>
+</html>
