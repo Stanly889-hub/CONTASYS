@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Login - CONTASYS</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="bg-finance">
+
+<div class="container-center">
+    <div class="card-register">
+
+        <h1>CONTASYS</h1>
+        <h2>Iniciar sesión</h2>
+
+        <form id="loginForm">
+            <input type="text" id="usuario" placeholder="Nombre o Cédula">
+            <input type="password" id="password" placeholder="Contraseña">
+
+            <button type="submit">Ingresar</button>
+        </form>
+
+        <a href="registro.html">Crear cuenta</a>
+
+    </div>
+</div>
+
+<script src="app.js"></script>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    let usuario = document.getElementById("usuario").value;
+    let password = document.getElementById("password").value;
+
+    let user = login(usuario, password);
+
+    if (user) {
+        localStorage.setItem("sesion", JSON.stringify(user));
+        window.location.href = "dashboard.html";
+    } else {
+        mostrarNotificacion("Información inválida", "error");
+    }
+});
+</script>
+
+</body>
+</html>

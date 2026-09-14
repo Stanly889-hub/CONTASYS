@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard - CONTASYS</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <h2>CONTASYS</h2>
+        <ul>
+            <li class="active">🏠 Dashboard</li>
+    <li>💰 Ingresos</li>
+    <li>💸 Egresos</li>
+    <li>📊 Reportes</li>
+
+    <li>📁 Cuentas</li>
+    <li>🧾 Facturación</li>
+    <li>📅 Presupuestos</li>
+    <li>📈 Análisis financiero</li>
+
+    <li>🔔 Notificaciones</li>
+    <li>👥 Usuarios</li>
+    <li>⚙ Configuración</li>
+        </ul>
+    </aside>
+
+    <!-- CONTENIDO -->
+    <main class="main-content">
+
+        <!-- NAVBAR -->
+        <header class="topbar">
+            <h1>Panel Financiero</h1>
+            <div class="user">👤 Usuario</div>
+        </header>
+
+        <!-- KPI -->
+        <section class="kpi-cards">
+            <div class="kpi">
+                <h3>Ingresos</h3>
+                <p id="ingresos">$0</p>
+            </div>
+
+            <div class="kpi">
+                <h3>Egresos</h3>
+                <p id="egresos">$0</p>
+            </div>
+
+            <div class="kpi">
+                <h3>Balance</h3>
+                <p id="balance">$0</p>
+            </div>
+        </section>
+
+        <!-- FORMULARIO -->
+        <section class="form-section">
+            <h2>Registrar movimiento</h2>
+
+            <input type="number" id="monto" placeholder="Monto">
+            <input type="text" id="desc" placeholder="Descripción">
+
+            <div class="btn-group">
+                <button onclick="agregarIngreso()">+ Ingreso</button>
+                <button onclick="agregarEgreso()">- Egreso</button>
+            </div>
+        </section>
+
+        <!-- TABLA -->
+        <section class="table-section">
+            <h2>Movimientos</h2>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Tipo</th>
+                        <th>Monto</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaMovimientos"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+<script src="app.js"></script>
+
+<script>
+function actualizarDashboard() {
+    let movimientos = obtenerMovimientos();
+
+    let ingresos = 0;
+    let egresos = 0;
+
+    let tabla = document.getElementById("tablaMovimientos");
+    tabla.innerHTML = "";
+
+    movimientos.forEach(m => {
+        if (m.tipo === "ingreso") ingresos += m.monto;
+        else egresos += m.monto;
+
+        tabla.innerHTML += `
+            <tr>
+                <td>${m.fecha}</td>
+                <td>${m.tipo}</td>
+                <td>$${m.monto}</td>
+                <td>${m.descripcion}</td>
+            </tr>
+        `;
+    });
+
+    document.getElementById("ingresos").textContent = "$" + ingresos;
+    document.getElementById("egresos").textContent = "$" + egresos;
+    document.getElementById("balance").textContent = "$" + (ingresos - egresos);
+}
+
+function agregarIngreso() {
+    let monto = document.getElementById("monto").value;
+    let desc = document.getElementById("desc").value;
+
+    if (!monto || !desc) {
+        mostrarNotificacion("Completa los campos", "error");
+        return;
+    }
+
+    guardarMovimiento("ingreso", monto, desc);
+    actualizarDashboard();
+}
+
+function agregarEgreso() {
+    let monto = document.getElementById("monto").value;
+    let desc = document.getElementById("desc").value;
+
+    if (!monto || !desc) {
+        mostrarNotificacion("Completa los campos", "error");
+        return;
+    }
+
+    guardarMovimiento("egreso", monto, desc);
+    actualizarDashboard();
+}
+
+actualizarDashboard();
+</script>
+
+</body>
+</html>
