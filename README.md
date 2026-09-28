@@ -21,7 +21,7 @@ No requiere instalación: abre `index.html` en el navegador. Puedes registrarte 
 ## Hoja de ruta del proyecto (7 secciones)
 
 1. **Análisis y prototipo de interfaz** ✅ (esta entrega): pantallas base y estructura del repositorio.
-2. **Modelo de datos**: diagrama ER y script SQL (MySQL 8, base `contasys_evidencia2`).
+2. **Modelo de datos**: diagrama ER y script SQL (MySQL 8, base `contasys_seccion2`).
 3. **Autenticación y control de sesión**: validaciones reales, contraseñas seguras, protección del dashboard y permisos por rol.
 4. **Ingresos y egresos (CRUD)**: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
 5. **Presupuestos, reportes y análisis**: alertas de presupuesto, gráficas y exportación de reportes.
