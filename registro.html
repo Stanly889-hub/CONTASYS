@@ -2,8 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Registro - CONTASYS</title>
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 
 <body class="bg-finance">
@@ -43,43 +44,8 @@
     </div>
 </div>
 
-<script src="app.js"></script>
-
-<script>
-document.getElementById("registroForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    let usuario = {
-        nombre: document.getElementById("nombre").value.trim(),
-        apellido: document.getElementById("apellido").value.trim(),
-        cedula: document.getElementById("cedula").value.trim(),
-        fecha: document.getElementById("fecha").value,
-        rol: document.getElementById("rol").value,
-        password: document.getElementById("password").value
-    };
-
-    let confirmPassword = document.getElementById("confirmPassword").value;
-
-    if (Object.values(usuario).includes("") || !confirmPassword) {
-        mostrarNotificacion("Todos los campos son obligatorios", "error");
-        return;
-    }
-
-    if (usuario.password !== confirmPassword) {
-        mostrarNotificacion("Las contraseñas no coinciden", "error");
-        return;
-    }
-
-    let guardado = registrarUsuario(usuario);
-
-    if (guardado) {
-        mostrarNotificacion("Registro exitoso", "ok");
-        setTimeout(() => {
-            window.location.href = "index.html";
-        }, 1500);
-    }
-});
-</script>
+<script src="js/app.js"></script>
+<script src="js/registro.js"></script>
 
 </body>
 </html>
