@@ -1,0 +1,316 @@
+/* ============================
+   FONDO FINANCIERO (login / registro / error)
+   ============================ */
+.bg-finance {
+    height: 100vh;
+    background: linear-gradient(135deg, #1e3a5f, #2c5364);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ============================
+   TARJETA LOGIN / REGISTRO
+   ============================ */
+.container-center {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-register {
+    width: 420px;
+    background: white;
+    padding: 40px;
+    border-radius: 18px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    text-align: center;
+}
+
+.card-register h1 {
+    color: #1e3a5f;
+    margin-bottom: 5px;
+}
+
+.card-register h2 {
+    margin-bottom: 20px;
+    color: #555;
+}
+
+.row {
+    display: flex;
+    gap: 10px;
+}
+
+.card-register input,
+.card-register select {
+    width: 100%;
+    margin: 10px 0;
+    padding: 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.card-register input:focus,
+.card-register select:focus {
+    border-color: #00c9a7;
+    outline: none;
+}
+
+.card-register button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 10px;
+    margin-bottom: 15px;
+    background: linear-gradient(135deg, #00c9a7, #009e82);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.card-register button:hover {
+    transform: scale(1.05);
+}
+
+.back-link {
+    display: block;
+    margin-top: 15px;
+    text-decoration: none;
+    color: #1e3a5f;
+}
+
+.error-text {
+    color: red;
+    font-size: 13px;
+    margin-top: 5px;
+}
+
+/* ============================
+   NOTIFICACIONES
+   ============================ */
+.notificacion {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 15px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    z-index: 999;
+}
+
+.notificacion.ok {
+    background: #00c9a7;
+}
+
+.notificacion.error {
+    background: #ff4d4d;
+}
+
+/* ============================
+   DASHBOARD
+   ============================ */
+.dashboard-container {
+    display: flex;
+}
+
+.sidebar {
+    width: 240px;
+    height: 100vh;
+    background: linear-gradient(180deg, #1e3a5f, #2c5364);
+    color: white;
+    padding: 25px;
+}
+
+.sidebar h2 {
+    margin-bottom: 30px;
+}
+
+.sidebar ul {
+    list-style: none;
+}
+
+.sidebar li {
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+}
+
+.sidebar li:hover,
+.sidebar .active {
+    background: rgba(255,255,255,0.2);
+    transform: translateX(5px);
+}
+
+.main-content {
+    flex: 1;
+    background: #f4f7fa;
+    padding: 20px;
+}
+
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.topbar h1 {
+    color: #1e3a5f;
+}
+
+.kpi-cards {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.kpi {
+    flex: 1;
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.kpi h3 {
+    color: #555;
+}
+
+.kpi p {
+    font-size: 22px;
+    color: #00c9a7;
+    font-weight: bold;
+}
+
+.form-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.form-section input {
+    margin: 10px 5px;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.btn-group {
+    margin-top: 10px;
+}
+
+.btn-group button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    border: none;
+    border-radius: 8px;
+    background: #00c9a7;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn-group button:hover {
+    transform: scale(1.05);
+}
+
+.table-section {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+}
+
+.table-section table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table-section th,
+.table-section td {
+    text-align: center;
+    padding: 10px;
+}
+
+.table-section th {
+    background: #1e3a5f;
+    color: white;
+}
+
+.table-section tr:nth-child(even) {
+    background: #f5f5f5;
+}
+
+.activity {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.activity ul {
+    list-style: none;
+}
+
+.activity li {
+    margin: 10px 0;
+}
+
+/* ============================
+   PÁGINA DE ERROR
+   ============================ */
+.error-container {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.error-box {
+    background: white;
+    padding: 40px;
+    border-radius: 15px;
+    text-align: center;
+    width: 350px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    border-top: 6px solid #ff4d4d;
+}
+
+.error-box .icon {
+    font-size: 50px;
+    margin-bottom: 15px;
+}
+
+.error-box h1 {
+    color: #1e3a5f;
+    margin-bottom: 10px;
+}
+
+.error-box p {
+    color: #555;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.error-box button {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #ff4d4d, #cc0000);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.error-box button:hover {
+    transform: scale(1.05);
+}
