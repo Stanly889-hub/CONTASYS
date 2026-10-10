@@ -28,6 +28,12 @@ No requiere instalación: abre `index.html` en el navegador. Puedes registrarte 
 6. **Backend y base de datos real**: API conectada a MySQL, reemplazo de `localStorage`.
 7. **Funciones complementarias y despliegue**: notificaciones, diseño responsive, pruebas y publicación en línea.
 
+## Pruebas realizadas (Seccion 1)
+
+Se ejecutaron pruebas funcionales manuales sobre registro, login, dashboard y manejo de errores. El detalle de los casos de prueba y sus resultados está documentado en el informe entregado, y las capturas de evidencia se encuentran en la carpeta `evidencias`.
+
+
 ## Base de datos (Seccion 2)
 
 El diagrama ER y el script SQL de la Evidencia 2 se incluirán en la carpeta `database/` cuando se integre esa entrega a este repositorio.
+
