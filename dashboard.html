@@ -26,8 +26,8 @@
             <li>📈 Análisis financiero</li>
 
             <li>🔔 Notificaciones</li>
-            <li>👥 Usuarios</li>
-            <li>⚙ Configuración</li>
+            <li data-rol="Administrador">👥 Usuarios</li>
+            <li data-rol="Administrador">⚙ Configuración</li>
         </ul>
     </aside>
 
@@ -36,9 +36,12 @@
 
         <!-- NAVBAR -->
         <header class="topbar">
-            <h1>Panel Financiero</h1>
-            <div class="user">👤 Usuario</div>
-        </header>
+    <h1>Panel Financiero</h1>
+    <div class="user">
+        👤 <span id="nombreUsuarioActual">Usuario</span>
+        <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+    </div>
+</header>
 
         <!-- KPI -->
         <section class="kpi-cards">
@@ -93,6 +96,7 @@
 
 </div>
 
+<script src="js/auth.js"></script>
 <script src="js/app.js"></script>
 <script src="js/dashboard.js"></script>
 

@@ -22,12 +22,12 @@ function registrarUsuario(usuario) {
     return true;
 }
 
-function login(usuarioInput, passwordInput) {
+function login(usuarioInput, passwordHashInput) {
     let usuarios = obtenerUsuarios();
 
     return usuarios.find(u =>
         (u.nombre === usuarioInput || u.cedula === usuarioInput) &&
-        u.password === passwordInput
+        u.password === passwordHashInput
     );
 }
 

@@ -1,17 +1,37 @@
 // Lógica de la página de login (index.html)
 
-document.getElementById("loginForm").addEventListener("submit", function (e) {
+let intentosFallidos = 0;
+
+document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
 
-    let usuario = document.getElementById("usuario").value;
+    let usuario = document.getElementById("usuario").value.trim();
     let password = document.getElementById("password").value;
 
-    let user = login(usuario, password);
+    if (!usuario || !password) {
+        mostrarNotificacion("Completa todos los campos", "error");
+        return;
+    }
+ let passwordHash = await hashPassword(password);
+    let user = login(usuario, passwordHash);
 
     if (user) {
-        localStorage.setItem("sesion", JSON.stringify(user));
+         let { password, ...usuarioSinPassword } = user;
+         localStorage.setItem("sesion", JSON.stringify(usuarioSinPassword));
+
         window.location.href = "dashboard.html";
+
+        } else {
+    intentosFallidos++;
+
+    if (intentosFallidos >= 3) {
+        window.location.href = "error.html";
+
     } else {
-        mostrarNotificacion("Información inválida", "error");
+        mostrarNotificacion(
+            `Credenciales inválidas (intento ${intentosFallidos} de 3)`,
+            "error"
+        );
     }
+}
 });

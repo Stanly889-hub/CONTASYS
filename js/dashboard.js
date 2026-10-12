@@ -1,5 +1,14 @@
 // Lógica de la página del dashboard (dashboard.html)
 
+// Protege el dashboard: si no hay sesion, redirige al login
+let sesionActual = exigirSesion();
+
+if (sesionActual) {
+    document.getElementById("nombreUsuarioActual").textContent =
+        `${sesionActual.nombre} (${sesionActual.rol})`;
+    aplicarPermisosPorRol(sesionActual.rol);
+}
+
 function actualizarDashboard() {
     let movimientos = obtenerMovimientos();
 

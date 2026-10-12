@@ -6,7 +6,7 @@ Sistema de gestión contable y financiera para pequeños negocios: control de in
 
 1. **Análisis y prototipo de interfaz** ✅ (esta entrega): pantallas base y estructura del repositorio.
 2. **Modelo de datos** ✅: diagrama ER y script SQL (MySQL 8, base `contasys_actualizado`).
-3. **Autenticación y control de sesión**: validaciones reales, contraseñas seguras, protección del dashboard y permisos por rol.
+3. **Autenticación y control de sesión** ✅: validaciones reales, contraseñas con hash, protección del dashboard y permisos por rol.
 4. **Ingresos y egresos (CRUD)**: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
 5. **Presupuestos, reportes y análisis**: alertas de presupuesto, gráficas y exportación de reportes.
 6. **Backend y base de datos real**: API conectada a MySQL, reemplazo de `localStorage`.
@@ -63,3 +63,18 @@ Se validó la ejecución real de los tres archivos en MySQL Workbench:
 - **`CONTASYS_FINAL.sql`** — crea las 12 tablas, los triggers y las 8 vistas, y carga los datos de ejemplo (7 categorías, 6 métodos de pago, 5 ingresos, 5 egresos, entre otros).
 - **`CONTASYS_PRODUCCION.sql`** — crea la misma estructura, pero queda en 0 usuarios, ingresos y egresos: solo conserva el catálogo base (7 categorías, 6 métodos de pago, 3 roles).
 - **`pruebas_integridad.sql`** — ejecuta los 7 casos de prueba de integridad. La captura evidencia el rechazo esperado de la Prueba 1 (`MySQL Error 1644: La categoria asignada no es de tipo Ingreso`), confirmando que el trigger de validación de categorías funciona correctamente.
+
+## Sección 3 — Autenticación y control de sesión
+
+Se implementó autenticación robusta sobre el prototipo de interfaz:
+
+- **Contraseñas con hash (SHA-256)** mediante la Web Crypto API del navegador, en lugar de texto plano.
+- **Validaciones** en registro (campos obligatorios, contraseña mínima de 6 caracteres, confirmación de contraseña) y en login (campos obligatorios).
+- **Control de intentos fallidos**: tras 3 intentos de login incorrectos, el usuario es redirigido a `error.html`.
+- **Protección del dashboard**: `dashboard.html` verifica que exista una sesión activa; si no, redirige automáticamente a `index.html`.
+- **Cierre de sesión** desde el dashboard, que elimina la sesión activa.
+- **Permisos por rol**: los usuarios con rol distinto de "Administrador" no ven las opciones "Usuarios" ni "Configuración" en el menú lateral.
+
+**Archivos nuevos/modificados:** `js/auth.js` (nuevo), `js/login.js`, `js/registro.js`, `js/app.js`, `js/dashboard.js`, `dashboard.html`, `css/styles.css`.
+
+El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia3/`.
