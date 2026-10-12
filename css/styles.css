@@ -314,3 +314,24 @@
 .error-box button:hover {
     transform: scale(1.05);
 }
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.btn-logout {
+    padding: 8px 14px;
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: 0.3s;
+}
+
+.btn-logout:hover {
+    transform: scale(1.05);
+}
