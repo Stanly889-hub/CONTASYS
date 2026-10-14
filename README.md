@@ -7,7 +7,7 @@ Sistema de gestión contable y financiera para pequeños negocios: control de in
 1. **Análisis y prototipo de interfaz** ✅ (esta entrega): pantallas base y estructura del repositorio.
 2. **Modelo de datos** ✅: diagrama ER y script SQL (MySQL 8, base `contasys_actualizado`).
 3. **Autenticación y control de sesión** ✅: validaciones reales, contraseñas con hash, protección del dashboard y permisos por rol.
-4. **Ingresos y egresos (CRUD)**: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
+4. **Ingresos y egresos (CRUD)** ✅: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
 5. **Presupuestos, reportes y análisis**: alertas de presupuesto, gráficas y exportación de reportes.
 6. **Backend y base de datos real**: API conectada a MySQL, reemplazo de `localStorage`.
 7. **Funciones complementarias y despliegue**: notificaciones, diseño responsive, pruebas y publicación en línea.
@@ -78,3 +78,18 @@ Se implementó autenticación robusta sobre el prototipo de interfaz:
 **Archivos nuevos/modificados:** `js/auth.js` (nuevo), `js/login.js`, `js/registro.js`, `js/app.js`, `js/dashboard.js`, `dashboard.html`, `css/styles.css`.
 
 El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia3/`.
+
+## Sección 4 — Módulo de ingresos y egresos (CRUD)
+
+Se implementó el CRUD completo de movimientos financieros:
+
+- **Categorías financieras y métodos de pago**: cada movimiento se clasifica por categoría (filtrada según sea ingreso o egreso) y método de pago.
+- **Editar y eliminar movimientos**, además de crear, desde una página dedicada (`movimientos.html`).
+- **Filtros por fecha y categoría**, con total calculado sobre los resultados filtrados.
+- **Formato de pesos colombianos** en todos los montos mostrados (KPIs, tablas, totales).
+- **Barra lateral funcional**: "Ingresos" y "Egresos" navegan a `movimientos.html` con su tipo correspondiente; el resto de los módulos aún no construidos navegan a una página "menu" indicando en qué sección estarán disponibles, en lugar de no hacer nada.
+
+**Archivos nuevos:** `movimientos.html`, `js/movimientos.js`, `proximamente.html`.
+**Archivos modificados:** `js/app.js`, `js/dashboard.js`, `dashboard.html`, `css/styles.css`.
+
+El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia4/`.
