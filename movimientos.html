@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Movimientos - CONTASYS</title>
+<link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <aside class="sidebar">
+        <h2>CONTASYS</h2>
+        <ul>
+            <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
+            <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
+            <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
+            <li><a href="proximamente.html?seccion=5&nombre=Reportes">📊 Reportes</a></li>
+            <li><a href="proximamente.html?seccion=7&nombre=Cuentas">📁 Cuentas</a></li>
+            <li><a href="proximamente.html?seccion=7&nombre=Facturación">🧾 Facturación</a></li>
+            <li><a href="proximamente.html?seccion=5&nombre=Presupuestos">📅 Presupuestos</a></li>
+            <li><a href="proximamente.html?seccion=5&nombre=Análisis financiero">📈 Análisis financiero</a></li>
+            <li><a href="proximamente.html?seccion=7&nombre=Notificaciones">🔔 Notificaciones</a></li>
+            <li data-rol="Administrador"><a href="proximamente.html?seccion=7&nombre=Usuarios">👥 Usuarios</a></li>
+            <li data-rol="Administrador"><a href="proximamente.html?seccion=7&nombre=Configuración">⚙ Configuración</a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+
+        <header class="topbar">
+            <h1 id="tituloPagina">Movimientos</h1>
+            <div class="user">
+                👤 <span id="nombreUsuarioActual">Usuario</span>
+                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+            </div>
+        </header>
+
+        <section class="form-section">
+            <h2 id="tituloFormulario">Registrar movimiento</h2>
+
+            <form id="movimientoForm">
+                <input type="hidden" id="editandoId" value="">
+
+                <div class="row">
+                    <input type="number" id="monto" placeholder="Monto" min="1" step="1" required>
+                    <input type="date" id="fecha" required>
+                </div>
+
+                <input type="text" id="desc" placeholder="Descripción" required>
+
+                <div class="row">
+                    <select id="categoria" required>
+                        <option value="">Selecciona categoría</option>
+                    </select>
+
+                    <select id="metodoPago" required>
+                        <option value="">Selecciona método de pago</option>
+                    </select>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" id="btnGuardar">Guardar</button>
+                    <button type="button" id="btnCancelar" onclick="cancelarEdicion()" style="display:none;">Cancelar edición</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="table-section">
+            <h2>Filtros</h2>
+
+            <div class="row filtros">
+                <input type="date" id="filtroFechaDesde">
+                <input type="date" id="filtroFechaHasta">
+                <select id="filtroCategoria">
+                    <option value="">Todas las categorías</option>
+                </select>
+                <button type="button" onclick="aplicarFiltros()">Filtrar</button>
+                <button type="button" onclick="limpiarFiltros()">Limpiar</button>
+            </div>
+        </section>
+
+        <section class="table-section">
+            <div class="table-header">
+                <h2 id="tituloTabla">Movimientos</h2>
+                <p id="totalFiltrado"></p>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Fecha</th>
+                        <th>Categoría</th>
+                        <th>Método de pago</th>
+                        <th>Descripción</th>
+                        <th>Monto</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody id="tablaMovimientos"></tbody>
+            </table>
+        </section>
+
+    </main>
+
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/app.js"></script>
+<script src="js/movimientos.js"></script>
+
+</body>
+</html>

@@ -1,3 +1,32 @@
+// ===== CATALOGOS =====
+const CATEGORIAS = [
+    { nombre: 'Ventas', tipo: 'ingreso' },
+    { nombre: 'Servicios', tipo: 'ingreso' },
+    { nombre: 'Salario', tipo: 'ingreso' },
+    { nombre: 'Arriendo', tipo: 'egreso' },
+    { nombre: 'Servicios Publicos', tipo: 'egreso' },
+    { nombre: 'Papeleria', tipo: 'egreso' },
+    { nombre: 'Transporte', tipo: 'egreso' }
+];
+
+const METODOS_PAGO = ['Efectivo', 'Transferencia', 'Tarjeta Debito', 'Tarjeta Credito', 'Nequi', 'Daviplata'];
+
+function obtenerCategorias(tipo) {
+    return CATEGORIAS.filter(c => c.tipo === tipo).map(c => c.nombre);
+}
+
+function obtenerMetodosPago() {
+    return METODOS_PAGO;
+}
+
+function formatoCOP(monto) {
+    return new Intl.NumberFormat('es-CO', {
+        style: 'currency',
+        currency: 'COP',
+        maximumFractionDigits: 0
+    }).format(monto);
+}
+
 // ===== USUARIOS =====
 function obtenerUsuarios() {
     return JSON.parse(localStorage.getItem("usuarios")) || [];
@@ -44,20 +73,49 @@ function mostrarNotificacion(mensaje, tipo) {
     }, 3000);
 }
 
-// ===== MOVIMIENTOS =====
+// ===== MOVIMIENTOS (Ingresos y Egresos) =====
+function generarId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
 function obtenerMovimientos() {
     return JSON.parse(localStorage.getItem("movimientos")) || [];
 }
 
-function guardarMovimiento(tipo, monto, descripcion) {
-    let movimientos = obtenerMovimientos();
-
-    movimientos.push({
-        tipo,
-        monto: Number(monto),
-        descripcion,
-        fecha: new Date().toLocaleDateString()
-    });
-
+function guardarMovimientos(movimientos) {
     localStorage.setItem("movimientos", JSON.stringify(movimientos));
+}
+
+function guardarMovimiento(movimiento) {
+    let movimientos = obtenerMovimientos();
+    movimiento.id = generarId();
+    movimientos.push(movimiento);
+    guardarMovimientos(movimientos);
+    return movimiento;
+}
+
+function actualizarMovimiento(id, datosNuevos) {
+    let movimientos = obtenerMovimientos();
+    let idx = movimientos.findIndex(m => m.id === id);
+    if (idx === -1) return false;
+
+    movimientos[idx] = { ...movimientos[idx], ...datosNuevos };
+    guardarMovimientos(movimientos);
+    return true;
+}
+
+function eliminarMovimiento(id) {
+    let movimientos = obtenerMovimientos();
+    let nuevos = movimientos.filter(m => m.id !== id);
+    guardarMovimientos(nuevos);
+}
+
+function filtrarMovimientos(tipo, fechaDesde, fechaHasta, categoria) {
+    return obtenerMovimientos().filter(m => {
+        if (m.tipo !== tipo) return false;
+        if (fechaDesde && m.fecha < fechaDesde) return false;
+        if (fechaHasta && m.fecha > fechaHasta) return false;
+        if (categoria && m.categoria !== categoria) return false;
+        return true;
+    });
 }
