@@ -8,7 +8,7 @@ Sistema de gestión contable y financiera para pequeños negocios: control de in
 2. **Modelo de datos** ✅: diagrama ER y script SQL (MySQL 8, base `contasys_actualizado`).
 3. **Autenticación y control de sesión** ✅: validaciones reales, contraseñas con hash, protección del dashboard y permisos por rol.
 4. **Ingresos y egresos (CRUD)** ✅: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
-5. **Presupuestos, reportes y análisis**: alertas de presupuesto, gráficas y exportación de reportes.
+5. **Presupuestos, reportes y análisis** ✅: alertas de presupuesto, gráficas y exportación de reportes.
 6. **Backend y base de datos real**: API conectada a MySQL, reemplazo de `localStorage`.
 7. **Funciones complementarias y despliegue**: notificaciones, diseño responsive, pruebas y publicación en línea.
 
@@ -93,3 +93,19 @@ Se implementó el CRUD completo de movimientos financieros:
 **Archivos modificados:** `js/app.js`, `js/dashboard.js`, `dashboard.html`, `css/styles.css`.
 
 El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia4/`.
+
+## Sección 5 — Presupuestos, reportes y análisis
+
+Se implementó el módulo de presupuestos y el de reportes/análisis financiero:
+
+- **Presupuestos por categoría**, con cálculo automático de lo ejecutado (a partir de los movimientos reales) y alerta cuando se supera el monto presupuestado.
+- **Reportes por periodo**: selección de rango de fechas, con resumen de ingresos, egresos y balance.
+- **Gráficas**: Ingresos vs Egresos (barras) y Gastos por categoría (dona), generadas con Chart.js.
+- **Exportación a PDF y Excel** del reporte generado (resumen, gráficas y detalle de movimientos).
+
+**Librerías externas usadas (vía CDN):** Chart.js (gráficas), jsPDF (exportación a PDF), SheetJS/xlsx (exportación a Excel).
+
+**Archivos nuevos:** `presupuestos.html`, `js/presupuestos.js`, `reportes.html`, `js/reportes.js`.
+**Archivos modificados:** `js/app.js`, `dashboard.html`, `movimientos.html`, `proximamente.html`, `css/styles.css`.
+
+El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia5/`.

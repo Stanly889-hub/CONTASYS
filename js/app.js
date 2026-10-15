@@ -119,3 +119,61 @@ function filtrarMovimientos(tipo, fechaDesde, fechaHasta, categoria) {
         return true;
     });
 }
+
+// ===== PRESUPUESTOS =====
+function obtenerPresupuestos() {
+    return JSON.parse(localStorage.getItem("presupuestos")) || [];
+}
+
+function guardarPresupuestos(arr) {
+    localStorage.setItem("presupuestos", JSON.stringify(arr));
+}
+
+function guardarPresupuesto(p) {
+    let arr = obtenerPresupuestos();
+    p.id = generarId();
+    arr.push(p);
+    guardarPresupuestos(arr);
+    return p;
+}
+
+function actualizarPresupuesto(id, datos) {
+    let arr = obtenerPresupuestos();
+    let idx = arr.findIndex(p => p.id === id);
+    if (idx === -1) return false;
+    arr[idx] = { ...arr[idx], ...datos };
+    guardarPresupuestos(arr);
+    return true;
+}
+
+function eliminarPresupuesto(id) {
+    let arr = obtenerPresupuestos();
+    guardarPresupuestos(arr.filter(p => p.id !== id));
+}
+
+function calcularEjecutadoPresupuesto(presupuesto) {
+    return obtenerMovimientos()
+        .filter(m => m.categoria === presupuesto.categoria &&
+                     m.fecha >= presupuesto.fechaInicio &&
+                     m.fecha <= presupuesto.fechaFin)
+        .reduce((s, m) => s + m.monto, 0);
+}
+
+// ===== REPORTES Y ANALISIS =====
+function filtrarMovimientosPorPeriodo(desde, hasta) {
+    return obtenerMovimientos().filter(m => m.fecha >= desde && m.fecha <= hasta);
+}
+
+function totalesPorTipo(movimientos) {
+    let ingresos = movimientos.filter(m => m.tipo === 'ingreso').reduce((s, m) => s + m.monto, 0);
+    let egresos = movimientos.filter(m => m.tipo === 'egreso').reduce((s, m) => s + m.monto, 0);
+    return { ingresos, egresos, balance: ingresos - egresos };
+}
+
+function gastosPorCategoria(movimientos) {
+    let mapa = {};
+    movimientos.filter(m => m.tipo === 'egreso').forEach(m => {
+        mapa[m.categoria] = (mapa[m.categoria] || 0) + m.monto;
+    });
+    return mapa;
+}
