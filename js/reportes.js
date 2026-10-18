@@ -1,6 +1,6 @@
 // Lógica de la página de reportes (reportes.html)
 
-let sesionActual = exigirSesion();
+let sesionUsuario = exigirSesion();
 let reporteActual = null;
 let chartIngresosEgresos = null;
 let chartCategorias = null;
@@ -15,10 +15,10 @@ function hoyISO() {
 }
 
 function iniciar() {
-    if (!sesionActual) return;
+    if (!sesionUsuario) return;
 
-    document.getElementById("nombreUsuarioActual").textContent = `${sesionActual.nombre} (${sesionActual.rol})`;
-    aplicarPermisosPorRol(sesionActual.rol);
+    document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
+    aplicarPermisosPorRol(sesionUsuario.rol);
     document.querySelector('[data-page="reportes"]').classList.add("active");
 
     document.getElementById("fechaDesde").value = primerDiaDelMes();
@@ -27,7 +27,7 @@ function iniciar() {
     generarReporte();
 }
 
-function generarReporte() {
+async function generarReporte() {
     let desde = document.getElementById("fechaDesde").value;
     let hasta = document.getElementById("fechaHasta").value;
 
@@ -40,18 +40,19 @@ function generarReporte() {
         return;
     }
 
-    let detalle = filtrarMovimientosPorPeriodo(desde, hasta).sort((a, b) => a.fecha.localeCompare(b.fecha));
-    let totales = totalesPorTipo(detalle);
-    let gastosCategoria = gastosPorCategoria(detalle);
+    try {
+        reporteActual = await apiFetch(`/reportes?desde=${desde}&hasta=${hasta}`);
+    } catch (error) {
+        mostrarNotificacion(error.message, "error");
+        return;
+    }
 
-    reporteActual = { desde, hasta, detalle, totales, gastosCategoria };
+    document.getElementById("resumenIngresos").textContent = formatoCOP(reporteActual.totales.ingresos);
+    document.getElementById("resumenEgresos").textContent = formatoCOP(reporteActual.totales.egresos);
+    document.getElementById("resumenBalance").textContent = formatoCOP(reporteActual.totales.balance);
 
-    document.getElementById("resumenIngresos").textContent = formatoCOP(totales.ingresos);
-    document.getElementById("resumenEgresos").textContent = formatoCOP(totales.egresos);
-    document.getElementById("resumenBalance").textContent = formatoCOP(totales.balance);
-
-    renderizarGraficas(totales, gastosCategoria);
-    renderizarTablaDetalle(detalle);
+    renderizarGraficas(reporteActual.totales, reporteActual.gastosPorCategoria);
+    renderizarTablaDetalle(reporteActual.detalle);
 }
 
 function renderizarGraficas(totales, gastosCategoria) {

@@ -9,7 +9,7 @@ Sistema de gestión contable y financiera para pequeños negocios: control de in
 3. **Autenticación y control de sesión** ✅: validaciones reales, contraseñas con hash, protección del dashboard y permisos por rol.
 4. **Ingresos y egresos (CRUD)** ✅: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
 5. **Presupuestos, reportes y análisis** ✅: alertas de presupuesto, gráficas y exportación de reportes.
-6. **Backend y base de datos real**: API conectada a MySQL, reemplazo de `localStorage`.
+6. **Backend y base de datos real** ✅: API conectada a MySQL, reemplazo de `localStorage`.
 7. **Funciones complementarias y despliegue**: notificaciones, diseño responsive, pruebas y publicación en línea.
 
 ## Seccion 1: prototipo de interfaz
@@ -109,3 +109,24 @@ Se implementó el módulo de presupuestos y el de reportes/análisis financiero:
 **Archivos modificados:** `js/app.js`, `dashboard.html`, `movimientos.html`, `proximamente.html`, `css/styles.css`.
 
 El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia5/`.
+
+## Sección 6 — Backend y base de datos real
+
+Se construyó una API REST con Node.js, Express y MySQL, reemplazando por completo el uso de `localStorage` en el front-end:
+
+- **Autenticación con JWT**: el login emite un token que se envía en cada petición protegida (`Authorization: Bearer`). Las contraseñas se cifran con `bcrypt` en el servidor.
+- **Endpoints por módulo**: autenticación, categorías, métodos de pago, ingresos, egresos, presupuestos, reportes y dashboard — cada uno conectado directamente a las tablas de `contasys_actualizado` (ver Sección 2).
+- **Separación por usuario**: cada usuario solo puede ver y modificar sus propios movimientos y presupuestos; esto se controla desde el servidor, tomando el `idUsuario` del token, nunca de lo que envíe el cliente.
+- **El front-end consume la API** mediante `fetch` (archivo `js/api.js`), en vez de leer y escribir directamente en `localStorage`.
+
+**Stack del backend:** Node.js, Express, MySQL (vía `mysql2`), `bcryptjs`, `jsonwebtoken`, `cors`, `dotenv`.
+
+**Carpeta nueva:** `backend/` (proyecto Node.js independiente, con su propio `package.json`).
+**Archivos modificados en el front-end:** `js/api.js` (nuevo), `js/auth.js`, `js/app.js`, `js/login.js`, `js/registro.js`, `js/dashboard.js`, `js/movimientos.js`, `js/presupuestos.js`, `js/reportes.js`, `index.html`, `registro.html`.
+
+**Cómo ejecutar el proyecto completo:**
+1. Backend: dentro de `backend/`, `npm install`, configurar `.env`, `npm run dev`.
+2. Front-end: abrir con Live Server.
+3. Ambos deben estar corriendo al mismo tiempo.
+
+El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia6/`.
