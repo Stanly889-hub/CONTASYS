@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { registrarActividad } = require("../utils/actividad");
 
 // Se reutiliza para /api/ingresos y /api/egresos.
 // La tabla nunca viene del usuario: la define la ruta ("Ingreso" o "Egreso"),
@@ -63,6 +64,13 @@ function crearControladorMovimientos(tabla) {
                 [monto, descripcion, numeroComprobante || null, fecha, req.usuario.idUsuario, idCategoria, idMetodoPago]
             );
 
+            await registrarActividad(
+                req.usuario.idUsuario,
+                `Registro de ${tabla.toLowerCase()} por ${monto}`,
+                tabla,
+                req.ip
+            );
+
             return res.status(201).json({ mensaje: "Registrado correctamente", id: resultado.insertId });
 
         } catch (error) {
@@ -99,6 +107,8 @@ function crearControladorMovimientos(tabla) {
                 [monto, descripcion, numeroComprobante || null, fecha, idCategoria, idMetodoPago, id]
             );
 
+            await registrarActividad(req.usuario.idUsuario, `Edición de ${tabla.toLowerCase()} #${id}`, tabla, req.ip);
+
             return res.json({ mensaje: "Actualizado correctamente" });
 
         } catch (error) {
@@ -122,6 +132,8 @@ function crearControladorMovimientos(tabla) {
             if (resultado.affectedRows === 0) {
                 return res.status(404).json({ error: "No encontrado" });
             }
+
+            await registrarActividad(req.usuario.idUsuario, `Eliminación de ${tabla.toLowerCase()} #${id}`, tabla, req.ip);
 
             return res.json({ mensaje: "Eliminado correctamente" });
 

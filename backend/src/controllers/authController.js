@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const pool = require("../config/db");
 const { generarToken } = require("../utils/jwt");
+const { registrarActividad } = require("../utils/actividad");
 
 async function registrar(req, res) {
     try {
@@ -40,6 +41,13 @@ async function registrar(req, res) {
             `INSERT INTO Usuario (documento, nombre, apellido, correo, password_hash, telefono, ciudad, fechaRegistro, idRol)
              VALUES (?, ?, ?, ?, ?, ?, ?, CURDATE(), ?)`,
             [documento, nombre, apellido, correo, passwordHash, telefono || null, ciudad || null, idRol]
+        );
+
+        // Toda cuenta nueva arranca con un plan gratuito (simulado, sin pasarela de pago real).
+        await pool.query(
+            `INSERT INTO Suscripcion (tipoPlan, fechaInicio, fechaFin, estado, idUsuario)
+             VALUES ('Free', CURDATE(), DATE_ADD(CURDATE(), INTERVAL 1 YEAR), 'Activa', ?)`,
+            [resultado.insertId]
         );
 
         return res.status(201).json({
@@ -90,6 +98,8 @@ async function iniciarSesion(req, res) {
             correo: usuario.correo,
             rol: usuario.nombreRol
         });
+
+        await registrarActividad(usuario.idUsuario, "Inicio de sesión", "Autenticación", req.ip);
 
         return res.json({
             token,

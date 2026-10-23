@@ -22,13 +22,17 @@ async function listar(req, res) {
                 [presupuesto.idCategoria, req.usuario.idUsuario, presupuesto.fechaInicio, presupuesto.fechaFin]
             );
 
-const ejecutado = Number(total);
-const monto = Number(presupuesto.montoPresupuesto);
+            const ejecutado = Number(total);
+            const monto = Number(presupuesto.montoPresupuesto);
 
-presupuesto.montoPresupuesto = monto;
-presupuesto.ejecutado = ejecutado;
-presupuesto.porcentaje = monto > 0 ? Math.round((ejecutado / monto) * 100) : 0;
-presupuesto.excedido = ejecutado > monto;
+            presupuesto.montoPresupuesto = monto;
+            presupuesto.ejecutado = ejecutado;
+            presupuesto.porcentaje = monto > 0 ? Math.round((ejecutado / monto) * 100) : 0;
+            presupuesto.excedido = ejecutado > monto;
+
+            if (presupuesto.excedido) {
+                await asegurarNotificacionExcedido(req.usuario.idUsuario, presupuesto);
+            }
         }
 
         return res.json(presupuestos);
@@ -36,6 +40,23 @@ presupuesto.excedido = ejecutado > monto;
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: "Error al obtener los presupuestos" });
+    }
+}
+
+async function asegurarNotificacionExcedido(idUsuario, presupuesto) {
+    const mensaje = `El presupuesto "${presupuesto.nombrePresupuesto}" fue excedido`;
+
+    const [existentes] = await pool.query(
+        `SELECT idNotificacion FROM Notificacion
+         WHERE idUsuario = ? AND mensaje = ? AND estado != 'Archivada'`,
+        [idUsuario, mensaje]
+    );
+
+    if (existentes.length === 0) {
+        await pool.query(
+            "INSERT INTO Notificacion (mensaje, estado, idUsuario) VALUES (?, 'Pendiente', ?)",
+            [mensaje, idUsuario]
+        );
     }
 }
 

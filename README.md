@@ -1,8 +1,8 @@
 # CONTASYS
 
-Sistema de gestión contable y financiera para pequeños negocios: control de ingresos y egresos, presupuestos, reportes y usuarios con distintos roles (Administrador, Contador).
+Sistema de gestión contable y financiera para pequeños negocios: control de ingresos y egresos, presupuestos, reportes y usuarios con distintos roles (Administrador, Contador, Emprendedor).
 
-## Hoja de ruta del proyecto (7 secciones)
+## Hoja de ruta del proyecto 
 
 1. **Análisis y prototipo de interfaz** ✅ (esta entrega): pantallas base y estructura del repositorio.
 2. **Modelo de datos** ✅: diagrama ER y script SQL (MySQL 8, base `contasys_actualizado`).
@@ -10,7 +10,9 @@ Sistema de gestión contable y financiera para pequeños negocios: control de in
 4. **Ingresos y egresos (CRUD)** ✅: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
 5. **Presupuestos, reportes y análisis** ✅: alertas de presupuesto, gráficas y exportación de reportes.
 6. **Backend y base de datos real** ✅: API conectada a MySQL, reemplazo de `localStorage`.
-7. **Funciones complementarias y despliegue**: notificaciones, diseño responsive, pruebas y publicación en línea.
+7. **Funciones complementarias** ✅: notificaciones, diseño responsive, pruebas y documentación.
+8. **Panel de administración, facturación y análisis separado** ✅: gestión de usuarios y catálogos (solo Administrador), generación de facturas en PDF, y separación de "Análisis financiero" como módulo propio con tendencias históricas.
+9. **Chat entre usuarios y planes Free/Premium** ✅: mensajería interna entre usuarios del sistema y aclaración del modelo freemium (Free gratuito para todos, Premium de pago simulado).
 
 ## Seccion 1: prototipo de interfaz
 
@@ -130,3 +132,42 @@ Se construyó una API REST con Node.js, Express y MySQL, reemplazando por comple
 3. Ambos deben estar corriendo al mismo tiempo.
 
 El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia6/`.
+
+## Sección 7 — Funciones complementarias y diseño responsive
+
+Se completaron algunas funciones del proyecto:
+
+- **Suscripciones**: cada usuario nuevo recibe automáticamente un plan "Free" al registrarse, con posibilidad de cambiar a "Premium" desde "Mi cuenta" (simulado, sin pasarela de pago real).
+- **Notificaciones automáticas**: cuando un presupuesto es excedido, el sistema genera una notificación persistente (no solo una alerta momentánea), visible en la página "Notificaciones", sin duplicarse en consultas repetidas.
+- **Historial de actividad**: el backend registra automáticamente acciones clave (inicio de sesión, creación/edición/eliminación de movimientos, creación de presupuestos), visibles en "Mi cuenta".
+- **Diseño responsive**: el menú lateral, las tarjetas de KPIs, los formularios y las tablas se adaptan a pantallas pequeñas.
+**Archivos nuevos:** `notificaciones.html`, `js/notificaciones.js`, `cuenta.html`, `js/cuenta.js`, además de nuevos controladores y rutas en el backend (`notificacionesController`, `historialController`, `suscripcionController`).
+**Archivos modificados:** `authController.js`, `movimientosController.js`, `presupuestosController.js`, `app.js` (backend); sidebar de todas las páginas, `css/styles.css` (frontend).
+
+El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia7/`.
+
+## Sección 8 — Panel de administración, facturación y análisis financiero separado
+
+Se genero una nueva sección complementaria debido a que contasys es un proyecto más amplio de lo esperado en donde está completa los módulos que antes estaban como "Próximamente" en el menú, y separa el "Análisis financiero" de los "Reportes" como una vista independiente.
+
+- **Gestión de usuarios** (`usuarios.html`, solo rol Administrador): listado de todos los usuarios del sistema, con la posibilidad de activar o desactivar su acceso. Un usuario desactivado no puede volver a iniciar sesión. Un administrador no puede desactivar su propia cuenta.
+- **Configuración del sistema** (`configuracion.html`, solo rol Administrador): administración de las categorías financieras y los métodos de pago — creación de nuevas y activación/desactivación de las existentes, sin necesidad de modificar la base de datos manualmente.
+- **Facturación** (`facturacion.html`): generación de facturas en PDF (cliente, concepto, valor, fecha), disponible para cualquier usuario autenticado. No persiste en la base de datos, ya que "Factura" no forma parte del modelo de datos definido en la Sección 2; queda como posible extensión futura.
+- **Análisis financiero** (`analisis.html`): separado de "Reportes" como módulo propio. Mientras Reportes muestra un periodo específico elegido por el usuario, Análisis financiero muestra la vista histórica completa: tendencia mensual de ingresos vs. egresos (gráfica de línea), tasa de ahorro acumulada, y las 5 categorías de mayor gasto histórico.
+- **Control de acceso por rol reforzado**: todos los endpoints nuevos usan el middleware `requiereRol("Administrador")` del backend (creado en la Sección 6, usado por primera vez aquí), de modo que la restricción no depende solo de ocultar botones en la interfaz, sino que el servidor rechaza la petición aunque alguien intente acceder directamente a la API.
+
+**Archivos nuevos (backend):** `usuariosController.js`, `analisisController.js`, sus rutas correspondientes, y las funciones de creación/activación agregadas a `categoriasController.js` y `metodosPagoController.js`.
+**Archivos nuevos (frontend):** `usuarios.html`, `configuracion.html`, `facturacion.html`, `analisis.html`, y sus respectivos `.js`.
+**Archivos modificados:** sidebar de todas las páginas, `app.js` (backend).
+
+El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia8/`.
+
+## Sección 9 — Chat entre usuarios y modelo de planes
+
+- **Chat interno** (`mensajes.html`): los usuarios activos pueden escribirse entre sí desde la página. Incluye lista de contactos, contador de mensajes no leídos, marcado automático como leído al abrir la conversación y actualización cada 5 segundos. Usa la tabla `Mensaje` definida en la Sección 2, incluido su trigger que impide enviarse mensajes a uno mismo.
+- **Modelo freemium y premium** (`cuenta.html`): el plan **Free** es gratuito y se asigna a todos los usuarios al registrarse. El plan **Premium** es de pago ($19.900 COP/mes) y exige una confirmación explícita antes de contratarse. El cobro es simulado.
+
+**Archivos nuevos:** `mensajesController.js`, `mensajesRoutes.js` (backend); `mensajes.html`, `js/mensajes.js` (frontend).
+**Archivos modificados:** `app.js` (backend), `cuenta.html`, `js/cuenta.js`, sidebar de todas las páginas, `css/styles.css`.
+
+Las capturas de evidencia se encuentran en `evidencias/evidencia9/`.
