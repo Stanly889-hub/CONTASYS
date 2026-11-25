@@ -37,14 +37,6 @@ El frontend utiliza HTML, CSS y JavaScript. Consume una API REST en Node.js y Ex
 
 Los [datos de demostración](database/pruebas/DATOS_DEMO.sql) son opcionales y están destinados a esquemas de prueba independientes. Los resultados históricos están en el [informe de fase 7](evidencias/fase7/INFORME.md), su [revisión de seguridad](evidencias/fase7/SEGURIDAD.md) y las [mediciones de fase 6](evidencias/rendimiento-fase6/RESULTADOS.md).
 
-## Capturas
-
-Las pantallas se capturaron en Chromium sin ingresar datos de usuario.
-
-<img src="docs/capturas/inicio-sesion.png" alt="Pantalla de inicio de sesión de CONTASYS" width="680">
-
-<img src="docs/capturas/error-acceso.png" alt="Pantalla de error de acceso de CONTASYS" width="680">
-
 ## Limitaciones actuales
 
 La facturación es interna o demostrativa. Los pagos de suscripción se simulan en los entornos habilitados para pruebas. La edición de perfil y contraseña desde Mi cuenta, la búsqueda y paginación de usuarios y la edición de catálogos siguen pendientes.
