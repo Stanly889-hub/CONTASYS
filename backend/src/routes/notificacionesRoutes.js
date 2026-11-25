@@ -4,8 +4,13 @@ const router = express.Router();
 const { requiereAutenticacion } = require("../middleware/auth");
 const controlador = require("../controllers/notificacionesController");
 
-router.get("/", requiereAutenticacion, controlador.listar);
-router.put("/:id/vista", requiereAutenticacion, controlador.marcarVista);
-router.put("/:id/archivar", requiereAutenticacion, controlador.archivar);
+router.use(requiereAutenticacion, (req, res, next) => {
+    if (req.query.clienteId !== undefined) return res.status(403).json({ error: "Las notificaciones son privadas de cada cuenta" });
+    next();
+});
+router.get("/", controlador.listar);
+router.get("/pendientes", controlador.pendientes);
+router.put("/:id/vista", controlador.marcarVista);
+router.put("/:id/archivar", controlador.archivar);
 
 module.exports = router;

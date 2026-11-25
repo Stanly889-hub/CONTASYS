@@ -1,0 +1,2 @@
+FAC-00000001.pdf: 1 pagina(s) abiertas y renderizadas con PDFium
+reporte_contasys_2026-01-15_a_2026-01-15.pdf: 4 pagina(s) abiertas y renderizadas con PDFium

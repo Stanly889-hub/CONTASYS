@@ -23,6 +23,7 @@
             <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
             <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
             <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
+            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
             <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
             <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
         </ul>
@@ -53,18 +54,41 @@
         <div class="plan-tarjeta" id="tarjetaFree">
             <h3>Free</h3>
             <p class="plan-precio">Gratis</p>
-            <p>Plan básico incluido para todos los usuarios de CONTASYS.</p>
+               <ul class="plan-beneficios">
+       <li>Hasta 3 presupuestos activos</li>
+       <li>Análisis financiero de los últimos 3 meses</li>
+       <li>Reportes exportables a PDF</li>
+       <li>Contador: hasta 2 clientes</li>
+    </ul>
         </div>
         <div class="plan-tarjeta" id="tarjetaPremium">
             <h3>Premium</h3>
             <p class="plan-precio">$19.900 COP / mes</p>
-            <p>Plan de pago con funciones avanzadas.</p>
+               <ul class="plan-beneficios">
+       <li>Presupuestos ilimitados</li>
+       <li>Análisis financiero con historial completo</li>
+       <li>Reportes exportables a PDF y Excel</li>
+       <li>Alerta preventiva al llegar al 80% de un presupuesto</li>
+       <li>Contador: clientes ilimitados</li>
+    </ul>
         </div>
     </div>
 
     <button id="btnCambiarPlan" class="btn-exportar"></button>
-    <p class="nota-simulada">Los pagos están simulados: este proyecto no tiene una pasarela de pago real conectada.</p>
+    <button id="btnRenovarPremium" class="btn-exportar" hidden>Simular renovación</button>
+    <p class="nota-simulada">La simulación de pagos solo está disponible en entornos académicos o de desarrollo habilitados.</p>
 </section>
+
+   <section class="table-section" id="seccionContadores" style="display:none;">
+       <h2>Accesos de contadores</h2>
+       <p class="nota-simulada">Un contador solo puede ver tus finanzas (en solo lectura) si tú aceptas su solicitud. Puedes revocar el acceso cuando quieras.</p>
+       <table>
+           <thead>
+               <tr><th>Contador</th><th>Correo</th><th>Estado</th><th>Acciones</th></tr>
+           </thead>
+           <tbody id="tablaContadores"></tbody>
+       </table>
+   </section>
 
         <section class="table-section">
             <h2>Actividad reciente</h2>

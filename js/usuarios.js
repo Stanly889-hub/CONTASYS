@@ -13,7 +13,38 @@ async function iniciar() {
     aplicarPermisosPorRol(sesionUsuario.rol);
     document.querySelector('[data-page="usuarios"]').classList.add("active");
 
+    await cargarEstadisticas();
     await renderizarTabla();
+}
+
+async function cargarEstadisticas() {
+    let est;
+    try {
+        est = await apiFetch("/usuarios/estadisticas");
+    } catch (error) {
+        return;
+    }
+
+    let contenedor = document.getElementById("estadisticasUsuarios");
+    contenedor.innerHTML = "";
+
+    [
+        ["Usuarios", `${est.totalUsuarios} (${est.usuariosActivos} activos)`],
+        ["Administradores", est.porRol.Administrador || 0],
+        ["Contadores", est.porRol.Contador || 0],
+        ["Emprendedores", est.porRol.Emprendedor || 0],
+        ["Plan Premium", est.porPlan.Premium],
+        ["Plan Free", est.porPlan.Free]
+    ].forEach(([titulo, valor]) => {
+        let tarjeta = document.createElement("div");
+        tarjeta.className = "kpi";
+        let h = document.createElement("h3");
+        h.textContent = titulo;
+        let p = document.createElement("p");
+        p.textContent = valor;
+        tarjeta.append(h, p);
+        contenedor.appendChild(tarjeta);
+    });
 }
 
 async function renderizarTabla() {
@@ -37,6 +68,24 @@ async function renderizarTabla() {
             fila.appendChild(td);
         });
 
+        // Columna "Cambiar rol": lista desplegable (no se puede cambiar el rol propio).
+        let celdaRol = document.createElement("td");
+        if (u.idUsuario === sesionUsuario.idUsuario) {
+            celdaRol.textContent = "—";
+        } else {
+            let selector = document.createElement("select");
+            ["Administrador", "Contador", "Emprendedor"].forEach(rol => {
+                let opcion = document.createElement("option");
+                opcion.value = rol;
+                opcion.textContent = rol;
+                opcion.selected = rol === u.rol;
+                selector.appendChild(opcion);
+            });
+            selector.onchange = () => cambiarRol(u, selector.value);
+            celdaRol.appendChild(selector);
+        }
+        fila.appendChild(celdaRol);
+
         let celdaAcciones = document.createElement("td");
 
         if (u.idUsuario === sesionUsuario.idUsuario) {
@@ -52,6 +101,25 @@ async function renderizarTabla() {
         fila.appendChild(celdaAcciones);
         tabla.appendChild(fila);
     });
+}
+
+async function cambiarRol(usuario, nuevoRol) {
+    if (!confirm(`¿Cambiar el rol de ${usuario.nombre} ${usuario.apellido} a ${nuevoRol}?`)) {
+        renderizarTabla();
+        return;
+    }
+
+    try {
+        await apiFetch(`/usuarios/${usuario.idUsuario}/rol`, {
+            method: "PUT",
+            body: JSON.stringify({ rol: nuevoRol })
+        });
+        mostrarNotificacion("Rol actualizado", "ok");
+    } catch (error) {
+        mostrarNotificacion(error.message, "error");
+    }
+    await cargarEstadisticas();
+    renderizarTabla();
 }
 
 async function cambiarEstado(idUsuario, nuevoEstado) {

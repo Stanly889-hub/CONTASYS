@@ -1,6 +1,6 @@
 let sesionUsuario = exigirSesion();
 let editandoId = null;
-let alertasYaMostradas = new Set();
+let guardandoPresupuesto = false;
 
 function primerDiaDelMes() {
     let d = new Date();
@@ -51,13 +51,15 @@ async function cargarCategorias() {
 
 document.getElementById("presupuestoForm").addEventListener("submit", async function (e) {
     e.preventDefault();
+    if (guardandoPresupuesto) return;
 
     let datos = {
         nombrePresupuesto: document.getElementById("nombrePresupuesto").value.trim(),
         idCategoria: Number(document.getElementById("categoria").value),
-        montoPresupuesto: Number(document.getElementById("montoPresupuesto").value),
+        montoPresupuesto: document.getElementById("montoPresupuesto").value,
         fechaInicio: document.getElementById("fechaInicio").value,
-        fechaFin: document.getElementById("fechaFin").value
+        fechaFin: document.getElementById("fechaFin").value,
+        estado: document.getElementById("estadoPresupuesto").value
     };
 
     if (!datos.nombrePresupuesto || !datos.idCategoria || !datos.fechaInicio || !datos.fechaFin) {
@@ -69,6 +71,8 @@ document.getElementById("presupuestoForm").addEventListener("submit", async func
         return;
     }
 
+    guardandoPresupuesto = true;
+    if (e.submitter) e.submitter.disabled = true;
     try {
         if (editandoId) {
             await apiFetch(`/presupuestos/${editandoId}`, { method: "PUT", body: JSON.stringify(datos) });
@@ -84,6 +88,9 @@ document.getElementById("presupuestoForm").addEventListener("submit", async func
         renderizarTabla();
     } catch (error) {
         mostrarNotificacion(error.message, "error");
+    } finally {
+        guardandoPresupuesto = false;
+        if (e.submitter) e.submitter.disabled = false;
     }
 });
 
@@ -111,11 +118,10 @@ async function renderizarTabla() {
     }
 
     presupuestos.forEach(p => {
-        let ejecutado = Number(p.ejecutado);
         let fila = document.createElement("tr");
         if (p.excedido) fila.classList.add("fila-excedida");
 
-        [p.nombrePresupuesto, p.categoria, `${p.fechaInicio} a ${p.fechaFin}`, formatoCOP(p.montoPresupuesto), formatoCOP(ejecutado)]
+        [p.nombrePresupuesto, `${p.categoria} (${p.tipo})`, `${p.fechaInicio} a ${p.fechaFin}`, formatoCOP(p.montoPresupuesto), formatoCOP(p.ejecutado)]
             .forEach(valor => {
                 let td = document.createElement("td");
                 td.textContent = valor;
@@ -131,8 +137,12 @@ async function renderizarTabla() {
         barraContenedor.appendChild(barra);
         let textoPorcentaje = document.createElement("span");
         textoPorcentaje.className = "texto-porcentaje";
-        textoPorcentaje.textContent = (p.excedido ? "⚠ " : "") + p.porcentaje + "%";
-        celdaProgreso.append(barraContenedor, textoPorcentaje);
+        const indicacion = p.excedido ? " · Límite superado" : p.metaAlcanzada ? " · Meta alcanzada"
+            : p.limiteAlcanzado ? " · Límite alcanzado" : p.alertaPreventiva ? " · Alerta preventiva" : "";
+        textoPorcentaje.textContent = p.porcentaje + "%" + indicacion;
+        const saldo = document.createElement("div");
+        saldo.textContent = `${p.tipo === "Ingreso" ? "Diferencia frente a la meta" : "Disponible"}: ${formatoCOP(p.disponible)}`;
+        celdaProgreso.append(barraContenedor, textoPorcentaje, saldo);
         fila.appendChild(celdaProgreso);
 
         let celdaAcciones = document.createElement("td");
@@ -149,23 +159,17 @@ async function renderizarTabla() {
 
         tabla.appendChild(fila);
 
-        if (p.excedido) mostrarAlertaExcedido(p.nombrePresupuesto);
     });
-}
-
-function mostrarAlertaExcedido(nombre) {
-    if (alertasYaMostradas.has(nombre)) return;
-    alertasYaMostradas.add(nombre);
-    mostrarNotificacion(`⚠ El presupuesto "${nombre}" fue excedido`, "error");
 }
 
 function editarPresupuesto(p) {
     editandoId = p.idPresupuesto;
     document.getElementById("nombrePresupuesto").value = p.nombrePresupuesto;
-    document.getElementById("categoria").value = p.idCategoria;
+    seleccionarCatalogoHistorico(document.getElementById("categoria"), p.idCategoria, p.categoria);
     document.getElementById("montoPresupuesto").value = p.montoPresupuesto;
     document.getElementById("fechaInicio").value = p.fechaInicio;
     document.getElementById("fechaFin").value = p.fechaFin;
+    document.getElementById("estadoPresupuesto").value = p.estado;
 
     document.getElementById("btnGuardarPresupuesto").textContent = "Actualizar";
     document.getElementById("btnCancelarPresupuesto").style.display = "inline-block";
@@ -174,6 +178,7 @@ function editarPresupuesto(p) {
 function cancelarEdicion() {
     editandoId = null;
     document.getElementById("presupuestoForm").reset();
+    document.querySelectorAll("#presupuestoForm [data-historico]").forEach(opcion => opcion.remove());
     document.getElementById("fechaInicio").value = primerDiaDelMes();
     document.getElementById("fechaFin").value = ultimoDiaDelMes();
     document.getElementById("btnGuardarPresupuesto").textContent = "Guardar";

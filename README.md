@@ -36,35 +36,19 @@ Se ejecutaron pruebas funcionales manuales sobre registro, login, dashboard y ma
 
 ## Sección 2 — Modelo de datos
 
-El modelo de datos de CONTASYS vive en la carpeta `database/` e incluye 12 tablas (Usuario, Rol, CategoriaFinanciera, MetodoPago, Ingreso, Egreso, Presupuesto, Reporte, Mensaje, Notificacion, Suscripcion, HistorialActividad), 6 triggers de integridad y 8 vistas de reportes reutilizables.
+La instalación completa tiene 18 tablas, 9 triggers y 8 vistas. El esquema seleccionado en MySQL Workbench debe coincidir con `DB_NAME` para la instalación que se está configurando.
 
-**Archivos:**
-- `CONTASYS_FINAL.sql` — esquema completo con datos de ejemplo (usuarios, ingresos, egresos, presupuestos, etc.), pensado para desarrollo y pruebas.
-- `CONTASYS_PRODUCCION.sql` — mismo esquema, pero sin datos ficticios de clientes. Solo trae precargado el catálogo (roles, categorías financieras y métodos de pago) necesario para que la aplicación funcione desde el primer uso; los usuarios y movimientos los crea el cliente real.
-- `pruebas_integridad.sql` — 7 casos de prueba que validan las reglas de negocio (categorías de ingreso/egreso, montos positivos, correos únicos, prevención de autoenvío de mensajes, borrado en cascada).
-- `RESULTADOS_PRUEBAS.md` — documentación de las pruebas ejecutadas, con sus resultados y evidencia visual.
+- **Instalación nueva.** En un esquema vacío, ejecuta `database/CONTASYS_PRODUCCION.sql` y las migraciones en el orden indicado en la guía del backend.
+- **Actualización.** Aplica las migraciones que falten en el esquema existente. Después ejecuta el diagnóstico de integridad en modo de lectura.
+- **Pruebas.** La suite crea su propio esquema. Para una demostración manual, `database/pruebas/DATOS_DEMO.sql` es una carga opcional para un esquema de pruebas recién instalado. `database/RESULTADOS_PRUEBAS.md` conserva la evidencia histórica.
 
-**Motor:** MySQL 8.0+ / MariaDB 10.5+. Base de datos: `contasys_actualizado`.
+Consulta las instrucciones para Workbench y Visual Studio Code en [la guía del backend](backend/README.md).
 
-**Cómo ejecutarlo:**
-```bash
-# Para desarrollo (con datos de ejemplo):
-mysql -u root < database/CONTASYS_FINAL.sql
+## Revisión final
 
-# Para producción (base limpia, sin datos ficticios):
-mysql -u root < database/CONTASYS_PRODUCCION.sql
-
-# Para correr las pruebas de integridad (sobre cualquiera de las dos anteriores):
-mysql -u root --force < database/pruebas_integridad.sql
-```
-
-## Pruebas realizadas (Sección 2)
-
-Se validó la ejecución real de los tres archivos en MySQL Workbench:
-
-- **`CONTASYS_FINAL.sql`** — crea las 12 tablas, los triggers y las 8 vistas, y carga los datos de ejemplo (7 categorías, 6 métodos de pago, 5 ingresos, 5 egresos, entre otros).
-- **`CONTASYS_PRODUCCION.sql`** — crea la misma estructura, pero queda en 0 usuarios, ingresos y egresos: solo conserva el catálogo base (7 categorías, 6 métodos de pago, 3 roles).
-- **`pruebas_integridad.sql`** — ejecuta los 7 casos de prueba de integridad. La captura evidencia el rechazo esperado de la Prueba 1 (`MySQL Error 1644: La categoria asignada no es de tipo Ingreso`), confirmando que el trigger de validación de categorías funciona correctamente.
+- Usa Node.js 22 y ejecuta `npm ci` en la raíz y en `backend/`. Sirve el frontend con su carpeta `vendor/`.
+- Ejecuta `npm run test:e2e` para Cypress sin ventana o `npm run test:e2e:open` para modo visual. El comando inicia el frontend y la API con un esquema ficticio y una cuenta temporal limitada. Requiere Chrome y un operador de pruebas que pueda crear ambos.
+- Consulta el [informe de la fase 7](evidencias/fase7/INFORME.md), la [guía de actualización y respaldo](evidencias/fase7/INSTALACION_RESPALDO.md) y la [revisión de seguridad](evidencias/fase7/SEGURIDAD.md).
 
 ## Sección 3 — Autenticación y control de sesión
 

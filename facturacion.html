@@ -6,7 +6,7 @@
 <title>Facturación - CONTASYS</title>
 <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="pagina-facturacion">
 
 <div class="dashboard-container">
 
@@ -23,6 +23,7 @@
             <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
             <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
             <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
+            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
             <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
             <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
         </ul>
@@ -37,28 +38,106 @@
             </div>
         </header>
 
-        <section class="form-section">
-            <h2>Generar factura</h2>
+        <section class="form-section" id="seccionFactura">
+            <h2 id="tituloFactura">Generar factura</h2>
+            <p>Documento comercial interno o de demostración.</p>
             <form id="facturaForm">
                 <div class="row">
-                    <input type="text" id="nombreCliente" placeholder="Nombre del cliente" required>
-                    <input type="text" id="documentoCliente" placeholder="Documento del cliente (opcional)">
+                    <input type="text" id="nombreCliente" placeholder="Nombre del cliente" maxlength="150" required>
+                    <input type="text" id="documentoCliente" placeholder="Documento del cliente (opcional)" maxlength="50">
                 </div>
-                <input type="text" id="conceptoFactura" placeholder="Concepto / descripción" required>
+                <input type="text" id="conceptoFactura" class="concepto" placeholder="Concepto / descripción" maxlength="250" required>
                 <div class="row">
-                    <input type="number" id="valorFactura" placeholder="Valor" min="1" required>
+                    <input type="number" id="valorFactura" class="precio" placeholder="Valor unitario" min="0.01" max="9999999999.99" step="0.01" required>
                     <input type="date" id="fechaFactura" required>
                 </div>
-                <button type="submit">Generar PDF</button>
+                <div class="row factura-linea">
+                    <label>Cantidad <input class="cantidad" type="number" min="0.001" max="999999.999" step="0.001" value="1" required></label>
+                    <label>Descuento (%) <input class="descuento" type="number" min="0" max="100" step="0.01" value="0" required></label>
+                    <label>Impuesto (%) <input class="impuesto" type="number" min="0" max="100" step="0.01" value="0" required></label>
+                </div>
+                <div id="conceptosFactura"></div>
+                <div class="btn-group">
+                    <button type="button" id="agregarConcepto">Agregar concepto</button>
+                    <button type="submit" value="borrador" formnovalidate>Guardar borrador</button>
+                    <button type="submit" value="emitir">Emitir y descargar PDF</button>
+                    <button type="button" id="cancelarFactura" hidden>Cancelar edición</button>
+                </div>
             </form>
         </section>
+        <section class="table-section">
+            <h2>Historial de facturas</h2>
+            <form id="filtrosFacturas" class="row filtros">
+                <input type="search" name="buscar" maxlength="150" placeholder="Consecutivo, nombre o documento" aria-label="Buscar factura">
+                <label>Desde <input type="date" name="desde"></label>
+                <label>Hasta <input type="date" name="hasta"></label>
+                <select name="estado" aria-label="Estado">
+                    <option value="">Todos los estados</option><option>Borrador</option><option>Pendiente</option>
+                    <option>Pagada</option><option>Anulada</option>
+                </select>
+                <button type="submit">Filtrar</button>
+            </form>
+            <div class="kpi-cards">
+                <div class="kpi"><h3>Total facturado</h3><p id="facturado">$0</p></div>
+                <div class="kpi"><h3>Total pagado</h3><p id="pagado">$0</p></div>
+                <div class="kpi"><h3>Pendiente</h3><p id="pendiente">$0</p></div>
+                <div class="kpi"><h3>Facturas</h3><p id="cantidadFacturas">0</p></div>
+            </div>
+            <div class="factura-tabla">
+                <table>
+                    <thead><tr><th>Número</th><th>Fecha</th><th>Cliente</th><th>Estado</th><th>Total</th><th>Acciones</th></tr></thead>
+                    <tbody id="historialFacturas"></tbody>
+                </table>
+            </div>
+        </section>
+        <dialog id="dialogoFactura" class="form-section factura-dialogo">
+            <h2 id="detalleTitulo">Detalle</h2>
+            <div id="detalleFactura"></div>
+            <form id="pagoFactura" hidden>
+                <label for="modoPagoFactura">Forma de registro</label>
+                <select id="modoPagoFactura">
+                    <option value="nuevo">Crear un ingreso confirmado</option>
+                    <option value="existente">Vincular un ingreso existente</option>
+                </select>
+                <div class="row" id="catalogosPagoFactura">
+                    <select id="categoriaPago" aria-label="Categoría del ingreso" required></select>
+                    <select id="metodoPagoFactura" aria-label="Método de pago" required></select>
+                </div>
+                <label id="selectorIngresoExistente" hidden>Ingreso elegible
+                    <select id="ingresoExistente" required disabled></select>
+                </label>
+                <button type="submit">Confirmar registro del pago</button>
+            </form>
+            <form id="correccionFactura" hidden>
+                <p id="consecuenciaCorreccion"></p>
+                <label for="motivoCorreccion">Motivo de la corrección interna</label>
+                <textarea id="motivoCorreccion" maxlength="500" rows="3" required></textarea>
+                <button type="submit">Confirmar corrección</button>
+            </form>
+            <div id="accionesFactura" class="btn-group"></div>
+            <form method="dialog"><button>Cerrar</button></form>
+        </dialog>
     </main>
 </div>
+
+<template id="plantillaConcepto">
+    <div class="factura-linea">
+        <input class="concepto" placeholder="Concepto / descripción" maxlength="250" required>
+        <div class="row">
+            <label>Cantidad <input class="cantidad" type="number" min="0.001" max="999999.999" step="0.001" value="1" required></label>
+            <label>Valor unitario <input class="precio" type="number" min="0.01" max="9999999999.99" step="0.01" required></label>
+            <label>Descuento (%) <input class="descuento" type="number" min="0" max="100" step="0.01" value="0" required></label>
+            <label>Impuesto (%) <input class="impuesto" type="number" min="0" max="100" step="0.01" value="0" required></label>
+        </div>
+        <button type="button" class="quitarConcepto">Quitar concepto</button>
+    </div>
+</template>
 
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="vendor/jspdf/jspdf.umd.min.js"></script>
+<script src="js/facturaPdf.js"></script>
 <script src="js/facturacion.js"></script>
 </body>
 </html>

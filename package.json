@@ -1,0 +1,25 @@
+{
+  "name": "contasys",
+  "version": "1.0.0",
+  "description": "Sistema de gestión contable y financiera para pequeños negocios: control de ingresos y egresos, presupuestos, reportes y usuarios con distintos roles (Administrador, Contador, Emprendedor).",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test:e2e",
+    "test:e2e": "node backend/scripts/probar-integral.js",
+    "test:e2e:open": "node backend/scripts/probar-integral.js --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Stanly889-hub/CONTASYS.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Stanly889-hub/CONTASYS/issues"
+  },
+  "homepage": "https://github.com/Stanly889-hub/CONTASYS#readme",
+  "devDependencies": {
+    "cypress": "^16.3.0"
+  }
+}

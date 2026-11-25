@@ -21,6 +21,12 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         window.location.href = "dashboard.html";
 
     } catch (error) {
+        // El servidor bloqueó temporalmente por demasiados intentos: mostrar su mensaje.
+        if (error.status === 429) {
+            mostrarNotificacion(error.message, "error");
+            return;
+        }
+
         intentosFallidos++;
         if (intentosFallidos >= 3) {
             window.location.href = "error.html";

@@ -7,7 +7,7 @@ async function listar(req, res) {
         );
         return res.json(metodos);
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         return res.status(500).json({ error: "Error al obtener los métodos de pago" });
     }
 }
@@ -19,7 +19,7 @@ async function listarTodos(req, res) {
         );
         return res.json(metodos);
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         return res.status(500).json({ error: "Error al obtener los métodos de pago" });
     }
 }
@@ -40,7 +40,7 @@ async function crear(req, res) {
         return res.status(201).json({ mensaje: "Método de pago creado", id: resultado.insertId });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         if (error.code === "ER_DUP_ENTRY") {
             return res.status(409).json({ error: "Ya existe un método de pago con ese nombre" });
         }
@@ -69,7 +69,7 @@ async function cambiarEstado(req, res) {
         return res.json({ mensaje: "Método de pago actualizado" });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         return res.status(500).json({ error: "Error al actualizar el método de pago" });
     }
 }

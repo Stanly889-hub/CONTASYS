@@ -2,19 +2,19 @@
 
 let sesionUsuario = exigirSesion();
 let reporteActual = null;
+let planUsuario = "Free";
 let chartIngresosEgresos = null;
 let chartCategorias = null;
+let peticionReporte;
+const FILAS_REPORTE = 100;
+let paginaDetalle = 0;
 
 function primerDiaDelMes() {
     let d = new Date();
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-01`;
 }
 
-function hoyISO() {
-    return new Date().toISOString().slice(0, 10);
-}
-
-function iniciar() {
+async function iniciar() {
     if (!sesionUsuario) return;
 
     document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
@@ -22,9 +22,23 @@ function iniciar() {
     document.querySelector('[data-page="reportes"]').classList.add("active");
 
     document.getElementById("fechaDesde").value = primerDiaDelMes();
-    document.getElementById("fechaHasta").value = hoyISO();
+    document.getElementById("fechaHasta").value = fechaLocalISO();
 
-    generarReporte();
+    document.getElementById("detalleAnterior").onclick = () => mostrarDetalle(paginaDetalle - 1);
+    document.getElementById("detalleSiguiente").onclick = () => mostrarDetalle(paginaDetalle + 1);
+    await Promise.all([cargarPlan(), generarReporte()]);
+}
+
+async function cargarPlan() {
+    // La exportación a Excel es una función del plan Premium.
+    try {
+        let s = await apiFetch("/suscripcion");
+        planUsuario = s.beneficios.exportarExcel ? "Premium" : "Free";
+    } catch (error) {
+        planUsuario = "Free";
+    }
+    let botonExcel = document.querySelector('[onclick="exportarExcel()"]');
+    if (botonExcel && planUsuario !== "Premium") botonExcel.textContent = "Exportar Excel 🔒 Premium";
 }
 
 async function generarReporte() {
@@ -40,19 +54,44 @@ async function generarReporte() {
         return;
     }
 
+    peticionReporte?.abort();
+    const peticion = new AbortController();
+    peticionReporte = peticion;
+    const estado = document.getElementById("estadoDetalleReporte");
+    document.getElementById("navegarDetalleReporte").hidden = false;
+    estado.textContent = "Cargando reporte…";
     try {
-        reporteActual = await apiFetch(`/reportes?desde=${desde}&hasta=${hasta}`);
+        const datos = await apiFetch(`/reportes?desde=${desde}&hasta=${hasta}`, { signal: peticion.signal });
+        if (peticion.signal.aborted) return;
+        reporteActual = datos;
     } catch (error) {
-        mostrarNotificacion(error.message, "error");
+        if (!peticion.signal.aborted) {
+            estado.textContent = "No se pudo actualizar el reporte";
+            mostrarNotificacion(error.message, "error");
+        }
         return;
     }
 
     document.getElementById("resumenIngresos").textContent = formatoCOP(reporteActual.totales.ingresos);
     document.getElementById("resumenEgresos").textContent = formatoCOP(reporteActual.totales.egresos);
     document.getElementById("resumenBalance").textContent = formatoCOP(reporteActual.totales.balance);
+    document.getElementById("resumenPendientes").textContent = textoPendientes(reporteActual.pendientes);
 
     renderizarGraficas(reporteActual.totales, reporteActual.gastosPorCategoria);
-    renderizarTablaDetalle(reporteActual.detalle);
+    mostrarDetalle(0);
+}
+
+function mostrarDetalle(pagina) {
+    if (!reporteActual) return;
+    const cantidad = reporteActual.detalle.length;
+    const totalPaginas = Math.max(1, Math.ceil(cantidad / FILAS_REPORTE));
+    if (pagina < 0 || pagina >= totalPaginas) return;
+    paginaDetalle = pagina;
+    const desde = pagina * FILAS_REPORTE;
+    renderizarTablaDetalle(reporteActual.detalle.slice(desde, desde + FILAS_REPORTE));
+    document.getElementById("detalleAnterior").disabled = pagina === 0;
+    document.getElementById("detalleSiguiente").disabled = pagina + 1 >= totalPaginas;
+    document.getElementById("estadoDetalleReporte").textContent = `Página ${pagina + 1} de ${totalPaginas} · ${cantidad} movimientos`;
 }
 
 function renderizarGraficas(totales, gastosCategoria) {
@@ -70,6 +109,7 @@ function renderizarGraficas(totales, gastosCategoria) {
         },
         options: {
             responsive: true,
+            animation: false,
             plugins: { legend: { display: false } },
             scales: { y: { ticks: { callback: (v) => formatoCOP(v) } } }
         }
@@ -86,11 +126,11 @@ function renderizarGraficas(totales, gastosCategoria) {
         data: {
             labels: categorias.length ? categorias : ['Sin egresos en el periodo'],
             datasets: [{
-                data: valores.length ? valores : [1],
+                data: valores.length ? valores.map(Number) : [0],
                 backgroundColor: ['#1e3a5f', '#2c5364', '#00c9a7', '#ff4d4d', '#f4b400', '#8e44ad', '#16a085']
             }]
         },
-        options: { responsive: true }
+        options: { responsive: true, animation: false }
     });
 }
 
@@ -118,7 +158,7 @@ function renderizarTablaDetalle(detalle) {
             m.categoria,
             m.metodoPago,
             m.descripcion,
-            formatoCOP(m.monto)
+            `${formatoCOP(m.monto)} · ${m.estadoTransaccion}`
         ];
 
         celdas.forEach(valor => {
@@ -145,11 +185,14 @@ function exportarPDF() {
 
     doc.setFontSize(11);
     doc.text(`Periodo: ${reporteActual.desde} a ${reporteActual.hasta}`, 14, 26);
-    doc.text(`Total Ingresos: ${formatoCOP(reporteActual.totales.ingresos)}`, 14, 34);
-    doc.text(`Total Egresos: ${formatoCOP(reporteActual.totales.egresos)}`, 14, 40);
-    doc.text(`Balance: ${formatoCOP(reporteActual.totales.balance)}`, 14, 46);
+    const { totales, pendientes } = reporteActual;
+    doc.text(`Ingresos confirmados: ${formatoCOPExacto(totales.ingresos)}`, 14, 34);
+    doc.text(`Egresos confirmados: ${formatoCOPExacto(totales.egresos)}`, 14, 40);
+    doc.text(`Balance confirmado: ${formatoCOPExacto(totales.balance)}`, 14, 46);
+    doc.text(`Ingresos pendientes: ${formatoCOPExacto(pendientes.ingresos)}`, 14, 53);
+    doc.text(`Egresos pendientes: ${formatoCOPExacto(pendientes.egresos)}`, 14, 59);
 
-    let y = 56;
+    let y = 69;
     doc.text("Ingresos vs Egresos", 14, y);
     doc.text("Gastos por categoría", 110, y);
     doc.addImage(chartIngresosEgresos.toBase64Image(), "PNG", 14, y + 4, 85, 60);
@@ -162,19 +205,32 @@ function exportarPDF() {
 
     doc.setFontSize(9);
     reporteActual.detalle.forEach(m => {
-        if (y > 280) {
-            doc.addPage();
-            y = 20;
+        const linea = `${m.fecha}  ${m.tipo === 'ingreso' ? 'Ingreso' : 'Egreso'}  ${m.estadoTransaccion}  ${m.categoria}  ${formatoCOPExacto(m.monto)}  ${m.descripcion || ""}`;
+        for (const parte of doc.splitTextToSize(linea, 180)) {
+            if (y > 280) {
+                doc.addPage();
+                y = 20;
+            }
+            doc.text(parte, 14, y);
+            y += 6;
         }
-        let linea = `${m.fecha}  ${m.tipo === 'ingreso' ? 'Ingreso' : 'Egreso'}  ${m.categoria}  ${formatoCOP(m.monto)}  ${m.descripcion}`;
-        doc.text(linea, 14, y);
-        y += 6;
     });
 
     doc.save(`reporte_contasys_${reporteActual.desde}_a_${reporteActual.hasta}.pdf`);
 }
 
+function importeExcel(monto) {
+    const centavos = centavosCOP(monto);
+    // Excel conserva hasta 15 dígitos significativos en una celda numérica.
+    return centavos >= -999999999999999n && centavos <= 999999999999999n ? Number(monto) : monto;
+}
+
 function exportarExcel() {
+    if (planUsuario !== "Premium") {
+        mostrarNotificacion("La exportación a Excel es una función del plan Premium. Puedes contratarlo en Mi cuenta", "error");
+        return;
+    }
+
     if (!reporteActual || reporteActual.detalle.length === 0) {
         mostrarNotificacion("No hay datos para exportar en este periodo", "error");
         return;
@@ -182,18 +238,21 @@ function exportarExcel() {
 
     let resumen = [
         { Concepto: "Periodo", Valor: `${reporteActual.desde} a ${reporteActual.hasta}` },
-        { Concepto: "Total Ingresos", Valor: reporteActual.totales.ingresos },
-        { Concepto: "Total Egresos", Valor: reporteActual.totales.egresos },
-        { Concepto: "Balance", Valor: reporteActual.totales.balance }
+        { Concepto: "Ingresos confirmados", Valor: importeExcel(reporteActual.totales.ingresos) },
+        { Concepto: "Egresos confirmados", Valor: importeExcel(reporteActual.totales.egresos) },
+        { Concepto: "Balance confirmado", Valor: importeExcel(reporteActual.totales.balance) },
+        { Concepto: "Ingresos pendientes", Valor: importeExcel(reporteActual.pendientes.ingresos) },
+        { Concepto: "Egresos pendientes", Valor: importeExcel(reporteActual.pendientes.egresos) }
     ];
 
     let detalle = reporteActual.detalle.map(m => ({
         Fecha: m.fecha,
         Tipo: m.tipo === 'ingreso' ? 'Ingreso' : 'Egreso',
+        Estado: m.estadoTransaccion,
         Categoria: m.categoria,
         MetodoPago: m.metodoPago,
         Descripcion: m.descripcion,
-        Monto: m.monto
+        Monto: importeExcel(m.monto)
     }));
 
     let wb = XLSX.utils.book_new();

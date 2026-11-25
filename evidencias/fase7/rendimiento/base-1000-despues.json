@@ -1,0 +1,238 @@
+{
+  "esquema": "contasys_prueba_perf_1000_092dd916",
+  "n": 1000,
+  "modo": "despues",
+  "metricas": {
+    "movimientos": {
+      "medianaMs": 10.63,
+      "maxMs": 73.3,
+      "consultas": 3,
+      "bytes": 11865
+    },
+    "egresos": {
+      "medianaMs": 6.33,
+      "maxMs": 8.23,
+      "consultas": 3,
+      "bytes": 12084
+    },
+    "facturas": {
+      "medianaMs": 7.66,
+      "maxMs": 13.48,
+      "consultas": 3,
+      "bytes": 9164
+    },
+    "mensajes": {
+      "medianaMs": 7.07,
+      "maxMs": 40.36,
+      "consultas": 3,
+      "bytes": 7880
+    },
+    "notificaciones": {
+      "medianaMs": 5.22,
+      "maxMs": 5.34,
+      "consultas": 2,
+      "bytes": 5412
+    },
+    "historial": {
+      "medianaMs": 5.05,
+      "maxMs": 5.67,
+      "consultas": 2,
+      "bytes": 7212
+    },
+    "pendientes": {
+      "medianaMs": 4.91,
+      "maxMs": 5.31,
+      "consultas": 2,
+      "bytes": 18
+    },
+    "contactos": {
+      "medianaMs": 4.66,
+      "maxMs": 9.12,
+      "consultas": 2,
+      "bytes": 87
+    },
+    "presupuestos": {
+      "medianaMs": 6.49,
+      "maxMs": 9.79,
+      "consultas": 3,
+      "bytes": 10827
+    },
+    "dashboard": {
+      "medianaMs": 7.03,
+      "maxMs": 7.25,
+      "consultas": 3,
+      "bytes": 1135
+    },
+    "analisis": {
+      "medianaMs": 10.98,
+      "maxMs": 21.3,
+      "consultas": 4,
+      "bytes": 1388
+    },
+    "reportes": {
+      "medianaMs": 24.64,
+      "maxMs": 27.86,
+      "consultas": 2,
+      "bytes": 336395
+    },
+    "sondeo": {
+      "medianaMs": 4.55,
+      "maxMs": 4.87,
+      "consultas": 2,
+      "bytes": 31
+    }
+  },
+  "planes": {},
+  "financiera": {
+    "facturas": {
+      "cantidad": 857,
+      "pagado": "0.00",
+      "pendiente": "8767.11",
+      "facturado": "8767.11"
+    },
+    "presupuestos": [
+      [
+        30,
+        "1739.10"
+      ],
+      [
+        29,
+        "1739.10"
+      ],
+      [
+        28,
+        "1739.10"
+      ],
+      [
+        27,
+        "1739.10"
+      ],
+      [
+        26,
+        "1739.10"
+      ],
+      [
+        25,
+        "1739.10"
+      ],
+      [
+        24,
+        "1739.10"
+      ],
+      [
+        23,
+        "1739.10"
+      ],
+      [
+        22,
+        "1739.10"
+      ],
+      [
+        21,
+        "1739.10"
+      ],
+      [
+        20,
+        "1739.10"
+      ],
+      [
+        19,
+        "1739.10"
+      ],
+      [
+        18,
+        "1739.10"
+      ],
+      [
+        17,
+        "1739.10"
+      ],
+      [
+        16,
+        "1739.10"
+      ],
+      [
+        15,
+        "1739.10"
+      ],
+      [
+        14,
+        "1739.10"
+      ],
+      [
+        13,
+        "1739.10"
+      ],
+      [
+        12,
+        "1739.10"
+      ],
+      [
+        11,
+        "1739.10"
+      ],
+      [
+        10,
+        "1739.10"
+      ],
+      [
+        9,
+        "1739.10"
+      ],
+      [
+        8,
+        "1739.10"
+      ],
+      [
+        7,
+        "1739.10"
+      ],
+      [
+        6,
+        "1739.10"
+      ],
+      [
+        5,
+        "1739.10"
+      ],
+      [
+        4,
+        "1739.10"
+      ],
+      [
+        3,
+        "1739.10"
+      ],
+      [
+        2,
+        "1739.10"
+      ],
+      [
+        1,
+        "1739.10"
+      ]
+    ],
+    "dashboard": [
+      "5258.22",
+      "5258.22",
+      "0.00"
+    ],
+    "analisis": {
+      "ingresos": "5258.22",
+      "egresos": "5258.22",
+      "balance": "0.00",
+      "tasaAhorro": 0
+    },
+    "reportes": {
+      "ingresos": "5258.22",
+      "egresos": "5258.22",
+      "balance": "0.00"
+    }
+  },
+  "concurrente": {
+    "peticiones": 8,
+    "ms": 76.99,
+    "cpuUsuarioMs": 78,
+    "rssMb": 92
+  }
+}

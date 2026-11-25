@@ -18,6 +18,7 @@ async function actualizarDashboard() {
     document.getElementById("ingresos").textContent = formatoCOP(datos.ingresos);
     document.getElementById("egresos").textContent = formatoCOP(datos.egresos);
     document.getElementById("balance").textContent = formatoCOP(datos.balance);
+    document.getElementById("resumenPendientes").textContent = textoPendientes(datos.pendientes);
 
     let tabla = document.getElementById("tablaMovimientos");
     tabla.innerHTML = "";
@@ -35,7 +36,7 @@ async function actualizarDashboard() {
 
     datos.recientes.forEach(m => {
         let fila = document.createElement("tr");
-        [m.fecha, m.tipo === "ingreso" ? "Ingreso" : "Egreso", m.categoria, formatoCOP(m.monto), m.descripcion]
+        [m.fecha, m.tipo === "ingreso" ? "Ingreso" : "Egreso", m.categoria, `${formatoCOP(m.monto)} · ${m.estadoTransaccion}`, m.descripcion]
             .forEach(valor => {
                 let td = document.createElement("td");
                 td.textContent = valor;
@@ -45,4 +46,6 @@ async function actualizarDashboard() {
     });
 }
 
-actualizarDashboard();
+if (sesionUsuario) {
+    actualizarDashboard();
+}

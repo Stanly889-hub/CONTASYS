@@ -13,8 +13,8 @@ document.getElementById("registroForm").addEventListener("submit", async functio
         mostrarNotificacion("Todos los campos son obligatorios", "error");
         return;
     }
-    if (password.length < 6) {
-        mostrarNotificacion("La contraseña debe tener al menos 6 caracteres", "error");
+    if (password.length < 8 || !/[A-Za-z]/.test(password) || !/\d/.test(password)) {
+        mostrarNotificacion("La contraseña debe tener al menos 8 caracteres e incluir letras y números", "error");
         return;
     }
     if (password !== confirmPassword) {

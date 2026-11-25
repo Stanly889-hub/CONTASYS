@@ -23,6 +23,7 @@
             <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
             <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
             <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
+            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
             <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
             <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
         </ul>
@@ -42,7 +43,8 @@
 
             <div class="chat-panel">
                 <div class="chat-titulo" id="chatTitulo">Selecciona un contacto para chatear</div>
-                <div class="chat-mensajes" id="chatMensajes"></div>
+                <button type="button" class="btn-accion btn-editar" id="mensajesAnteriores" hidden>Cargar anteriores</button>
+                <div class="chat-mensajes" id="chatMensajes" aria-live="polite"></div>
                 <form class="chat-form" id="chatForm" style="display:none;">
                     <input type="text" id="chatInput" placeholder="Escribe un mensaje..." autocomplete="off">
                     <button type="submit">Enviar</button>

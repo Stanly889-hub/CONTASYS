@@ -1,0 +1,705 @@
+{
+  "esquema": "contasys_prueba_perf_10000_7391bfb2",
+  "n": 10000,
+  "modo": "despues",
+  "metricas": {
+    "movimientos": {
+      "medianaMs": 11.48,
+      "maxMs": 17.08,
+      "consultas": 3,
+      "bytes": 11970
+    },
+    "egresos": {
+      "medianaMs": 10.03,
+      "maxMs": 11.67,
+      "consultas": 3,
+      "bytes": 12189
+    },
+    "facturas": {
+      "medianaMs": 23.13,
+      "maxMs": 24.51,
+      "consultas": 3,
+      "bytes": 9368
+    },
+    "mensajes": {
+      "medianaMs": 6,
+      "maxMs": 6.22,
+      "consultas": 3,
+      "bytes": 7930
+    },
+    "notificaciones": {
+      "medianaMs": 5.31,
+      "maxMs": 6.41,
+      "consultas": 2,
+      "bytes": 5463
+    },
+    "historial": {
+      "medianaMs": 4.87,
+      "maxMs": 7.69,
+      "consultas": 2,
+      "bytes": 7263
+    },
+    "pendientes": {
+      "medianaMs": 5.04,
+      "maxMs": 6.21,
+      "consultas": 2,
+      "bytes": 19
+    },
+    "contactos": {
+      "medianaMs": 4.7,
+      "maxMs": 6.02,
+      "consultas": 2,
+      "bytes": 87
+    },
+    "presupuestos": {
+      "medianaMs": 12.62,
+      "maxMs": 15.79,
+      "consultas": 3,
+      "bytes": 36533
+    },
+    "dashboard": {
+      "medianaMs": 27.2,
+      "maxMs": 27.7,
+      "consultas": 3,
+      "bytes": 1142
+    },
+    "analisis": {
+      "medianaMs": 46.31,
+      "maxMs": 50.28,
+      "consultas": 4,
+      "bytes": 1421
+    },
+    "reportes": {
+      "medianaMs": 187.81,
+      "maxMs": 296.76,
+      "consultas": 2,
+      "bytes": 3378812
+    },
+    "sondeo": {
+      "medianaMs": 4.41,
+      "maxMs": 4.59,
+      "consultas": 2,
+      "bytes": 31
+    }
+  },
+  "planes": {
+    "movimientos": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=2441 rows=51) (actual time=0.0807..0.339 rows=51 loops=1)\n    -> Nested loop inner join  (cost=2441 rows=90.3) (actual time=0.0798..0.333 rows=51 loops=1)\n        -> Nested loop inner join  (cost=1221 rows=90.3) (actual time=0.0297..0.21 rows=51 loops=1)\n            -> Filter: (m.idUsuario = 1)  (cost=1.52 rows=90.3) (actual time=0.0232..0.184 rows=51 loops=1)\n                -> Index scan on m using IDX_Ingreso_Fecha (reverse)  (cost=1.52 rows=102) (actual time=0.0219..0.176 rows=60 loops=1)\n            -> Single-row index lookup on mp using PRIMARY (idMetodoPago = m.idMetodoPago)  (cost=0.25 rows=1) (actual time=292e-6..320e-6 rows=1 loops=51)\n        -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=0.00221..0.00224 rows=1 loops=51)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Aggregate: sum((case when (m.estadoTransaccion = 'Pendiente') then m.monto end)), sum((case when (m.estadoTransaccion = 'Confirmada') then m.monto end))  (cost=1604 rows=1) (actual time=4.81..4.81 rows=1 loops=1)\n    -> Covering index lookup on m using IDX_Ingreso_Ejecucion (idUsuario = 1)  (cost=488 rows=4843) (actual time=0.0868..2.53 rows=8571 loops=1)\n"
+        ]
+      }
+    ],
+    "egresos": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=2565 rows=51) (actual time=0.06..0.308 rows=51 loops=1)\n    -> Nested loop inner join  (cost=2565 rows=85.8) (actual time=0.0593..0.303 rows=51 loops=1)\n        -> Nested loop inner join  (cost=1283 rows=85.8) (actual time=0.0549..0.229 rows=51 loops=1)\n            -> Filter: (m.idUsuario = 1)  (cost=1.37 rows=85.8) (actual time=0.0484..0.203 rows=51 loops=1)\n                -> Index scan on m using IDX_Egreso_Fecha (reverse)  (cost=1.37 rows=102) (actual time=0.0463..0.196 rows=60 loops=1)\n            -> Single-row index lookup on mp using PRIMARY (idMetodoPago = m.idMetodoPago)  (cost=0.25 rows=1) (actual time=280e-6..310e-6 rows=1 loops=51)\n        -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=0.0012..0.00124 rows=1 loops=51)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Aggregate: sum((case when (m.estadoTransaccion = 'Pendiente') then m.monto end)), sum((case when (m.estadoTransaccion = 'Confirmada') then m.monto end))  (cost=1686 rows=1) (actual time=4.73..4.73 rows=1 loops=1)\n    -> Covering index lookup on m using IDX_Egreso_Ejecucion (idUsuario = 1)  (cost=513 rows=5093) (actual time=0.0883..2.5 rows=8571 loops=1)\n"
+        ]
+      }
+    ],
+    "facturas": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=564 rows=51) (actual time=0.211..0.227 rows=51 loops=1)\n    -> Index lookup on Factura using IDX_Factura_Historial (idUsuario = 1) (reverse)  (cost=564 rows=4916) (actual time=0.21..0.222 rows=51 loops=1)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Aggregate: sum((case when (factura.estado = 'Pendiente') then factura.total end)), sum((case when (factura.estado = 'Pagada') then factura.total end)), count(0)  (cost=1697 rows=1) (actual time=16.4..16.4 rows=1 loops=1)\n    -> Index lookup on Factura using IDX_Factura_Historial (idUsuario = 1)  (cost=564 rows=4916) (actual time=0.155..13.8 rows=8571 loops=1)\n"
+        ]
+      }
+    ],
+    "mensajes": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=1217..1217 rows=51) (actual time=0.485..0.495 rows=51 loops=1)\n    -> Sort row IDs: idMensaje DESC, limit input to 51 row(s) per chunk  (cost=1217..1217 rows=51) (actual time=0.484..0.49 rows=51 loops=1)\n        -> Table scan on <union temporary>  (cost=1169..1173 rows=102) (actual time=0.404..0.422 rows=102 loops=1)\n            -> Union all materialize  (cost=1169..1169 rows=102) (actual time=0.402..0.402 rows=102 loops=1)\n                -> Limit: 51 row(s)  (cost=573 rows=51) (actual time=0.0307..0.158 rows=51 loops=1)\n                    -> Index lookup on Mensaje using IDX_Mensaje_Conversacion (idEmisor = 1, idReceptor = 2) (reverse)  (cost=573 rows=5000) (actual time=0.0303..0.154 rows=51 loops=1)\n                -> Limit: 51 row(s)  (cost=573 rows=51) (actual time=0.0127..0.127 rows=51 loops=1)\n                    -> Index lookup on Mensaje using IDX_Mensaje_Conversacion (idEmisor = 2, idReceptor = 1) (reverse)  (cost=573 rows=5000) (actual time=0.0124..0.122 rows=51 loops=1)\n"
+        ]
+      }
+    ],
+    "notificaciones": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=644 rows=51) (actual time=0.229..0.255 rows=51 loops=1)\n    -> Filter: (notificacion.estado <> 'Archivada')  (cost=644 rows=5714) (actual time=0.228..0.251 rows=51 loops=1)\n        -> Index lookup on Notificacion using IDX_Notificacion_Usuario_Fecha (idUsuario = 1) (reverse)  (cost=644 rows=8571) (actual time=0.224..0.237 rows=77 loops=1)\n"
+        ]
+      }
+    ],
+    "historial": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=581 rows=51) (actual time=0.275..0.293 rows=51 loops=1)\n    -> Index lookup on h using IDX_Historial_Usuario_Fecha (idUsuario = 1) (reverse)  (cost=581 rows=5080) (actual time=0.274..0.287 rows=51 loops=1)\n"
+        ]
+      }
+    ],
+    "pendientes": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Aggregate: count(0)  (cost=945 rows=1) (actual time=0.896..0.896 rows=1 loops=1)\n    -> Covering index lookup on Notificacion using IDX_Notificacion_Pendientes (idUsuario = 1, estado = 'Pendiente')  (cost=287 rows=2857) (actual time=0.0451..0.782 rows=2857 loops=1)\n"
+        ]
+      }
+    ],
+    "contactos": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Nested loop left join  (cost=2.06 rows=2) (actual time=0.115..0.115 rows=1 loops=1)\n    -> Nested loop inner join  (cost=1.36 rows=2) (actual time=0.0877..0.0881 rows=1 loops=1)\n        -> Sort: u.nombre  (cost=0.91 rows=2) (actual time=0.0365..0.0366 rows=1 loops=1)\n            -> Filter: ((u.idUsuario <> 1) and (u.estado = 'Activo'))  (cost=0.91 rows=2) (actual time=0.022..0.024 rows=1 loops=1)\n                -> Index range scan on u using PRIMARY over (idUsuario < 1) OR (1 < idUsuario)  (cost=0.91 rows=2) (actual time=0.0186..0.0205 rows=1 loops=1)\n        -> Single-row index lookup on r using PRIMARY (idRol = u.idRol)  (cost=0.35 rows=1) (actual time=0.0503..0.0504 rows=1 loops=1)\n    -> Index lookup on m using <auto_key0> (idEmisor = u.idUsuario)  (cost=1.16..1.51 rows=2) (actual time=0.0243..0.0243 rows=0 loops=1)\n        -> Materialize  (cost=0.811..0.811 rows=1) (actual time=0.0231..0.0231 rows=0 loops=1)\n            -> Group aggregate: count(0)  (cost=0.58 rows=1) (actual time=0.0086..0.0086 rows=0 loops=1)\n                -> Covering index lookup on Mensaje using IDX_Mensaje_Pendientes (idReceptor = 1, leido = false)  (cost=0.35 rows=1) (actual time=0.0076..0.0076 rows=0 loops=1)\n"
+        ]
+      }
+    ],
+    "presupuestos": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Nested loop left join  (cost=53708 rows=0) (actual time=5.89..6.17 rows=100 loops=1)\n    -> Nested loop inner join  (cost=45.2 rows=100) (actual time=0.207..0.371 rows=100 loops=1)\n        -> Sort: fechaInicio DESC, idPresupuesto DESC  (cost=10.2 rows=100) (actual time=0.199..0.218 rows=100 loops=1)\n            -> Filter: (p.idUsuario = 1)  (cost=10.2 rows=100) (actual time=0.0679..0.132 rows=100 loops=1)\n                -> Table scan on p  (cost=10.2 rows=100) (actual time=0.0664..0.122 rows=100 loops=1)\n        -> Single-row index lookup on c using PRIMARY (idCategoria = p.idCategoria)  (cost=0.251 rows=1) (actual time=0.0013..0.00133 rows=1 loops=100)\n    -> Index lookup on e using <auto_key0> (idCategoria = p.idCategoria, fechaInicio = p.fechaInicio, fechaFin = p.fechaFin)  (cost=2.5..537 rows=215) (actual time=0.0575..0.0577 rows=1 loops=100)\n        -> Materialize union CTE ejecucion  (cost=0..0 rows=0) (actual time=5.68..5.68 rows=2 loops=1)\n            -> Table scan on <temporary>  (actual time=3.1..3.1 rows=1 loops=1)\n                -> Aggregate using temporary table  (actual time=3.1..3.1 rows=1 loops=1)\n                    -> Nested loop inner join  (cost=9566 rows=10462) (actual time=0.39..1.53 rows=1713 loops=1)\n                        -> Filter: (r.tipo = 'Ingreso')  (cost=41.9 rows=175) (actual time=0.344..0.345 rows=1 loops=1)\n                            -> Table scan on r  (cost=209..216 rows=350) (actual time=0.343..0.343 rows=2 loops=1)\n                                -> Materialize CTE rangos if needed  (cost=209..209 rows=350) (actual time=0.343..0.343 rows=2 loops=1)\n                                    -> Table scan on <temporary>  (cost=122..129 rows=350) (actual time=0.331..0.332 rows=2 loops=1)\n                                        -> Temporary table with deduplication  (cost=122..122 rows=350) (actual time=0.33..0.33 rows=2 loops=1)\n                                            -> Nested loop inner join  (cost=41.2 rows=350) (actual time=0.0438..0.205 rows=100 loops=1)\n                                                -> Covering index scan on c using UQ_Categoria_Nombre_Tipo  (cost=0.95 rows=7) (actual time=0.0159..0.018 rows=7 loops=1)\n                                                -> Filter: (p.idUsuario = 1)  (cost=1.46 rows=50) (actual time=0.00701..0.0252 rows=14.3 loops=7)\n                                                    -> Index lookup on p using FK_Presupuesto_Categoria (idCategoria = c.idCategoria)  (cost=1.46 rows=50) (actual time=0.00673..0.0235 rows=14.3 loops=7)\n                        -> Filter: (i.fecha between r.fechaInicio and r.fechaFin)  (cost=0.644 rows=59.8) (actual time=0.0449..1.05 rows=1713 loops=1)\n                            -> Covering index lookup on i using IDX_Ingreso_Ejecucion (idUsuario = r.idUsuario, idCategoria = r.idCategoria, estadoTransaccion = 'Confirmada')  (cost=0.644 rows=538) (actual time=0.0438..0.854 rows=1713 loops=1)\n            -> Table scan on <temporary>  (actual time=2.56..2.56 rows=1 loops=1)\n                -> Aggregate using temporary table  (actual time=2.55..2.55 rows=1 loops=1)\n                    -> Nested loop inner join  (cost=10056 rows=11003) (actual time=0.0285..1.05 rows=1713 loops=1)\n                        -> Filter: (r.tipo = 'Egreso')  (cost=41.9 rows=175) (actual time=0.002..0.0027 rows=1 loops=1)\n                            -> Table scan on r  (cost=209..216 rows=350) (actual time=0.0016..0.0019 rows=2 loops=1)\n                                -> Materialize CTE rangos if needed (query plan printed elsewhere)  (cost=209..209 rows=350) (never executed)\n                        -> Filter: (e.fecha between r.fechaInicio and r.fechaFin)  (cost=0.665 rows=62.9) (actual time=0.0261..0.937 rows=1713 loops=1)\n                            -> Covering index lookup on e using IDX_Egreso_Ejecucion (idUsuario = r.idUsuario, idCategoria = r.idCategoria, estadoTransaccion = 'Confirmada')  (cost=0.665 rows=566) (actual time=0.0257..0.758 rows=1713 loops=1)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Rows fetched before execution  (cost=0..0 rows=1) (actual time=300e-6..400e-6 rows=1 loops=1)\n"
+        ]
+      }
+    ],
+    "dashboard": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Append  (actual time=10.7..22.7 rows=4 loops=1)\n    -> Stream results  (actual time=10.7..10.7 rows=2 loops=1)\n        -> Table scan on <temporary>  (actual time=10.7..10.7 rows=2 loops=1)\n            -> Aggregate using temporary table  (actual time=10.7..10.7 rows=2 loops=1)\n                -> Filter: (m.estadoTransaccion in ('Confirmada','Pendiente'))  (cost=403 rows=4000) (actual time=0.0879..5.26 rows=6857 loops=1)\n                    -> Covering index lookup on m using IDX_Ingreso_Ejecucion (idUsuario = 1)  (cost=403 rows=4843) (actual time=0.0855..2.97 rows=8571 loops=1)\n    -> Stream results  (actual time=12..12 rows=2 loops=1)\n        -> Table scan on <temporary>  (actual time=12..12 rows=2 loops=1)\n            -> Aggregate using temporary table  (actual time=12..12 rows=2 loops=1)\n                -> Filter: (m.estadoTransaccion in ('Confirmada','Pendiente'))  (cost=404 rows=4000) (actual time=0.138..5.89 rows=6857 loops=1)\n                    -> Covering index lookup on m using IDX_Egreso_Ejecucion (idUsuario = 1)  (cost=404 rows=5093) (actual time=0.137..3.4 rows=8571 loops=1)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 5 row(s)  (cost=4980..4980 rows=5) (actual time=0.166..0.167 rows=5 loops=1)\n    -> Sort row IDs: fecha DESC, id DESC, tipo, limit input to 5 row(s) per chunk  (cost=4980..4980 rows=5) (actual time=0.166..0.166 rows=5 loops=1)\n        -> Table scan on <union temporary>  (cost=4974..4977 rows=10) (actual time=0.138..0.141 rows=10 loops=1)\n            -> Union all materialize  (cost=4974..4974 rows=10) (actual time=0.136..0.136 rows=10 loops=1)\n                -> Limit: 5 row(s)  (cost=2423 rows=5) (actual time=0.0381..0.0675 rows=5 loops=1)\n                    -> Nested loop inner join  (cost=2423 rows=8.85) (actual time=0.0375..0.0663 rows=5 loops=1)\n                        -> Nested loop inner join  (cost=1212 rows=8.85) (actual time=0.0333..0.0598 rows=5 loops=1)\n                            -> Filter: (m.idUsuario = 1)  (cost=0.135 rows=8.85) (actual time=0.0256..0.0444 rows=5 loops=1)\n                                -> Index scan on m using IDX_Ingreso_Fecha (reverse)  (cost=0.135 rows=10) (actual time=0.0243..0.0427 rows=5 loops=1)\n                            -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=0.00262..0.00266 rows=1 loops=5)\n                        -> Single-row index lookup on mp using PRIMARY (idMetodoPago = m.idMetodoPago)  (cost=0.25 rows=1) (actual time=980e-6..0.00102 rows=1 loops=5)\n                -> Limit: 5 row(s)  (cost=2548 rows=5) (actual time=0.0192..0.0436 rows=5 loops=1)\n                    -> Nested loop inner join  (cost=2548 rows=8.41) (actual time=0.019..0.0429 rows=5 loops=1)\n                        -> Nested loop inner join  (cost=1274 rows=8.41) (actual time=0.0161..0.038 rows=5 loops=1)\n                            -> Filter: (m.idUsuario = 1)  (cost=0.122 rows=8.41) (actual time=0.0122..0.027 rows=5 loops=1)\n                                -> Index scan on m using IDX_Egreso_Fecha (reverse)  (cost=0.122 rows=10) (actual time=0.0118..0.0261 rows=5 loops=1)\n                            -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=0.00194..0.00198 rows=1 loops=5)\n                        -> Single-row index lookup on mp using PRIMARY (idMetodoPago = m.idMetodoPago)  (cost=0.25 rows=1) (actual time=680e-6..720e-6 rows=1 loops=5)\n"
+        ]
+      }
+    ],
+    "analisis": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Rows fetched before execution  (cost=0..0 rows=1) (actual time=400e-6..500e-6 rows=1 loops=1)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Rows fetched before execution  (cost=0..0 rows=1) (actual time=300e-6..400e-6 rows=1 loops=1)\n"
+        ]
+      },
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Append  (actual time=24.2..47.6 rows=156 loops=1)\n    -> Stream results  (actual time=24.2..24.3 rows=78 loops=1)\n        -> Table scan on <temporary>  (actual time=24.2..24.3 rows=78 loops=1)\n            -> Aggregate using temporary table  (actual time=24.2..24.2 rows=78 loops=1)\n                -> Nested loop inner join  (cost=903 rows=2000) (actual time=0.11..10.1 rows=6857 loops=1)\n                    -> Filter: ((m.fecha <= DATE'2026-11-24') and (m.estadoTransaccion in ('Confirmada','Pendiente')))  (cost=203 rows=2000) (actual time=0.104..7.35 rows=6857 loops=1)\n                        -> Covering index lookup on m using IDX_Ingreso_Ejecucion (idUsuario = 1)  (cost=203 rows=4843) (actual time=0.0998..4.18 rows=8571 loops=1)\n                    -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=163e-6..199e-6 rows=1 loops=6857)\n    -> Stream results  (actual time=23.2..23.3 rows=78 loops=1)\n        -> Table scan on <temporary>  (actual time=23.2..23.2 rows=78 loops=1)\n            -> Aggregate using temporary table  (actual time=23.2..23.2 rows=78 loops=1)\n                -> Nested loop inner join  (cost=903 rows=2000) (actual time=0.111..9.73 rows=6857 loops=1)\n                    -> Filter: ((m.fecha <= DATE'2026-11-24') and (m.estadoTransaccion in ('Confirmada','Pendiente')))  (cost=204 rows=2000) (actual time=0.105..7.13 rows=6857 loops=1)\n                        -> Covering index lookup on m using IDX_Egreso_Ejecucion (idUsuario = 1)  (cost=204 rows=5093) (actual time=0.102..4.21 rows=8571 loops=1)\n                    -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=157e-6..191e-6 rows=1 loops=6857)\n"
+        ]
+      }
+    ],
+    "reportes": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Sort row IDs: fecha, id, tipo  (cost=15220..15220 rows=9936) (actual time=101..103 rows=17142 loops=1)\n    -> Table scan on <union temporary>  (cost=7403..7529 rows=9936) (actual time=71.2..74.7 rows=17142 loops=1)\n        -> Union all materialize  (cost=7403..7403 rows=9936) (actual time=71.2..71.2 rows=17142 loops=1)\n            -> Nested loop inner join  (cost=2494 rows=4843) (actual time=0.0359..25.9 rows=8571 loops=1)\n                -> Nested loop inner join  (cost=1405 rows=4843) (actual time=0.0314..22.9 rows=8571 loops=1)\n                    -> Index lookup on m using IDX_Ingreso_Ejecucion (idUsuario = 1), with index condition: ((m.fecha >= DATE'2025-11-24') and (m.fecha <= DATE'2026-11-24'))  (cost=315 rows=4843) (actual time=0.0238..19.5 rows=8571 loops=1)\n                    -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=170e-6..203e-6 rows=1 loops=8571)\n                -> Single-row index lookup on mp using PRIMARY (idMetodoPago = m.idMetodoPago)  (cost=0.25 rows=1) (actual time=135e-6..170e-6 rows=1 loops=8571)\n            -> Nested loop inner join  (cost=2619 rows=5093) (actual time=0.0427..24.9 rows=8571 loops=1)\n                -> Nested loop inner join  (cost=1473 rows=5093) (actual time=0.0364..21.9 rows=8571 loops=1)\n                    -> Index lookup on m using IDX_Egreso_Ejecucion (idUsuario = 1), with index condition: ((m.fecha >= DATE'2025-11-24') and (m.fecha <= DATE'2026-11-24'))  (cost=327 rows=5093) (actual time=0.0279..18.6 rows=8571 loops=1)\n                    -> Single-row index lookup on c using PRIMARY (idCategoria = m.idCategoria)  (cost=0.25 rows=1) (actual time=164e-6..199e-6 rows=1 loops=8571)\n                -> Single-row index lookup on mp using PRIMARY (idMetodoPago = m.idMetodoPago)  (cost=0.25 rows=1) (actual time=126e-6..162e-6 rows=1 loops=8571)\n"
+        ]
+      }
+    ],
+    "sondeo": [
+      {
+        "resumen": [
+          {}
+        ],
+        "real": [
+          "-> Limit: 51 row(s)  (cost=3.88..3.88 rows=0.518) (actual time=0.027..0.027 rows=0 loops=1)\n    -> Sort row IDs: idMensaje, limit input to 51 row(s) per chunk  (cost=3.88..3.88 rows=0.518) (actual time=0.0266..0.0266 rows=0 loops=1)\n        -> Table scan on <union temporary>  (cost=3.54..3.54 rows=0.518) (actual time=0.021..0.021 rows=0 loops=1)\n            -> Union all materialize  (cost=1.04..1.04 rows=0.518) (actual time=0.0198..0.0198 rows=0 loops=1)\n                -> Limit: 51 row(s)  (cost=0.46 rows=0.259) (actual time=0.013..0.013 rows=0 loops=1)\n                    -> Filter: ((mensaje.idReceptor = 2) and (mensaje.idEmisor = 1) and (mensaje.idMensaje > 10000))  (cost=0.46 rows=0.259) (actual time=0.0125..0.0125 rows=0 loops=1)\n                        -> Index range scan on Mensaje using PRIMARY over (10000 < idMensaje)  (cost=0.46 rows=1) (actual time=0.0116..0.0116 rows=0 loops=1)\n                -> Limit: 51 row(s)  (cost=0.46 rows=0.259) (actual time=0.0038..0.0038 rows=0 loops=1)\n                    -> Filter: ((mensaje.idReceptor = 1) and (mensaje.idEmisor = 2) and (mensaje.idMensaje > 10000))  (cost=0.46 rows=0.259) (actual time=0.0036..0.0036 rows=0 loops=1)\n                        -> Index range scan on Mensaje using PRIMARY over (10000 < idMensaje)  (cost=0.46 rows=1) (actual time=0.0034..0.0034 rows=0 loops=1)\n"
+        ]
+      }
+    ]
+  },
+  "financiera": {
+    "facturas": {
+      "cantidad": 8571,
+      "pagado": "0.00",
+      "pendiente": "87681.33",
+      "facturado": "87681.33"
+    },
+    "presupuestos": [
+      [
+        100,
+        "17523.99"
+      ],
+      [
+        99,
+        "17523.99"
+      ],
+      [
+        98,
+        "17523.99"
+      ],
+      [
+        97,
+        "17523.99"
+      ],
+      [
+        96,
+        "17523.99"
+      ],
+      [
+        95,
+        "17523.99"
+      ],
+      [
+        94,
+        "17523.99"
+      ],
+      [
+        93,
+        "17523.99"
+      ],
+      [
+        92,
+        "17523.99"
+      ],
+      [
+        91,
+        "17523.99"
+      ],
+      [
+        90,
+        "17523.99"
+      ],
+      [
+        89,
+        "17523.99"
+      ],
+      [
+        88,
+        "17523.99"
+      ],
+      [
+        87,
+        "17523.99"
+      ],
+      [
+        86,
+        "17523.99"
+      ],
+      [
+        85,
+        "17523.99"
+      ],
+      [
+        84,
+        "17523.99"
+      ],
+      [
+        83,
+        "17523.99"
+      ],
+      [
+        82,
+        "17523.99"
+      ],
+      [
+        81,
+        "17523.99"
+      ],
+      [
+        80,
+        "17523.99"
+      ],
+      [
+        79,
+        "17523.99"
+      ],
+      [
+        78,
+        "17523.99"
+      ],
+      [
+        77,
+        "17523.99"
+      ],
+      [
+        76,
+        "17523.99"
+      ],
+      [
+        75,
+        "17523.99"
+      ],
+      [
+        74,
+        "17523.99"
+      ],
+      [
+        73,
+        "17523.99"
+      ],
+      [
+        72,
+        "17523.99"
+      ],
+      [
+        71,
+        "17523.99"
+      ],
+      [
+        70,
+        "17523.99"
+      ],
+      [
+        69,
+        "17523.99"
+      ],
+      [
+        68,
+        "17523.99"
+      ],
+      [
+        67,
+        "17523.99"
+      ],
+      [
+        66,
+        "17523.99"
+      ],
+      [
+        65,
+        "17523.99"
+      ],
+      [
+        64,
+        "17523.99"
+      ],
+      [
+        63,
+        "17523.99"
+      ],
+      [
+        62,
+        "17523.99"
+      ],
+      [
+        61,
+        "17523.99"
+      ],
+      [
+        60,
+        "17523.99"
+      ],
+      [
+        59,
+        "17523.99"
+      ],
+      [
+        58,
+        "17523.99"
+      ],
+      [
+        57,
+        "17523.99"
+      ],
+      [
+        56,
+        "17523.99"
+      ],
+      [
+        55,
+        "17523.99"
+      ],
+      [
+        54,
+        "17523.99"
+      ],
+      [
+        53,
+        "17523.99"
+      ],
+      [
+        52,
+        "17523.99"
+      ],
+      [
+        51,
+        "17523.99"
+      ],
+      [
+        50,
+        "17523.99"
+      ],
+      [
+        49,
+        "17523.99"
+      ],
+      [
+        48,
+        "17523.99"
+      ],
+      [
+        47,
+        "17523.99"
+      ],
+      [
+        46,
+        "17523.99"
+      ],
+      [
+        45,
+        "17523.99"
+      ],
+      [
+        44,
+        "17523.99"
+      ],
+      [
+        43,
+        "17523.99"
+      ],
+      [
+        42,
+        "17523.99"
+      ],
+      [
+        41,
+        "17523.99"
+      ],
+      [
+        40,
+        "17523.99"
+      ],
+      [
+        39,
+        "17523.99"
+      ],
+      [
+        38,
+        "17523.99"
+      ],
+      [
+        37,
+        "17523.99"
+      ],
+      [
+        36,
+        "17523.99"
+      ],
+      [
+        35,
+        "17523.99"
+      ],
+      [
+        34,
+        "17523.99"
+      ],
+      [
+        33,
+        "17523.99"
+      ],
+      [
+        32,
+        "17523.99"
+      ],
+      [
+        31,
+        "17523.99"
+      ],
+      [
+        30,
+        "17523.99"
+      ],
+      [
+        29,
+        "17523.99"
+      ],
+      [
+        28,
+        "17523.99"
+      ],
+      [
+        27,
+        "17523.99"
+      ],
+      [
+        26,
+        "17523.99"
+      ],
+      [
+        25,
+        "17523.99"
+      ],
+      [
+        24,
+        "17523.99"
+      ],
+      [
+        23,
+        "17523.99"
+      ],
+      [
+        22,
+        "17523.99"
+      ],
+      [
+        21,
+        "17523.99"
+      ],
+      [
+        20,
+        "17523.99"
+      ],
+      [
+        19,
+        "17523.99"
+      ],
+      [
+        18,
+        "17523.99"
+      ],
+      [
+        17,
+        "17523.99"
+      ],
+      [
+        16,
+        "17523.99"
+      ],
+      [
+        15,
+        "17523.99"
+      ],
+      [
+        14,
+        "17523.99"
+      ],
+      [
+        13,
+        "17523.99"
+      ],
+      [
+        12,
+        "17523.99"
+      ],
+      [
+        11,
+        "17523.99"
+      ],
+      [
+        10,
+        "17523.99"
+      ],
+      [
+        9,
+        "17523.99"
+      ],
+      [
+        8,
+        "17523.99"
+      ],
+      [
+        7,
+        "17523.99"
+      ],
+      [
+        6,
+        "17523.99"
+      ],
+      [
+        5,
+        "17523.99"
+      ],
+      [
+        4,
+        "17523.99"
+      ],
+      [
+        3,
+        "17523.99"
+      ],
+      [
+        2,
+        "17523.99"
+      ],
+      [
+        1,
+        "17523.99"
+      ]
+    ],
+    "dashboard": [
+      "52602.66",
+      "52602.66",
+      "0.00"
+    ],
+    "analisis": {
+      "ingresos": "52602.66",
+      "egresos": "52602.66",
+      "balance": "0.00",
+      "tasaAhorro": 0
+    },
+    "reportes": {
+      "ingresos": "52602.66",
+      "egresos": "52602.66",
+      "balance": "0.00"
+    }
+  },
+  "concurrente": {
+    "peticiones": 8,
+    "ms": 77.3,
+    "cpuUsuarioMs": 31,
+    "rssMb": 114.4
+  }
+}

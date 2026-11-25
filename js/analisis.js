@@ -16,10 +16,20 @@ async function iniciar() {
         return;
     }
 
+    // Plan Free: el análisis solo cubre los últimos meses.
+    let aviso = document.getElementById("avisoPlan");
+    if (datos.limitado) {
+        aviso.textContent = `Plan Free: este análisis incluye solo los últimos ${datos.mesesIncluidos} meses. Con Premium verás tu historial completo.`;
+        aviso.style.display = "block";
+    } else {
+        aviso.style.display = "none";
+    }
+
     document.getElementById("totalIngresos").textContent = formatoCOP(datos.totales.ingresos);
     document.getElementById("totalEgresos").textContent = formatoCOP(datos.totales.egresos);
     document.getElementById("totalBalance").textContent = formatoCOP(datos.totales.balance);
     document.getElementById("tasaAhorro").textContent = datos.totales.tasaAhorro + "%";
+    document.getElementById("resumenPendientes").textContent = textoPendientes(datos.pendientes);
 
     renderizarTendencia(datos.tendenciaMensual);
     renderizarTopCategorias(datos.topCategorias);
@@ -69,7 +79,7 @@ function renderizarTendencia(tendencia) {
                 legend: { position: 'top' },
                 tooltip: {
                     callbacks: {
-                        label: (c) => `${c.dataset.label}: ${formatoCOP(c.parsed.y)}`
+                        label: (c) => `${c.dataset.label}: ${formatoCOP(c.raw)}`
                     }
                 }
             },

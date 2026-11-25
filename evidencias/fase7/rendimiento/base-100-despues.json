@@ -1,0 +1,142 @@
+{
+  "esquema": "contasys_prueba_perf_100_0ba62098",
+  "n": 100,
+  "modo": "despues",
+  "metricas": {
+    "movimientos": {
+      "medianaMs": 8.53,
+      "maxMs": 15.69,
+      "consultas": 3,
+      "bytes": 11825
+    },
+    "egresos": {
+      "medianaMs": 6.3,
+      "maxMs": 8.94,
+      "consultas": 3,
+      "bytes": 12044
+    },
+    "facturas": {
+      "medianaMs": 6.4,
+      "maxMs": 8.58,
+      "consultas": 3,
+      "bytes": 9059
+    },
+    "mensajes": {
+      "medianaMs": 6.38,
+      "maxMs": 6.9,
+      "consultas": 3,
+      "bytes": 7830
+    },
+    "notificaciones": {
+      "medianaMs": 5.14,
+      "maxMs": 5.36,
+      "consultas": 2,
+      "bytes": 5361
+    },
+    "historial": {
+      "medianaMs": 5.3,
+      "maxMs": 7.73,
+      "consultas": 2,
+      "bytes": 7161
+    },
+    "pendientes": {
+      "medianaMs": 4.53,
+      "maxMs": 4.65,
+      "consultas": 2,
+      "bytes": 17
+    },
+    "contactos": {
+      "medianaMs": 4.97,
+      "maxMs": 5.44,
+      "consultas": 2,
+      "bytes": 87
+    },
+    "presupuestos": {
+      "medianaMs": 6.64,
+      "maxMs": 37.28,
+      "consultas": 3,
+      "bytes": 2146
+    },
+    "dashboard": {
+      "medianaMs": 4.89,
+      "maxMs": 6.99,
+      "consultas": 3,
+      "bytes": 1119
+    },
+    "analisis": {
+      "medianaMs": 6.27,
+      "maxMs": 7.26,
+      "consultas": 4,
+      "bytes": 715
+    },
+    "reportes": {
+      "medianaMs": 6.44,
+      "maxMs": 8.47,
+      "consultas": 2,
+      "bytes": 33455
+    },
+    "sondeo": {
+      "medianaMs": 4.49,
+      "maxMs": 6.51,
+      "consultas": 2,
+      "bytes": 31
+    }
+  },
+  "planes": {},
+  "financiera": {
+    "facturas": {
+      "cantidad": 85,
+      "pagado": "0.00",
+      "pendiente": "869.55",
+      "facturado": "869.55"
+    },
+    "presupuestos": [
+      [
+        6,
+        "173.91"
+      ],
+      [
+        5,
+        "173.91"
+      ],
+      [
+        4,
+        "173.91"
+      ],
+      [
+        3,
+        "173.91"
+      ],
+      [
+        2,
+        "173.91"
+      ],
+      [
+        1,
+        "173.91"
+      ]
+    ],
+    "dashboard": [
+      "521.73",
+      "521.73",
+      "0.00"
+    ],
+    "analisis": {
+      "ingresos": "521.73",
+      "egresos": "521.73",
+      "balance": "0.00",
+      "tasaAhorro": 0
+    },
+    "reportes": {
+      "ingresos": "521.73",
+      "egresos": "521.73",
+      "balance": "0.00"
+    }
+  },
+  "concurrente": {
+    "peticiones": 8,
+    "ms": 76.69,
+    "cpuUsuarioMs": 62,
+    "rssMb": 78.8
+  }
+}

@@ -23,6 +23,7 @@
             <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
             <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
             <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
+            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
             <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
             <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
         </ul>
@@ -41,19 +42,24 @@
         <section class="form-section">
             <h2>Nuevo presupuesto</h2>
             <form id="presupuestoForm">
-                <input type="text" id="nombrePresupuesto" placeholder="Nombre del presupuesto" required>
+                <input type="text" id="nombrePresupuesto" placeholder="Nombre del presupuesto" maxlength="100" required>
 
                 <div class="row">
                     <select id="categoria" required>
                         <option value="">Selecciona categoría</option>
                     </select>
-                    <input type="number" id="montoPresupuesto" placeholder="Monto presupuestado" min="1" required>
+                    <input type="number" id="montoPresupuesto" placeholder="Monto presupuestado" min="0.01" max="9999999999.99" step="0.01" required>
                 </div>
 
                 <div class="row">
                     <input type="date" id="fechaInicio" required>
                     <input type="date" id="fechaFin" required>
                 </div>
+                <select id="estadoPresupuesto" aria-label="Estado del presupuesto">
+                    <option>Activo</option>
+                    <option>Finalizado</option>
+                    <option>Cancelado</option>
+                </select>
 
                 <div class="btn-group">
                     <button type="submit" id="btnGuardarPresupuesto">Guardar</button>

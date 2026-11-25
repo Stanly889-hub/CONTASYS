@@ -4,6 +4,21 @@ node_modules/
 # Variables de entorno / credenciales
 .env
 .env.local
+.env.*
+!.env.example
+*.backup
+*.bak
+*.sql.gz
+*.sql.zip
+backups/
+cypress/results/
+cypress/downloads/
+cypress/screenshots/
+cypress/videos/
+
+# Evidencias privadas que se conservan solo en el equipo local
+/evidencias/Secci*/
+/evidencias/fase7/cypress/ejecucion-final.txt
 
 # Archivos del sistema operativo y del editor
 .DS_Store

@@ -1,8 +1,9 @@
 -- =====================================================================
 -- CONTASYS - ESQUEMA DE PRODUCCION
 -- Motor: MySQL 8.0+ / MariaDB 10.5+
--- Script idempotente: se puede ejecutar de inicio a fin las veces que
--- sea necesario (recrea la base de datos desde cero).
+-- Instalación base. Seleccionar primero un esquema VACÍO.
+-- Para completar la instalación, aplicar las migraciones indicadas
+-- en backend/README.md sobre el mismo esquema.
 --
 -- NO incluye usuarios, ingresos ni egresos de prueba.
 -- Solo trae cargados los datos de CATALOGO que la aplicacion
@@ -11,10 +12,6 @@
 -- etc. los crea el cliente real usando la aplicacion.
 
 -- =====================================================================
-
-DROP DATABASE IF EXISTS contasys_actualizado;
-CREATE DATABASE contasys_actualizado CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE contasys_actualizado;
 
 -- =====================================================================
 -- 1. TABLAS
@@ -392,5 +389,5 @@ SHOW TABLES;
 
 SELECT TABLE_NAME AS Tabla, TABLE_ROWS AS RegistrosAproximados
 FROM information_schema.TABLES
-WHERE TABLE_SCHEMA='contasys_actualizado' AND TABLE_TYPE='BASE TABLE'
+WHERE TABLE_SCHEMA=DATABASE() AND TABLE_TYPE='BASE TABLE'
 ORDER BY TABLE_NAME;

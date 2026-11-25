@@ -1,149 +1,99 @@
 const pool = require("../config/db");
+const { LIMITES_FREE, esPremium } = require("../utils/plan");
+const { enTransaccion } = require("../utils/transaccion");
+const { bloquearPresupuestos, consumeCupo, consultarPresupuestos, evaluar, reevaluarPresupuesto } =
+    require("../utils/alertasPresupuesto");
+const { DatoFinancieroInvalido, validarRango, montoValido, idValido, textoValido, estadoValido, responderError } =
+    require("../utils/validacionFinanciera");
+const ESTADOS = ["Activo", "Finalizado", "Cancelado"];
 
 async function listar(req, res) {
     try {
-        const [presupuestos] = await pool.query(
-            `SELECT p.idPresupuesto, p.nombrePresupuesto, p.montoPresupuesto,
-                    p.fechaInicio, p.fechaFin, c.idCategoria, c.nombreCategoria AS categoria
-             FROM Presupuesto p
-             JOIN CategoriaFinanciera c ON p.idCategoria = c.idCategoria
-             WHERE p.idUsuario = ?
-             ORDER BY p.fechaInicio DESC`,
-            [req.usuario.idUsuario]
-        );
+        const idUsuario = req.usuario.idUsuario;
+        const [presupuestos, premium] = await Promise.all([consultarPresupuestos(pool, idUsuario), esPremium(idUsuario)]);
+        return res.json(presupuestos.map(({ total, hoy, ...p }) => ({ ...p, ...evaluar({ ...p, total, hoy }, premium).ejecucion })));
+    } catch (error) {
+        return responderError(res, error, "Error al obtener los presupuestos");
+    }
+}
 
-        for (const presupuesto of presupuestos) {
-            const tablaMovimiento = await obtenerTablaPorCategoria(presupuesto.idCategoria);
+async function guardar(req, res) {
+    try {
+        const body = req.body || {};
+        const idUsuario = req.usuario.idUsuario;
+        const id = req.params.id === undefined ? null : idValido(req.params.id);
+        const nombre = textoValido(body.nombrePresupuesto, "El nombre", 100);
+        const monto = montoValido(body.montoPresupuesto);
+        const categoria = idValido(body.idCategoria, "Categoría");
+        const { fechaInicio, fechaFin } = body;
+        validarRango(fechaInicio, fechaFin);
+        estadoValido(body.estado, ESTADOS);
 
-            const [[{ total }]] = await pool.query(
-                `SELECT COALESCE(SUM(monto),0) AS total
-                 FROM ${tablaMovimiento}
-                 WHERE idCategoria = ? AND idUsuario = ? AND fecha BETWEEN ? AND ?`,
-                [presupuesto.idCategoria, req.usuario.idUsuario, presupuesto.fechaInicio, presupuesto.fechaFin]
-            );
-
-            const ejecutado = Number(total);
-            const monto = Number(presupuesto.montoPresupuesto);
-
-            presupuesto.montoPresupuesto = monto;
-            presupuesto.ejecutado = ejecutado;
-            presupuesto.porcentaje = monto > 0 ? Math.round((ejecutado / monto) * 100) : 0;
-            presupuesto.excedido = ejecutado > monto;
-
-            if (presupuesto.excedido) {
-                await asegurarNotificacionExcedido(req.usuario.idUsuario, presupuesto);
+        const guardado = await enTransaccion(async conexion => {
+            await bloquearPresupuestos(conexion, idUsuario);
+            let anterior;
+            if (id) {
+                [[anterior]] = await conexion.execute(
+                    "SELECT idCategoria, estado, fechaFin FROM Presupuesto WHERE idPresupuesto = ? AND idUsuario = ? FOR UPDATE", [id, idUsuario]
+                );
+                if (!anterior) return null;
             }
+            const estado = body.estado ?? anterior?.estado ?? "Activo";
+            const [[{ hoy }]] = await conexion.execute("SELECT CURDATE() AS hoy");
+            if (consumeCupo(estado, fechaFin, hoy) &&
+                (!anterior || !consumeCupo(anterior.estado, anterior.fechaFin, hoy)) &&
+                !(await esPremium(idUsuario, conexion))) {
+                const [[{ activos }]] = await conexion.execute(
+                    "SELECT COUNT(*) AS activos FROM Presupuesto WHERE idUsuario = ? AND estado = 'Activo' AND fechaFin >= ?",
+                    [idUsuario, hoy]
+                );
+                if (activos >= LIMITES_FREE.presupuestosActivos) return false;
+            }
+            const [[cat]] = await conexion.execute("SELECT estado FROM CategoriaFinanciera WHERE idCategoria = ? LOCK IN SHARE MODE", [categoria]);
+            if (!cat || (cat.estado !== "Activa" && anterior?.idCategoria !== categoria)) {
+                throw new DatoFinancieroInvalido("Selecciona una categoría activa");
+            }
+            const valores = [nombre, monto, fechaInicio, fechaFin, categoria, estado];
+            let idGuardado = id;
+            if (id) {
+                await conexion.execute(
+                    `UPDATE Presupuesto SET nombrePresupuesto = ?, montoPresupuesto = ?, fechaInicio = ?, fechaFin = ?,
+                     idCategoria = ?, estado = ? WHERE idPresupuesto = ? AND idUsuario = ?`, [...valores, id, idUsuario]
+                );
+            } else {
+                const [resultado] = await conexion.execute(
+                    `INSERT INTO Presupuesto (nombrePresupuesto, montoPresupuesto, fechaInicio, fechaFin, idCategoria, estado, idUsuario)
+                     VALUES (?, ?, ?, ?, ?, ?, ?)`, [...valores, idUsuario]
+                );
+                idGuardado = resultado.insertId;
+            }
+            await reevaluarPresupuesto(conexion, idUsuario, idGuardado);
+            return idGuardado;
+        });
+        if (guardado === false) {
+            return res.status(403).json({ error: `Free admite hasta ${LIMITES_FREE.presupuestosActivos} presupuestos activos. Libera un cupo para crear o activar otro presupuesto.` });
         }
-
-        return res.json(presupuestos);
-
+        if (guardado === null) return res.status(404).json({ error: "No encontrado" });
+        return id ? res.json({ mensaje: "Presupuesto actualizado" })
+            : res.status(201).json({ mensaje: "Presupuesto creado", id: guardado });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al obtener los presupuestos" });
-    }
-}
-
-async function asegurarNotificacionExcedido(idUsuario, presupuesto) {
-    const mensaje = `El presupuesto "${presupuesto.nombrePresupuesto}" fue excedido`;
-
-    const [existentes] = await pool.query(
-        `SELECT idNotificacion FROM Notificacion
-         WHERE idUsuario = ? AND mensaje = ? AND estado != 'Archivada'`,
-        [idUsuario, mensaje]
-    );
-
-    if (existentes.length === 0) {
-        await pool.query(
-            "INSERT INTO Notificacion (mensaje, estado, idUsuario) VALUES (?, 'Pendiente', ?)",
-            [mensaje, idUsuario]
-        );
-    }
-}
-
-async function obtenerTablaPorCategoria(idCategoria) {
-    const [[categoria]] = await pool.query(
-        "SELECT tipo FROM CategoriaFinanciera WHERE idCategoria = ?",
-        [idCategoria]
-    );
-    return categoria.tipo === "Ingreso" ? "Ingreso" : "Egreso";
-}
-
-async function crear(req, res) {
-    try {
-        const { nombrePresupuesto, idCategoria, montoPresupuesto, fechaInicio, fechaFin } = req.body;
-
-        if (!nombrePresupuesto || !idCategoria || !montoPresupuesto || !fechaInicio || !fechaFin) {
-            return res.status(400).json({ error: "Completa todos los campos" });
-        }
-        if (montoPresupuesto <= 0) {
-            return res.status(400).json({ error: "El monto debe ser mayor a cero" });
-        }
-        if (fechaInicio > fechaFin) {
-            return res.status(400).json({ error: "La fecha inicial no puede ser mayor que la final" });
-        }
-
-        const [resultado] = await pool.query(
-            `INSERT INTO Presupuesto (nombrePresupuesto, montoPresupuesto, fechaInicio, fechaFin, idUsuario, idCategoria)
-             VALUES (?, ?, ?, ?, ?, ?)`,
-            [nombrePresupuesto, montoPresupuesto, fechaInicio, fechaFin, req.usuario.idUsuario, idCategoria]
-        );
-
-        return res.status(201).json({ mensaje: "Presupuesto creado", id: resultado.insertId });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al crear el presupuesto" });
-    }
-}
-
-async function actualizar(req, res) {
-    try {
-        const { id } = req.params;
-        const { nombrePresupuesto, idCategoria, montoPresupuesto, fechaInicio, fechaFin } = req.body;
-
-        const [existentes] = await pool.query(
-            "SELECT idPresupuesto FROM Presupuesto WHERE idPresupuesto = ? AND idUsuario = ?",
-            [id, req.usuario.idUsuario]
-        );
-
-        if (existentes.length === 0) {
-            return res.status(404).json({ error: "No encontrado" });
-        }
-
-        await pool.query(
-            `UPDATE Presupuesto
-             SET nombrePresupuesto = ?, montoPresupuesto = ?, fechaInicio = ?, fechaFin = ?, idCategoria = ?
-             WHERE idPresupuesto = ?`,
-            [nombrePresupuesto, montoPresupuesto, fechaInicio, fechaFin, idCategoria, id]
-        );
-
-        return res.json({ mensaje: "Presupuesto actualizado" });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al actualizar el presupuesto" });
+        return responderError(res, error, "Error al guardar el presupuesto");
     }
 }
 
 async function eliminar(req, res) {
     try {
-        const { id } = req.params;
-
-        const [resultado] = await pool.query(
-            "DELETE FROM Presupuesto WHERE idPresupuesto = ? AND idUsuario = ?",
-            [id, req.usuario.idUsuario]
-        );
-
-        if (resultado.affectedRows === 0) {
-            return res.status(404).json({ error: "No encontrado" });
-        }
-
+        const id = idValido(req.params.id);
+        const idUsuario = req.usuario.idUsuario;
+        const [resultado] = await enTransaccion(async conexion => {
+            await bloquearPresupuestos(conexion, idUsuario);
+            return conexion.execute("DELETE FROM Presupuesto WHERE idPresupuesto = ? AND idUsuario = ?", [id, idUsuario]);
+        });
+        if (resultado.affectedRows === 0) return res.status(404).json({ error: "No encontrado" });
         return res.json({ mensaje: "Presupuesto eliminado" });
-
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al eliminar el presupuesto" });
+        return responderError(res, error, "Error al eliminar el presupuesto");
     }
 }
 
-module.exports = { listar, crear, actualizar, eliminar };
+module.exports = { listar, crear: guardar, actualizar: guardar, eliminar };

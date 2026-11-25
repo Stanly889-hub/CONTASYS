@@ -23,6 +23,7 @@
             <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
             <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
             <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
+            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
             <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
             <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
         </ul>
@@ -37,12 +38,13 @@
             </div>
         </header>
 
+           <section class="kpi-cards resumen-cards" id="estadisticasUsuarios"></section>
         <section class="table-section">
             <table>
                 <thead>
                     <tr>
                         <th>Nombre</th><th>Documento</th><th>Correo</th>
-                        <th>Rol</th><th>Estado</th><th>Registrado</th><th>Acciones</th>
+                        <th>Rol</th><th>Estado</th><th>Registrado</th><th>Cambiar rol</th><th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaUsuarios"></tbody>

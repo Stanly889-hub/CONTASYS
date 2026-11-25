@@ -18,7 +18,7 @@ async function listar(req, res) {
         return res.json(categorias);
 
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         return res.status(500).json({ error: "Error al obtener las categorías" });
     }
 }
@@ -30,7 +30,7 @@ async function listarTodas(req, res) {
         );
         return res.json(categorias);
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         return res.status(500).json({ error: "Error al obtener las categorías" });
     }
 }
@@ -59,7 +59,7 @@ async function crear(req, res) {
         return res.status(201).json({ mensaje: "Categoría creada", id: resultado.insertId, codigoCategoria });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         if (error.code === "ER_DUP_ENTRY") {
             return res.status(409).json({ error: "Ya existe una categoría con ese nombre y tipo" });
         }
@@ -88,7 +88,7 @@ async function cambiarEstado(req, res) {
         return res.json({ mensaje: "Categoría actualizada" });
 
     } catch (error) {
-        console.error(error);
+        console.error("Error de API:", error.code || error.name);
         return res.status(500).json({ error: "Error al actualizar la categoría" });
     }
 }

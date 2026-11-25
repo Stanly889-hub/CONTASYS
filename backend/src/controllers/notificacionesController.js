@@ -1,27 +1,45 @@
 const pool = require("../config/db");
+const { idValido, responderError } = require("../utils/validacionFinanciera");
+const { paginacion, respuestaPagina } = require("../utils/paginacion");
+
+async function pendientes(req, res) {
+    try {
+        const [[{ total }]] = await pool.execute(
+            "SELECT COUNT(*) AS total FROM Notificacion WHERE idUsuario = ? AND estado = 'Pendiente'",
+            [req.usuario.idUsuario]
+        );
+        return res.json({ pendientes: Number(total) });
+    } catch (error) {
+        return responderError(res, error, "Error al contar las notificaciones");
+    }
+}
 
 async function listar(req, res) {
     try {
-        const [notificaciones] = await pool.query(
+        const pagina = paginacion(req.query);
+        const parametros = [req.usuario.idUsuario];
+        if (pagina?.fecha) parametros.push(pagina.fecha, pagina.fecha, pagina.id);
+        if (pagina) parametros.push(pagina.limite + 1);
+        const [notificaciones] = await pool.execute(
             `SELECT idNotificacion, mensaje, fecha, estado
              FROM Notificacion
              WHERE idUsuario = ? AND estado != 'Archivada'
-             ORDER BY fecha DESC`,
-            [req.usuario.idUsuario]
+             ${pagina?.fecha ? "AND (fecha < ? OR (fecha = ? AND idNotificacion < ?))" : ""}
+             ORDER BY fecha DESC, idNotificacion DESC${pagina ? " LIMIT ?" : ""}`,
+            parametros
         );
-        return res.json(notificaciones);
+        return res.json(respuestaPagina(notificaciones, pagina, "fecha", "idNotificacion"));
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al obtener las notificaciones" });
+        return responderError(res, error, "Error al obtener las notificaciones");
     }
 }
 
 async function marcarVista(req, res) {
     try {
-        const { id } = req.params;
+        const id = idValido(req.params.id);
 
-        const [resultado] = await pool.query(
-            "UPDATE Notificacion SET estado = 'Vista' WHERE idNotificacion = ? AND idUsuario = ?",
+        const [resultado] = await pool.execute(
+            "UPDATE Notificacion SET estado = 'Vista' WHERE idNotificacion = ? AND idUsuario = ? AND estado <> 'Archivada'",
             [id, req.usuario.idUsuario]
         );
 
@@ -31,16 +49,15 @@ async function marcarVista(req, res) {
 
         return res.json({ mensaje: "Notificación marcada como vista" });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al actualizar la notificación" });
+        return responderError(res, error, "Error al actualizar la notificación");
     }
 }
 
 async function archivar(req, res) {
     try {
-        const { id } = req.params;
+        const id = idValido(req.params.id);
 
-        const [resultado] = await pool.query(
+        const [resultado] = await pool.execute(
             "UPDATE Notificacion SET estado = 'Archivada' WHERE idNotificacion = ? AND idUsuario = ?",
             [id, req.usuario.idUsuario]
         );
@@ -51,9 +68,8 @@ async function archivar(req, res) {
 
         return res.json({ mensaje: "Notificación archivada" });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Error al archivar la notificación" });
+        return responderError(res, error, "Error al archivar la notificación");
     }
 }
 
-module.exports = { listar, marcarVista, archivar };
+module.exports = { listar, pendientes, marcarVista, archivar };

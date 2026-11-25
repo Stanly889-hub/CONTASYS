@@ -524,6 +524,34 @@
     padding: 30px;
 }
 
+.factura-tabla { overflow-x: auto; }
+.pagina-facturacion .main-content { min-width: 0; }
+.factura-dialogo { width: min(90vw, 48rem); box-sizing: border-box; max-height: 85vh; overflow: auto; overflow-wrap: anywhere; }
+.factura-dialogo::backdrop { background: rgba(0, 0, 0, .45); }
+.factura-linea .row, .factura-linea.row { flex-wrap: wrap; }
+.factura-linea label { flex: 1 1 9rem; min-width: 0; }
+#catalogosPagoFactura[hidden] { display: none; }
+#motivoCorreccion {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 8px 0;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font: inherit;
+}
+.factura-estado { font-weight: 700; }
+.factura-estado.estado-pagada { color: #13795b; }
+.factura-estado.estado-pendiente { color: #835000; }
+.factura-estado.estado-anulada { color: #ae2020; }
+@media (max-width: 640px) {
+    #filtrosFacturas, #facturaForm .btn-group, .factura-dialogo .btn-group { flex-wrap: wrap; }
+    .pagina-facturacion .sidebar { box-sizing: border-box; }
+    .pagina-facturacion .topbar { flex-wrap: wrap; }
+    .factura-linea label { flex: auto; }
+}
+
 /* ============================
    DISEÑO RESPONSIVE
    ============================ */
@@ -533,6 +561,7 @@
     }
     .sidebar {
         width: 100%;
+        box-sizing: border-box;
         height: auto;
         position: relative;
         padding: 15px;
@@ -675,4 +704,41 @@
     .grafica-alta {
         height: 320px;
     }
+}
+
+/* ---- Roles y plan Premium ---- */
+.banner-cliente {
+    background: #fff3cd;
+    border: 1px solid #ffe08a;
+    color: #664d03;
+    padding: 10px 15px;
+    border-radius: 6px;
+    margin: 15px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.banner-cliente button {
+    background: #664d03;
+    color: #fff;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* En modo cliente (solo lectura) se ocultan formularios y botones de edición */
+body.modo-cliente.pagina-edicion .form-section,
+body.modo-cliente.pagina-edicion .btn-accion {
+    display: none;
+}
+
+.plan-beneficios {
+    padding-left: 18px;
+    margin: 8px 0;
+    font-size: 14px;
+    text-align: left;
 }

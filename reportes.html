@@ -23,6 +23,7 @@
             <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
             <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
             <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
+            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
             <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
             <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
         </ul>
@@ -50,8 +51,9 @@
         <section class="kpi-cards resumen-cards">
             <div class="kpi"><h3>Ingresos</h3><p id="resumenIngresos">$0</p></div>
             <div class="kpi"><h3>Egresos</h3><p id="resumenEgresos">$0</p></div>
-            <div class="kpi"><h3>Balance</h3><p id="resumenBalance">$0</p></div>
+            <div class="kpi"><h3>Balance confirmado</h3><p id="resumenBalance">$0</p></div>
         </section>
+        <p id="resumenPendientes"></p>
 
         <section class="graficas-container">
             <div class="grafica-box">
@@ -82,6 +84,11 @@
                 </thead>
                 <tbody id="tablaDetalle"></tbody>
             </table>
+            <div class="btn-group" id="navegarDetalleReporte" hidden>
+                <button id="detalleAnterior" type="button">Anterior</button>
+                <button id="detalleSiguiente" type="button">Siguiente</button>
+                <span id="estadoDetalleReporte" role="status"></span>
+            </div>
         </section>
 
     </main>
@@ -90,9 +97,9 @@
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="vendor/chartjs/chart.umd.js"></script>
+<script src="vendor/jspdf/jspdf.umd.min.js"></script>
+<script src="vendor/sheetjs/xlsx.full.min.js"></script>
 <script src="js/reportes.js"></script>
 </body>
 </html>
