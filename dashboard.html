@@ -1,95 +1,142 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Dashboard - CONTASYS</title>
-<link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0F172A">
+    <title>Panel financiero | CONTASYS</title>
+    <link rel="icon" href="css/marca/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/corporativo.css">
 </head>
-
-<body>
-
-<div class="dashboard-container">
-
-<aside class="sidebar">
-    <h2>CONTASYS</h2>
-    <ul>
-        <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
-        <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
-        <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
-        <li data-page="reportes"><a href="reportes.html">📊 Reportes</a></li>
-        <li data-page="mensajes"><a href="mensajes.html">💬 Chat</a></li>
-        <li data-page="cuenta"><a href="cuenta.html">📁 Mi cuenta</a></li>
-        <li data-page="facturacion"><a href="facturacion.html">🧾 Facturación</a></li>
-        <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
-        <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
-        <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
-        <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
-        <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
-        <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
-    </ul>
-</aside>
-
-    <main class="main-content">
-
-        <header class="topbar">
-            <h1>Panel Financiero</h1>
-            <div class="user">
-                👤 <span id="nombreUsuarioActual">Usuario</span>
-                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
-            </div>
-        </header>
-
-        <section class="kpi-cards">
-            <div class="kpi">
-                <h3>Ingresos</h3>
-                <p id="ingresos">$0</p>
-            </div>
-
-            <div class="kpi">
-                <h3>Egresos</h3>
-                <p id="egresos">$0</p>
-            </div>
-
-            <div class="kpi">
-                <h3>Balance</h3>
-                <p id="balance">$0</p>
-            </div>
-        </section>
-
-        <p id="resumenPendientes"></p>
-        <section class="table-section">
-            <div class="table-header">
-                <h2>Últimos movimientos</h2>
-                <div class="table-links">
-                    <a href="movimientos.html?tipo=ingreso">Ver ingresos →</a>
-                    <a href="movimientos.html?tipo=egreso">Ver egresos →</a>
+<body class="cs-ui cs-dashboard">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="menuFinanciero">
+            <h2><picture class="cs-brand"><source media="(max-width: 540px)" srcset="css/marca/simbolo.png"><img class="cs-brand-image" src="css/marca/contasys.png" alt="CONTASYS" width="84" height="44"></picture></h2>
+            <nav aria-label="Navegación principal">
+                <div class="cs-nav-group">
+                    <p>Vista general</p>
+                    <ul>
+                        <li data-page="dashboard"><a href="dashboard.html" aria-current="page"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#panel"></use></svg> <span>Dashboard</span></a></li>
+                        <li data-page="analisis"><a href="analisis.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#grafica"></use></svg> <span>Análisis financiero</span></a></li>
+                        <li data-page="reportes"><a href="reportes.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#reporte"></use></svg> <span>Reportes</span></a></li>
+                    </ul>
+                </div>
+                <div class="cs-nav-group">
+                    <p>Operaciones</p>
+                    <ul>
+                        <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#entrada"></use></svg> <span>Ingresos</span></a></li>
+                        <li data-page="egresos"><a href="movimientos.html?tipo=egreso"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#salida"></use></svg> <span>Egresos</span></a></li>
+                        <li data-page="presupuestos"><a href="presupuestos.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#billetera"></use></svg> <span>Presupuestos</span></a></li>
+                        <li data-page="facturacion"><a href="facturacion.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#factura"></use></svg> <span>Facturación</span></a></li>
+                    </ul>
+                </div>
+                <div class="cs-nav-group">
+                    <p>Mi espacio</p>
+                    <ul>
+                        <li data-page="mensajes"><a href="mensajes.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#chat"></use></svg> <span>Chat</span></a></li>
+                        <li data-page="notificaciones"><a href="notificaciones.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#campana"></use></svg> <span>Notificaciones</span></a></li>
+                        <li data-page="cuenta"><a href="cuenta.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#persona"></use></svg> <span>Mi cuenta</span></a></li>
+                    </ul>
+                </div>
+                <div class="cs-nav-group" id="grupoGestion" hidden>
+                    <p>Gestión</p>
+                    <ul>
+                        <li data-rol="Contador" data-page="clientes"><a href="clientes.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#grupo"></use></svg> <span>Clientes</span></a></li>
+                        <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#grupo"></use></svg> <span>Usuarios</span></a></li>
+                        <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#ajustes"></use></svg> <span>Configuración</span></a></li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        <main class="main-content">
+            <header class="topbar">
+                <button class="cs-button cs-button-secondary cs-menu-toggle" type="button" aria-controls="menuFinanciero" aria-expanded="false"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#menu"></use></svg> Menú</button>
+                <p class="cs-location"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#panel"></use></svg> <strong>Vista general</strong></p>
+                <div class="user">
+                    <a class="cs-top-notifications" data-notificaciones-acceso href="notificaciones.html" aria-label="Notificaciones"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#campana"></use></svg></a>
+                    <a class="cs-profile" href="cuenta.html">
+                        <span class="cs-avatar" aria-hidden="true"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#persona"></use></svg></span>
+                        <span><strong id="nombreUsuarioActual">Usuario</strong><small id="rolUsuarioActual"></small></span>
+                    </a>
+                    <button type="button" onclick="cerrarSesion()" class="btn-logout cs-button cs-button-secondary"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#logout"></use></svg> <span>Cerrar sesión</span></button>
+                </div>
+            </header>
+            <div class="cs-dashboard-content">
+                <div class="cs-dashboard-heading">
+                    <h1>Panel financiero</h1>
+                    <p>Consulta el balance de tu negocio y tus movimientos recientes.</p>
+                </div>
+                <p id="estadoDashboard" class="cs-status" role="status"><span class="cs-spinner" aria-hidden="true"></span> Cargando resumen financiero…</p>
+                <div id="datosDashboard" hidden>
+                    <section class="kpi-cards" aria-label="Saldos en pesos colombianos">
+                        <div class="kpi cs-card cs-kpi-balance">
+                            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#billetera"></use></svg></span>
+                            <h2>Balance general</h2>
+                            <p id="balance">$0</p>
+                            <span class="cs-kpi-caption">Ingresos menos egresos</span>
+                        </div>
+                        <div class="kpi cs-card cs-kpi-ingresos">
+                            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#entrada"></use></svg></span>
+                            <h2>Ingresos</h2>
+                            <p id="ingresos">$0</p>
+                        </div>
+                        <div class="kpi cs-card cs-kpi-egresos">
+                            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#salida"></use></svg></span>
+                            <h2>Egresos</h2>
+                            <p id="egresos">$0</p>
+                        </div>
+                    </section>
+                    <section class="cs-card cs-comparison" aria-labelledby="tituloComparacion">
+                        <div class="cs-comparison-main">
+                            <h2 id="tituloComparacion">Ingresos y egresos</h2>
+                            <p>Comparación de los movimientos confirmados</p>
+                            <div class="cs-chart-frame" id="marcoComparacion" hidden>
+                                <canvas id="graficaComparacion" role="img" aria-label="Comparación de ingresos y egresos"></canvas>
+                            </div>
+                            <p class="cs-chart-empty" id="comparacionVacia" hidden>El gráfico se mostrará cuando haya movimientos confirmados.</p>
+                        </div>
+                        <div class="cs-pending">
+                            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#reloj"></use></svg></span>
+                            <h3>Por confirmar</h3>
+                            <p id="resumenPendientes" hidden></p>
+                            <dl>
+                                <div><dt>Ingresos</dt><dd id="ingresosPendientes"></dd></div>
+                                <div><dt>Egresos</dt><dd id="egresosPendientes"></dd></div>
+                            </dl>
+                        </div>
+                    </section>
+                    <section class="table-section cs-card" aria-labelledby="tituloMovimientos">
+                        <div class="table-header">
+                            <div><h2 id="tituloMovimientos">Últimos movimientos</h2><p>Consulta el estado y los detalles de cada registro reciente.</p></div>
+                            <div class="table-links">
+                                <a href="movimientos.html?tipo=ingreso">Ver ingresos <svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#derecha"></use></svg></a>
+                                <a href="movimientos.html?tipo=egreso">Ver egresos <svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#derecha"></use></svg></a>
+                            </div>
+                        </div>
+                        <p class="cs-table-hint" id="ayudaMovimientos">Desliza la tabla para ver más columnas.</p>
+                        <div class="cs-table-scroll" role="region" aria-labelledby="tituloMovimientos" aria-describedby="ayudaMovimientos" tabindex="0">
+                            <table>
+                                <thead>
+                                    <tr><th scope="col">Fecha</th><th scope="col">Tipo</th><th scope="col">Monto</th><th scope="col">Categoría</th><th scope="col">Descripción</th></tr>
+                                </thead>
+                                <tbody id="tablaMovimientos"></tbody>
+                            </table>
+                        </div>
+                        <template id="movimientosVacios">
+                            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#factura"></use></svg></span>
+                            <strong>Aún no tienes movimientos registrados.</strong>
+                            <p>Al registrar un ingreso o egreso, aparecerá aquí.</p>
+                        </template>
+                    </section>
                 </div>
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Tipo</th>
-                        <th>Categoría</th>
-                        <th>Monto</th>
-                        <th>Descripción</th>
-                    </tr>
-                </thead>
-
-                <tbody id="tablaMovimientos"></tbody>
-            </table>
-        </section>
-
-    </main>
-
-</div>
-
-<script src="js/auth.js"></script>
-<script src="js/api.js"></script>
-<script src="js/app.js"></script>
-<script src="js/dashboard.js"></script>
-
+        </main>
+    </div>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="vendor/chartjs/chart.umd.js"></script>
+    <script src="js/dashboard.js"></script>
 </body>
 </html>

@@ -29,6 +29,8 @@ async function ejecutar() {
     try {
         await operador.query(`CREATE DATABASE \`${esquema}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
         await operador.changeUser({ database: esquema });
+        const [[{ activo }]] = await operador.query("SELECT DATABASE() AS activo");
+        assert.equal(activo, esquema);
         for (const migracion of migraciones) await ejecutarSql(operador, migracion + ".sql");
         await operador.query("CREATE USER ?@'localhost' IDENTIFIED BY ?", [usuario, clave]);
         creado = true;
@@ -39,6 +41,8 @@ async function ejecutar() {
                 .replaceAll("CUENTA_CONTASYS", usuario).replaceAll("HOST_CONTASYS", "localhost"));
         }
         limitado = await mysql.createConnection({ ...opciones, user: usuario, password: clave, database: esquema });
+        const [[{ activo: aislado }]] = await limitado.query("SELECT DATABASE() AS activo");
+        assert.equal(aislado, esquema);
         const [efectivos] = await limitado.query("SHOW GRANTS");
         const lista = efectivos.flatMap(fila => Object.values(fila));
         assert.ok(lista.some(l => /^GRANT USAGE ON \*\.\*/.test(l)));
@@ -65,6 +69,8 @@ async function ejecutar() {
         Object.assign(process.env, { DB_NAME: esquema, DB_USER: usuario, DB_PASSWORD: clave,
             JWT_SECRET: randomBytes(32).toString("hex"), NODE_ENV: "development", CORS_ORIGIN: "", CONTASYS_SIMULAR_PAGOS: "true" });
         pool = require("../src/config/db");
+        const [[{ activo: esquemaApi }]] = await pool.query("SELECT DATABASE() AS activo");
+        assert.equal(esquemaApi, esquema);
         const app = express();
         app.get("/", (_req, res) => res.redirect("/index.html"));
         for (const directorio of ["css", "js", "vendor"]) {

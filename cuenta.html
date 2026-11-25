@@ -5,54 +5,40 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Mi cuenta - CONTASYS</title>
 <link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="css/marca/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="css/corporativo.css">
+<link rel="stylesheet" href="css/operaciones.css">
+<link rel="stylesheet" href="css/administracion.css">
 </head>
-<body>
+<body class="cs-ui cs-dashboard cs-modulo cs-administracion">
 
 <div class="dashboard-container">
 
-    <aside class="sidebar">
-        <h2>CONTASYS</h2>
-        <ul>
-            <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
-            <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
-            <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
-            <li data-page="reportes"><a href="reportes.html">📊 Reportes</a></li>
-            <li data-page="mensajes"><a href="mensajes.html">💬 Chat</a></li>
-            <li data-page="cuenta"><a href="cuenta.html">📁 Mi cuenta</a></li>
-            <li data-page="facturacion"><a href="facturacion.html">🧾 Facturación</a></li>
-            <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
-            <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
-            <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
-            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
-            <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
-            <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
-        </ul>
-    </aside>
+    <aside class="sidebar" id="menuFinanciero"></aside>
 
     <main class="main-content">
-        <header class="topbar">
-            <h1>Mi cuenta</h1>
-            <div class="user">
-                👤 <span id="nombreUsuarioActual">Usuario</span>
-                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
-            </div>
-        </header>
+        <header class="topbar"></header>
+        <div class="cs-dashboard-content">
+        <div class="cs-module-hero"><div class="cs-module-hero-mark"><svg class="ui-icon" width="18" height="18" aria-hidden="true"><use href="css/iconos.svg#persona"></use></svg></div><div><h1>Mi cuenta</h1><p>Consulta tu perfil, el plan vigente y los accesos autorizados.</p></div></div>
 
-        <section class="form-section">
-            <h2>Datos del usuario</h2>
-            <p><strong>Nombre:</strong> <span id="datosNombre"></span></p>
-            <p><strong>Correo:</strong> <span id="datosCorreo"></span></p>
-            <p><strong>Rol:</strong> <span id="datosRol"></span></p>
-        </section>
-
-        <section class="form-section">
-    <h2>Suscripción</h2>
-    <p><strong>Plan actual:</strong> <span id="planActual">...</span></p>
-    <p id="planVigencia"></p>
-
+        <div class="adm-profile-grid">
+            <section class="cs-card adm-profile" aria-labelledby="tituloPerfil">
+                <h2 id="tituloPerfil">Información personal</h2>
+                <div class="adm-persona" id="avatarPerfil"><strong id="datosNombre"></strong></div>
+                <dl><div><dt>Correo electrónico</dt><dd id="datosCorreo"></dd></div><div><dt>Rol</dt><dd id="datosRol"></dd></div></dl>
+            </section>
+            <section class="cs-card adm-security" aria-labelledby="tituloSeguridad">
+                <h2 id="tituloSeguridad">Seguridad y acceso</h2>
+                <p>Revisa las autorizaciones de tu cuenta y cierra tu sesión cuando termines.</p>
+                <div class="cs-module-actions"><a class="cs-button cs-button-secondary" href="#seccionContadores" data-rol="Emprendedor">Accesos de contadores</a><button type="button" class="cs-button cs-button-secondary" onclick="cerrarSesion()">Cerrar sesión actual</button></div>
+            </section>
+        </div>
+        <section class="form-section cs-card cs-module-form adm-suscripcion" aria-labelledby="tituloSuscripcion">
+            <h2 id="tituloSuscripcion">Planes y suscripción</h2>
+            <p class="adm-plan-actual"><strong>Plan actual</strong> <span id="planActual">Cargando…</span> <span id="estadoSimulacionPlan" class="adm-simulacion" hidden></span></p>
     <div class="planes-grid">
         <div class="plan-tarjeta" id="tarjetaFree">
-            <h3>Free</h3>
+            <h3><svg class="ui-icon" width="18" height="18" aria-hidden="true"><use href="css/iconos.svg#billetera"></use></svg> Free <span class="adm-plan-badge">Plan actual</span></h3>
             <p class="plan-precio">Gratis</p>
                <ul class="plan-beneficios">
        <li>Hasta 3 presupuestos activos</li>
@@ -62,8 +48,8 @@
     </ul>
         </div>
         <div class="plan-tarjeta" id="tarjetaPremium">
-            <h3>Premium</h3>
-            <p class="plan-precio">$19.900 COP / mes</p>
+            <h3><svg class="ui-icon" width="18" height="18" aria-hidden="true"><use href="css/iconos.svg#grafica"></use></svg> Premium <span class="adm-plan-badge">Plan actual</span></h3>
+            <p class="plan-precio"><strong>$19.900</strong> <span>COP / mes</span></p>
                <ul class="plan-beneficios">
        <li>Presupuestos ilimitados</li>
        <li>Análisis financiero con historial completo</li>
@@ -74,37 +60,49 @@
         </div>
     </div>
 
-    <button id="btnCambiarPlan" class="btn-exportar"></button>
-    <button id="btnRenovarPremium" class="btn-exportar" hidden>Simular renovación</button>
+    <div class="cs-module-actions"><button id="btnCambiarPlan" class="btn-exportar cs-button cs-button-primary" disabled>Cargando suscripción…</button>
+    <button id="btnRenovarPremium" class="btn-exportar cs-button cs-button-secondary" hidden>Simular renovación</button></div>
     <p class="nota-simulada">La simulación de pagos solo está disponible en entornos académicos o de desarrollo habilitados.</p>
 </section>
 
-   <section class="table-section" id="seccionContadores" style="display:none;">
+   <section class="cs-card cs-module-ledger adm-ledger" id="seccionContadores" style="display:none;">
        <h2>Accesos de contadores</h2>
+       <p id="estadoAccesos" class="cs-status cs-module-loading" role="status">Cargando accesos…</p>
        <p class="nota-simulada">Un contador solo puede ver tus finanzas (en solo lectura) si tú aceptas su solicitud. Puedes revocar el acceso cuando quieras.</p>
-       <table>
+       <div class="cs-table-scroll cs-module-scroll" tabindex="0"><table>
            <thead>
                <tr><th>Contador</th><th>Correo</th><th>Estado</th><th>Acciones</th></tr>
            </thead>
            <tbody id="tablaContadores"></tbody>
-       </table>
+       </table></div>
    </section>
 
-        <section class="table-section">
+        <section class="cs-card cs-module-ledger adm-ledger">
             <h2>Actividad reciente</h2>
-            <table>
+            <div class="cs-table-scroll cs-module-scroll" tabindex="0"><table>
                 <thead>
                     <tr><th>Fecha</th><th>Acción</th><th>Módulo</th></tr>
                 </thead>
                 <tbody id="tablaActividad"></tbody>
-            </table>
+            </table></div>
         </section>
+        </div>
+        <dialog class="cs-module-dialog" id="confirmacionOperacion" aria-labelledby="tituloConfirmacion" aria-describedby="textoConfirmacion">
+            <form method="dialog">
+                <h2 id="tituloConfirmacion">Confirmar acción</h2>
+                <p id="textoConfirmacion"></p>
+                <div class="cs-module-actions"><button class="cs-button cs-button-secondary" value="cancelar" autofocus>Cancelar</button><button class="cs-button cs-button-primary" value="eliminar">Confirmar</button></div>
+            </form>
+        </dialog>
     </main>
 </div>
 
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
+<script src="js/operaciones-ui.js"></script>
+<script src="js/comunicacion-ui.js"></script>
+<script src="js/administracion-ui.js"></script>
 <script src="js/cuenta.js"></script>
 </body>
 </html>

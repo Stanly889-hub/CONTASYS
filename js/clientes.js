@@ -10,23 +10,20 @@ async function iniciar() {
         return;
     }
 
-    document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
-    aplicarPermisosPorRol(sesionUsuario.rol);
-    document.querySelector('[data-page="clientes"]').classList.add("active");
+    iniciarMarcoOperacion(sesionUsuario, "clientes");
+    document.querySelector(".com-clientes").hidden = false;
 
     mostrarClienteActivo();
-    await cargarLimite();
-    await renderizarTabla();
+    await Promise.all([cargarLimite(), renderizarTabla()]);
 }
 
 function mostrarClienteActivo() {
     let cliente = obtenerClienteActivo();
     let info = document.getElementById("infoClienteActivo");
+    info.hidden = !cliente;
     if (!cliente) {
-        info.style.display = "none";
         return;
     }
-    info.style.display = "block";
     info.textContent = `Ahora estás viendo los datos de ${cliente.nombre} ${cliente.apellido || ""}. `;
     let boton = document.createElement("button");
     boton.type = "button";
@@ -46,6 +43,7 @@ async function cargarLimite() {
     } catch (error) {
         nota.textContent = "";
     }
+    nota.hidden = !nota.textContent;
 }
 
 document.getElementById("formCliente").addEventListener("submit", async function (e) {
@@ -73,13 +71,16 @@ document.getElementById("formCliente").addEventListener("submit", async function
 });
 
 async function renderizarTabla() {
+    estadoListado("Cargando clientes…", "carga");
     let clientes;
     try {
         clientes = await apiFetch("/vinculos?como=contador");
     } catch (error) {
+        estadoListado(error.message, "error");
         mostrarNotificacion(error.message, "error");
         return;
     }
+    estadoListado("");
 
     let tabla = document.getElementById("tablaClientes");
     tabla.innerHTML = "";
@@ -88,6 +89,7 @@ async function renderizarTabla() {
         let fila = document.createElement("tr");
         let td = document.createElement("td");
         td.colSpan = 4;
+        td.className = "cs-table-empty";
         td.textContent = "Aún no tienes clientes. Solicita acceso con el correo de un cliente.";
         fila.appendChild(td);
         tabla.appendChild(fila);
@@ -102,30 +104,39 @@ async function renderizarTabla() {
             : c.estado === "Suspendido" ? "Suspendido. Requiere una nueva solicitud"
             : "Rechazado";
 
-        [`${c.nombre} ${c.apellido}`, c.correo, estadoTexto].forEach(valor => {
-            let td = document.createElement("td");
-            td.textContent = valor;
-            fila.appendChild(td);
-        });
+        const nombre = fila.insertCell();
+        const perfil = document.createElement("div");
+        perfil.className = "com-persona";
+        perfil.append(avatarComunicacion(c.nombre, c.apellido), `${c.nombre} ${c.apellido}`);
+        nombre.append(perfil);
+        fila.insertCell().textContent = c.correo;
+        const estado = document.createElement("span");
+        estado.className = "cs-pill com-vinculo-estado";
+        estado.dataset.estado = c.estado === "Aceptado" && c.estadoOtro !== "Activo" ? "Inactivo" : c.estado;
+        estado.textContent = estadoTexto;
+        fila.insertCell().append(estado);
 
         let celdaAcciones = document.createElement("td");
+        const acciones = document.createElement("div");
+        acciones.className = "cs-module-actions cs-row-actions";
 
         if (c.estado === "Aceptado" && c.estadoOtro === "Activo") {
             let btnVer = document.createElement("button");
             btnVer.textContent = "Ver datos";
-            btnVer.className = "btn-accion btn-editar";
+            btnVer.className = "btn-accion btn-editar cs-button cs-button-secondary";
             btnVer.onclick = () => {
                 establecerClienteActivo({ idUsuario: c.idOtro, nombre: c.nombre, apellido: c.apellido });
                 window.location.href = "dashboard.html";
             };
-            celdaAcciones.appendChild(btnVer);
+            acciones.append(btnVer);
         }
 
         let btnQuitar = document.createElement("button");
         btnQuitar.textContent = "Quitar";
-        btnQuitar.className = "btn-accion btn-eliminar";
+        btnQuitar.className = "btn-accion btn-eliminar cs-button cs-button-secondary";
         btnQuitar.onclick = () => quitarCliente(c);
-        celdaAcciones.appendChild(btnQuitar);
+        acciones.append(btnQuitar);
+        celdaAcciones.append(acciones);
 
         fila.appendChild(celdaAcciones);
         tabla.appendChild(fila);
@@ -133,7 +144,7 @@ async function renderizarTabla() {
 }
 
 async function quitarCliente(c) {
-    if (!confirm(`¿Quitar a ${c.nombre} ${c.apellido} de tus clientes? Perderás el acceso a sus datos.`)) return;
+    if (!await confirmarEliminacion(`¿Quitar a ${c.nombre} ${c.apellido} de tus clientes? Perderás el acceso a sus datos.`)) return;
 
     try {
         await apiFetch(`/vinculos/${c.idVinculo}`, { method: "DELETE" });

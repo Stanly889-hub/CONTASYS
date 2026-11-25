@@ -1,0 +1,140 @@
+.com-clientes { display: grid; grid-template-columns: minmax(265px, .54fr) minmax(0, 1fr); gap: 1rem; align-items: start; }
+.cs-comunicacion #formCliente { display: grid; gap: .75rem; margin-block: 1rem .75rem; }
+.cs-comunicacion #formCliente button { justify-self: start; }
+.cs-comunicacion .com-help, .cs-comunicacion .com-plan { margin-top: .65rem; font-size: .83rem; color: var(--cs-muted); }
+.cs-comunicacion .com-plan { padding: .65rem; border-radius: 8px; background: #eff6ff; }
+.cs-comunicacion .com-clientes-scroll table { min-width: 630px; }
+.cs-comunicacion .com-clientes-scroll table:has(.cs-table-empty) { min-width: 0; }
+.com-persona { display: flex; align-items: center; gap: .6rem; font-weight: 680; }
+.com-avatar { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 11px; color: #1e40af; background: var(--cs-pale-blue); font-size: .8rem; font-weight: 750; }
+.com-vinculo-estado { color: var(--cs-muted); background: #f1f5f9; }
+.com-vinculo-estado[data-estado="Aceptado"] { color: #166534; background: #dcfce7; }
+.com-vinculo-estado[data-estado="Rechazado"] { color: #991b1b; background: #fef2f2; }
+.com-vinculo-estado[data-estado="Suspendido"], .com-vinculo-estado[data-estado="Inactivo"] { color: #92400e; background: #fffbeb; }
+.cs-comunicacion .chat-contenedor {
+    display: grid;
+    grid-template-columns: minmax(215px, .37fr) minmax(0, 1fr);
+    height: clamp(27rem, calc(100dvh - 245px), 49rem);
+    min-height: 0;
+    gap: 0;
+}
+.cs-comunicacion .chat-contactos { width: auto; min-height: 0; max-height: none; border-radius: var(--cs-radius) 0 0 var(--cs-radius); border-inline-end: 1px solid var(--cs-border); box-shadow: none; }
+.cs-comunicacion .chat-contactos h2 { padding: 1rem; font-size: 1rem; border-bottom: 1px solid var(--cs-border); }
+.cs-comunicacion #listaContactos { padding: .5rem; color: var(--cs-muted); font-size: .87rem; overflow-wrap: anywhere; }
+.cs-comunicacion .chat-contacto {
+    display: flex;
+    gap: .6rem;
+    width: 100%;
+    margin: 0 0 .25rem;
+    padding: .55rem;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: white;
+    text-align: left;
+    color: var(--cs-ink);
+    transition: background var(--cs-transition), border-color var(--cs-transition);
+}
+.cs-comunicacion .chat-contacto:hover { background: var(--cs-bg); }
+.cs-comunicacion .chat-contacto.activo { background: #eff6ff; border-color: #bfdbfe; }
+.com-contacto-datos { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.com-contacto-datos small { display: block; color: var(--cs-muted); margin-top: .15rem; }
+.cs-comunicacion #listaContactos .chat-badge { background: #1d4ed8; }
+.cs-comunicacion .chat-panel { height: auto; min-height: 0; box-shadow: none; border-radius: 0 var(--cs-radius) var(--cs-radius) 0; }
+.com-chat-header { display: flex; align-items: center; gap: .65rem; min-height: 60px; padding: .55rem .85rem; border-bottom: 1px solid var(--cs-border); }
+.cs-comunicacion .chat-titulo { padding: 0; border: 0; color: var(--cs-ink); font-size: 1rem; overflow-wrap: anywhere; }
+.cs-comunicacion #mensajesAnteriores { flex: none; align-self: center; margin: .4rem; font-size: .76rem; }
+.cs-comunicacion .chat-mensajes { min-height: 0; background: var(--cs-bg); overflow-anchor: none; overscroll-behavior: contain; scrollbar-width: thin; }
+.cs-comunicacion .chat-mensajes:not([data-estado="mensajes"]) { justify-content: center; align-items: center; text-align: center; color: var(--cs-muted); }
+.cs-comunicacion .chat-mensajes[data-estado="error"] { color: #991b1b; }
+.cs-comunicacion .chat-burbuja { flex: none; max-width: min(78%, 560px); padding: .55rem .75rem; border-radius: 13px; overflow-wrap: anywhere; white-space: pre-wrap; }
+.cs-comunicacion .chat-burbuja.propia { background: #2563eb; color: white; border-end-end-radius: 4px; }
+.cs-comunicacion .chat-burbuja.ajena { background: #e9eff7; color: var(--cs-ink); border-end-start-radius: 4px; }
+.cs-comunicacion .chat-hora { opacity: 1; color: var(--cs-muted); font-size: .7rem; }
+.cs-comunicacion .propia .chat-hora { color: #eff6ff; }
+.cs-comunicacion .chat-form { flex: none; padding: .6rem .75rem; border-top-color: var(--cs-border); }
+.cs-comunicacion .chat-form input { min-width: 0; border-color: #cbd5e1; background: var(--cs-bg); color: var(--cs-ink); }
+.cs-comunicacion .com-chat-back { display: none; }
+.cs-comunicacion #listaNotificaciones { display: grid; gap: .6rem; padding: 0 1rem .7rem; }
+.cs-comunicacion .notif-tarjeta {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: start;
+    gap: .7rem;
+    margin: 0;
+    padding: .85rem;
+    border: 1px solid var(--cs-border);
+    background: var(--cs-paper);
+    box-shadow: none;
+    border-radius: 11px;
+}
+.cs-comunicacion .notif-tarjeta.no-leida { border-inline-start: 4px solid var(--cs-blue); background: #f8fbff; }
+.com-notif-contenido > p { margin: .35rem 0; overflow-wrap: anywhere; }
+.com-notif-meta { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; font-size: .84rem; }
+.com-lectura { background: #f1f5f9; color: var(--cs-muted); }
+.no-leida .com-lectura { color: #1e40af; background: var(--cs-pale-blue); }
+.cs-comunicacion .notif-fecha { color: var(--cs-muted); font-size: .75rem; }
+.cs-comunicacion .notif-acciones { margin-top: .5rem; align-items: center; flex-wrap: wrap; }
+.cs-comunicacion .notif-acciones a { color: #1d4ed8; font-size: .8rem; font-weight: 700; }
+.cs-comunicacion .notif-tarjeta[data-tono="error"] .cs-kpi-icon { background: #fef2f2; color: #991b1b; }
+.cs-comunicacion .notif-tarjeta[data-tono="aviso"] .cs-kpi-icon { background: #fef3c7; color: #92400e; }
+.cs-comunicacion .notif-tarjeta[data-tono="exito"] .cs-kpi-icon { background: #dcfce7; color: #166534; }
+.cs-comunicacion .sin-notificaciones { padding: 1.2rem; text-align: center; color: var(--cs-muted); }
+
+@media (min-width: 701px) and (min-height: 520px) {
+    .cs-chat .dashboard-container {
+        height: 100dvh;
+        min-height: 0;
+    }
+    .cs-chat .main-content {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        height: 100%;
+    }
+    .cs-chat .cs-dashboard-content {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        min-height: 0;
+        padding-block: clamp(1rem, 3dvh, 2.5rem);
+    }
+    .cs-chat .chat-contenedor { height: 100%; }
+    .cs-chat .chat-contactos { display: flex; flex-direction: column; overflow: visible; }
+    .cs-chat #listaContactos { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+}
+
+@media (max-width: 1000px) {
+    .com-clientes { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+    .cs-comunicacion .com-clientes-scroll table { min-width: 0; display: block; }
+    .cs-comunicacion .com-clientes-scroll thead {
+        position: absolute;
+        clip-path: inset(50%);
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+    }
+    .cs-comunicacion .com-clientes-scroll tbody { display: block; padding: 0 .8rem .8rem; }
+    .cs-comunicacion .com-clientes-scroll tr {
+        display: grid;
+        margin-bottom: .55rem;
+        padding: .65rem;
+        border: 1px solid var(--cs-border);
+        border-radius: 10px;
+    }
+    .cs-comunicacion .com-clientes-scroll td {
+        display: block;
+        padding: .25rem 0;
+        border: 0;
+        white-space: normal;
+        overflow-wrap: anywhere;
+    }
+    .cs-comunicacion .com-clientes-scroll td:nth-child(2) { max-width: none; }
+    .cs-comunicacion .com-clientes-scroll td:last-child .cs-module-actions { flex-wrap: wrap; }
+    .cs-comunicacion .chat-contenedor { grid-template-columns: minmax(0, 1fr); height: auto; }
+    .cs-comunicacion .chat-contenedor:not([data-conversacion]) .chat-panel { display: none; }
+    .cs-comunicacion .chat-contenedor[data-conversacion] .chat-contactos { display: none; }
+    .cs-comunicacion .chat-contactos { border: 0; border-radius: var(--cs-radius); max-height: max(15rem, calc(100dvh - 225px)); }
+    .cs-comunicacion .chat-panel { height: max(17rem, calc(100dvh - 105px)); border-radius: var(--cs-radius); }
+    .cs-comunicacion .com-chat-back { display: inline-flex; flex: none; padding: .4rem .55rem; font-size: .77rem; }
+    .cs-chat .cs-dashboard-content:has([data-conversacion]) .cs-module-hero { display: none; }
+}

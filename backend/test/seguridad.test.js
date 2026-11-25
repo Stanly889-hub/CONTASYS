@@ -47,6 +47,8 @@ async function abrirBaseAislada(t, etiqueta) {
     t.after(() => conexion.end());
     await conexion.query(`CREATE DATABASE \`${nombreDb}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
     await conexion.changeUser({ database: nombreDb });
+    const [[{ esquema }]] = await conexion.query("SELECT DATABASE() AS esquema");
+    assert.equal(esquema, nombreDb);
     t.diagnostic(`Base aislada: ${nombreDb}`);
     return { conexion, nombreDb };
 }
@@ -87,7 +89,8 @@ test("el limitador tiene tope y libera claves caducadas", t => {
 
 test("regresión de autenticación con HTTP y MySQL independientes", {
     skip: process.env.CONTASYS_PRUEBA_MYSQL !== "1",
-    timeout: 45000
+    // Incluye migraciones y diez casos secuenciales; cada fallo del pool se valida aparte.
+    timeout: 90000
 }, async t => {
     const { conexion, nombreDb } = await abrirBaseAislada(t, "auth");
     await ejecutarSql(conexion, "CONTASYS_PRODUCCION.sql");
@@ -96,6 +99,8 @@ test("regresión de autenticación con HTTP y MySQL independientes", {
     process.env.NODE_ENV = "development";
     process.env.CORS_ORIGIN = "";
     const pool = require("../src/config/db");
+    const [[{ esquema }]] = await pool.query("SELECT DATABASE() AS esquema");
+    assert.equal(esquema, nombreDb);
     let poolCerrado = false;
     t.after(() => poolCerrado ? undefined : pool.end());
     const app = require("../src/app");

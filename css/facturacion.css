@@ -1,0 +1,85 @@
+.pagina-facturacion .topbar { flex-wrap: nowrap; }
+.pagina-facturacion .fac-ledger { margin-top: 1rem; }
+.pagina-facturacion #tituloFactura { font-size: 1.25rem; }
+.pagina-facturacion #seccionFactura > p, .fac-kicker { color: var(--cs-muted); font-size: .83rem; }
+.fac-group {
+    min-width: 0;
+    margin: .9rem 0 0;
+    padding: .75rem;
+    border: 1px solid var(--cs-border);
+    border-radius: 12px;
+    background: #f8fbff;
+}
+.fac-group legend { padding-inline: .3rem; font-size: .83rem; font-weight: 720; }
+.fac-group-client { background: var(--cs-paper); }
+.fac-group-items { border-color: #d2e2fb; }
+.fac-group-items legend { color: #1e40af; }
+.fac-form-summary { margin-top: .9rem; }
+.fac-form-summary h3 { margin: 0; font-size: .87rem; }
+.fac-form-summary .fac-preview-totals { margin: .4rem 0; }
+.fac-form-summary .fac-preview-totals > div { display: grid; align-content: center; }
+.fac-form-summary .fac-preview-totals > div:last-child dd {
+    font-size: clamp(1rem, 2vw, 1.35rem);
+    font-variant-numeric: tabular-nums;
+}
+.fac-form-summary > p { color: var(--cs-muted); font-size: .8rem; }
+.fac-document-fields, .fac-concepto { display: grid; gap: .55rem; align-items: start; }
+.fac-document-fields { grid-template-columns: 1.5fr 1fr minmax(130px, .7fr); }
+.fac-concepto { grid-template-columns: minmax(0, 2fr) minmax(0, .75fr) minmax(0, 1.15fr) repeat(2, minmax(0, .9fr)); }
+#conceptosFactura .fac-concepto { border-top: 1px solid var(--cs-border); margin-top: .65rem; padding-top: .65rem; }
+.fac-concepto .quitarConcepto { grid-column: 1 / -1; justify-self: end; color: #991b1b; font-size: .76rem; }
+.pagina-facturacion #agregarConcepto { margin-top: .65rem; color: #1d4ed8; }
+.pagina-facturacion #facturaForm > .btn-group { margin-top: .8rem; }
+.pagina-facturacion #facturaForm .btn-group button { margin-right: 0; }
+.pagina-facturacion #filtrosFacturas { grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)) auto; }
+.pagina-facturacion .fac-summary { grid-template-columns: repeat(4, minmax(0, 1fr)); padding: .85rem 1.2rem; margin: 0; }
+.fac-summary .cs-module-kpi { min-height: 72px; }
+.fac-summary .cs-module-kpi p { font-size: clamp(1rem, 1.7vw, 1.55rem); }
+.pagina-facturacion .fac-ledger .factura-tabla table { min-width: 670px; }
+.pagina-facturacion .fac-ledger .factura-tabla td:nth-child(5) { font-variant-numeric: tabular-nums; font-weight: 750; white-space: nowrap; }
+.fac-status { display: inline-flex; align-items: center; gap: .3rem; padding: .2rem .54rem; border-radius: 100px; font-size: .76rem; background: #eff6ff; color: #1e40af; white-space: nowrap; }
+.estado-pendiente .fac-status { background: #fffbeb; color: #92400e; }
+.estado-pagada .fac-status { background: #dcfce7; color: #166534; }
+.estado-anulada .fac-status { background: #fef2f2; color: #991b1b; }
+.pagina-facturacion .fac-ledger .btn-accion { white-space: nowrap; }
+.pagina-facturacion .factura-dialogo {
+    margin: auto;
+    width: min(calc(100% - 2rem), 54rem);
+    max-height: 90dvh;
+    padding: clamp(1rem, 3vw, 1.65rem);
+    color: var(--cs-ink);
+}
+.pagina-facturacion .factura-dialogo::backdrop { background: rgb(15 23 42 / 62%); }
+.pagina-facturacion #detalleTitulo { margin: .2rem 0 .85rem; font-size: clamp(1.15rem, 3vw, 1.6rem); }
+.pagina-facturacion #detalleFactura > p { margin: .5rem 0; color: var(--cs-muted); font-size: .84rem; }
+.fac-preview-partes, .fac-preview-totals { display: grid; gap: .65rem; margin: .7rem 0; }
+.fac-preview-partes { grid-template-columns: 1fr 1fr minmax(115px, .6fr); }
+.fac-preview-partes > div, .fac-preview-totals > div { padding: .55rem .65rem; border-radius: 9px; background: #f2f6fc; min-width: 0; }
+.fac-preview-partes dt, .fac-preview-totals dt { font-size: .75rem; font-weight: 700; color: var(--cs-muted); }
+.fac-preview-partes dd, .fac-preview-totals dd { margin: .15rem 0 0; font-size: .85rem; overflow-wrap: anywhere; }
+.fac-preview-totals { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.fac-preview-totals dd { font-weight: 720; }
+.fac-preview-totals > div:last-child { background: var(--cs-pale-blue); color: #1e40af; }
+.fac-preview-table table { width: 100%; min-width: 580px; border-collapse: collapse; }
+.fac-preview-table :is(th, td) { padding: .48rem .55rem; border-bottom: 1px solid var(--cs-border); text-align: left; font-size: .79rem; }
+.fac-preview-table th { background: #f2f6fc; color: var(--cs-muted); }
+.fac-preview-table td:not(:first-child) { white-space: nowrap; }
+.fac-payment { display: grid; gap: .55rem; padding: .8rem; border: 1px solid #dce8fb; border-radius: 12px; background: #f8fbff; margin: .75rem 0; }
+.fac-payment h3 { margin: 0; font-size: 1rem; }
+.fac-payment label, .fac-payment p { font-size: .84rem; }
+.pagina-facturacion .fac-payment :is(select, textarea) { width: 100%; min-width: 0; margin: 0; padding: .55rem; border: 1px solid #cbd5e1; border-radius: 8px; background: white; color: var(--cs-ink); font: inherit; font-size: .84rem; }
+.fac-payment .row > select { flex: 1; }
+.fac-payment button { justify-self: start; }
+.pagina-facturacion #accionesFactura { margin: .85rem 0; }
+.pagina-facturacion #accionesFactura button { margin: 0; }
+@media (max-width: 850px) {
+    .fac-concepto { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .fac-concepto .fac-desc { grid-column: 1 / -1; }
+    .pagina-facturacion #filtrosFacturas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 590px) {
+    .pagina-facturacion .topbar { flex-wrap: wrap; }
+    .fac-document-fields, .fac-concepto, .pagina-facturacion .fac-summary, .fac-preview-partes, .fac-preview-totals { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .fac-document-fields > :first-child { grid-column: 1 / -1; }
+    .fac-preview-partes > :first-child { grid-column: 1 / -1; }
+}

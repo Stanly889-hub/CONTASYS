@@ -1,157 +1,106 @@
 # CONTASYS
 
-Sistema de gestión contable y financiera para pequeños negocios: control de ingresos y egresos, presupuestos, reportes y usuarios con distintos roles (Administrador, Contador, Emprendedor).
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="css/marca/contasys.png">
+  <img src="css/marca/contasys-claro.png" alt="CONTASYS" width="210">
+</picture>
 
-## Hoja de ruta del proyecto 
+CONTASYS es un sistema de gestión contable y financiera para pequeños negocios. Permite controlar movimientos, presupuestos y facturación interna, consultar reportes y compartir acceso con un contador autorizado.
 
-1. **Análisis y prototipo de interfaz** ✅ (esta entrega): pantallas base y estructura del repositorio.
-2. **Modelo de datos** ✅: diagrama ER y script SQL (MySQL 8, base `contasys_actualizado`).
-3. **Autenticación y control de sesión** ✅: validaciones reales, contraseñas con hash, protección del dashboard y permisos por rol.
-4. **Ingresos y egresos (CRUD)** ✅: categorías, edición/eliminación, filtros y navegación real desde la barra lateral.
-5. **Presupuestos, reportes y análisis** ✅: alertas de presupuesto, gráficas y exportación de reportes.
-6. **Backend y base de datos real** ✅: API conectada a MySQL, reemplazo de `localStorage`.
-7. **Funciones complementarias** ✅: notificaciones, diseño responsive, pruebas y documentación.
-8. **Panel de administración, facturación y análisis separado** ✅: gestión de usuarios y catálogos (solo Administrador), generación de facturas en PDF, y separación de "Análisis financiero" como módulo propio con tendencias históricas.
-9. **Chat entre usuarios y planes Free/Premium** ✅: mensajería interna entre usuarios del sistema y aclaración del modelo freemium (Free gratuito para todos, Premium de pago simulado).
+Su objetivo es ayudar a emprendedores y microempresas a registrar sus operaciones y consultar su situación financiera por periodo.
 
-## Seccion 1: prototipo de interfaz
+Consulta las novedades y limitaciones de [CONTASYS v1.1.0](CHANGELOG.md).
 
-Esta entrega contiene el prototipo funcional de la interfaz, con datos guardados en `localStorage` del navegador (sin backend todavía):
+## Funcionalidades
 
-- `index.html` — inicio de sesión.
-- `registro.html` — creación de cuenta.
-- `dashboard.html` — panel con KPIs (ingresos, egresos, balance), formulario de movimientos y tabla.
-- `error.html` — pantalla de error de acceso.
-- `css/styles.css` — estilos de toda la aplicación.
-- `js/app.js` — funciones compartidas (usuarios, movimientos, notificaciones).
-- `js/login.js`, `js/registro.js`, `js/dashboard.js` — lógica propia de cada página.
+- **Emprendedor.** Dashboard, ingresos, egresos, presupuestos, facturas internas, reportes, análisis financiero, suscripción y control del acceso delegado.
+- **Contador.** Clientes vinculados y consulta financiera según el permiso concedido. La consulta de facturas depende de una autorización separada y revocable.
+- **Administrador.** Gestión del estado y rol de usuarios, de categorías financieras y de métodos de pago.
+- **Servicios comunes.** Registro, inicio y cierre de sesión, Mi cuenta, notificaciones y Chat. Los planes Free y Premium conservan sus restricciones. El cobro simulado se limita a los entornos habilitados para pruebas.
 
-## Cómo probarlo
+## Planes Free y Premium
 
-No requiere instalación: se abre `index.html` en el navegador. Donde puede registrarse desde "Crear cuenta" y luego iniciar sesión con sus credenciales.
+- **Free.** Incluye el registro y la consulta de movimientos. Permite hasta tres presupuestos activos vigentes.
+- **Premium.** Quita ese límite, añade alertas preventivas de presupuesto y habilita las exportaciones de reportes en PDF y Excel.
 
-## Pruebas realizadas (Seccion 1)
+## Arquitectura y tecnologías
 
-Se ejecutaron pruebas funcionales manuales sobre registro, login, dashboard y manejo de errores. El detalle de los casos de prueba y sus resultados está documentado en el informe entregado, y las capturas de evidencia se encuentran en la carpeta `evidencias`.
+El frontend utiliza HTML, CSS y JavaScript. Consume una API REST en Node.js y Express. MySQL almacena usuarios, sesiones, movimientos, facturas y demás datos. La API valida el rol, el estado de la sesión y los permisos delegados. Chart.js, jsPDF y SheetJS se sirven desde [vendor](vendor/README.md).
 
-## Sección 2 — Modelo de datos
+## Instalación
 
-La instalación completa tiene 18 tablas, 9 triggers y 8 vistas. El esquema seleccionado en MySQL Workbench debe coincidir con `DB_NAME` para la instalación que se está configurando.
+1. Instala Node.js 22 y MySQL. Ejecuta `npm ci` en la raíz del proyecto y en `backend/`.
+2. Copia `backend/.env.example` a `backend/.env` y configura tu conexión y el secreto de sesión. Conserva el archivo fuera de Git.
+3. Instala el esquema y las migraciones según la [guía del backend](backend/README.md). Para actualizar una instalación existente, consulta la [guía de respaldo y actualización](evidencias/fase7/INSTALACION_RESPALDO.md).
+4. Ejecuta `npm.cmd --prefix backend start` desde la raíz. Comprueba la respuesta de `/api/salud`.
+5. Sirve la raíz del proyecto por HTTP, por ejemplo con Live Server en el puerto 5500, y abre `index.html`. Sirve también `css/`, `js/` y `vendor/`. Para otro origen, configura la URL de la API y CORS según la guía del backend.
 
-- **Instalación nueva.** En un esquema vacío, ejecuta `database/CONTASYS_PRODUCCION.sql` y las migraciones en el orden indicado en la guía del backend.
-- **Actualización.** Aplica las migraciones que falten en el esquema existente. Después ejecuta el diagnóstico de integridad en modo de lectura.
-- **Pruebas.** La suite crea su propio esquema. Para una demostración manual, `database/pruebas/DATOS_DEMO.sql` es una carga opcional para un esquema de pruebas recién instalado. `database/RESULTADOS_PRUEBAS.md` conserva la evidencia histórica.
+Los [datos de demostración](database/pruebas/DATOS_DEMO.sql) son opcionales y están destinados a esquemas de prueba independientes. Los resultados históricos están en el [informe de fase 7](evidencias/fase7/INFORME.md), su [revisión de seguridad](evidencias/fase7/SEGURIDAD.md) y las [mediciones de fase 6](evidencias/rendimiento-fase6/RESULTADOS.md).
 
-Consulta las instrucciones para Workbench y Visual Studio Code en [la guía del backend](backend/README.md).
+## Capturas
 
-## Revisión final
+Las pantallas se capturaron en Chromium sin ingresar datos de usuario.
 
-- Usa Node.js 22 y ejecuta `npm ci` en la raíz y en `backend/`. Sirve el frontend con su carpeta `vendor/`.
-- Ejecuta `npm run test:e2e` para Cypress sin ventana o `npm run test:e2e:open` para modo visual. El comando inicia el frontend y la API con un esquema ficticio y una cuenta temporal limitada. Requiere Chrome y un operador de pruebas que pueda crear ambos.
-- Consulta el [informe de la fase 7](evidencias/fase7/INFORME.md), la [guía de actualización y respaldo](evidencias/fase7/INSTALACION_RESPALDO.md) y la [revisión de seguridad](evidencias/fase7/SEGURIDAD.md).
+<img src="docs/capturas/inicio-sesion.png" alt="Pantalla de inicio de sesión de CONTASYS" width="680">
 
-## Sección 3 — Autenticación y control de sesión
+<img src="docs/capturas/error-acceso.png" alt="Pantalla de error de acceso de CONTASYS" width="680">
 
-Se implementó autenticación robusta sobre el prototipo de interfaz:
+## Limitaciones actuales
 
-- **Contraseñas con hash (SHA-256)** mediante la Web Crypto API del navegador, en lugar de texto plano.
-- **Validaciones** en registro (campos obligatorios, contraseña mínima de 6 caracteres, confirmación de contraseña) y en login (campos obligatorios).
-- **Control de intentos fallidos**: tras 3 intentos de login incorrectos, el usuario es redirigido a `error.html`.
-- **Protección del dashboard**: `dashboard.html` verifica que exista una sesión activa; si no, redirige automáticamente a `index.html`.
-- **Cierre de sesión** desde el dashboard, que elimina la sesión activa.
-- **Permisos por rol**: los usuarios con rol distinto de "Administrador" no ven las opciones "Usuarios" ni "Configuración" en el menú lateral.
+La facturación es interna o demostrativa. Los pagos de suscripción se simulan en los entornos habilitados para pruebas. La edición de perfil y contraseña desde Mi cuenta, la búsqueda y paginación de usuarios y la edición de catálogos siguen pendientes.
 
-**Archivos nuevos/modificados:** `js/auth.js` (nuevo), `js/login.js`, `js/registro.js`, `js/app.js`, `js/dashboard.js`, `dashboard.html`, `css/styles.css`.
+## Validación académica de CONTASYS v1.1.0
 
-El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia3/`.
+Las verificaciones de la versión candidata se ejecutaron con datos ficticios en MySQL aislado.
 
-## Sección 4 — Módulo de ingresos y egresos (CRUD)
+### Cómo repetir las pruebas
 
-Se implementó el CRUD completo de movimientos financieros:
+Usa la carpeta raíz de CONTASYS, Node.js, Chrome y MySQL. Configura las variables de conexión `DB_HOST`, `DB_PORT`, `DB_USER` y `DB_PASSWORD` en la terminal para apuntar a una instancia MySQL aislada. Las pruebas crean esquemas con nombres aleatorios. Confirman el esquema activo antes de cargar el SQL y comprueban también el esquema de la conexión que usa la API de prueba. Los datos de cada prueba son ficticios.
 
-- **Categorías financieras y métodos de pago**: cada movimiento se clasifica por categoría (filtrada según sea ingreso o egreso) y método de pago.
-- **Editar y eliminar movimientos**, además de crear, desde una página dedicada (`movimientos.html`).
-- **Filtros por fecha y categoría**, con total calculado sobre los resultados filtrados.
-- **Formato de pesos colombianos** en todos los montos mostrados (KPIs, tablas, totales).
-- **Barra lateral funcional**: "Ingresos" y "Egresos" navegan a `movimientos.html` con su tipo correspondiente; el resto de los módulos aún no construidos navegan a una página "menu" indicando en qué sección estarán disponibles, en lugar de no hacer nada.
+```powershell
+$env:CONTASYS_PRUEBA_MYSQL = '1'
+$env:CONTASYS_NAVEGADOR = 'C:/Program Files/Google/Chrome/Application/chrome.exe'
+npm.cmd --prefix backend test -- --test-concurrency=1
+npm.cmd run test:e2e
+npm.cmd audit
+npm.cmd --prefix backend audit
+```
 
-**Archivos nuevos:** `movimientos.html`, `js/movimientos.js`, `proximamente.html`.
-**Archivos modificados:** `js/app.js`, `js/dashboard.js`, `dashboard.html`, `css/styles.css`.
+Cypress levanta la API real en un puerto local temporal, utiliza una cuenta SQL restringida al esquema de prueba y la bloquea al terminar. El comando imprime la ruta local de sus artefactos. En la instalación donde se realizó la revisión, la evidencia adicional se conserva en `evidencias/validacion-v1.1.0/`. Los informes técnicos históricos y sus ejemplos ficticios están en `evidencias/fase7/` y `evidencias/rendimiento-fase6/`.
 
-El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia4/`.
+### Verificación del 25 de noviembre de 2026
 
-## Sección 5 — Presupuestos, reportes y análisis
+- Backend, MySQL y Chromium aprobaron 21 de 21 pruebas.
+- Cypress aprobó 10 de 10 casos al repetir la suite. En la primera corrida aprobó 9 de 10 porque el archivo Excel apareció después de agotarse la espera de la prueba. El archivo de esa corrida también se verificó independientemente y contenía las 124 filas esperadas.
+- Las auditorías npm de la raíz y del backend reportaron cero vulnerabilidades en los manifiestos examinados.
+- Con 10.000 registros ficticios por listado, las medianas paginadas fueron 25,48 ms en Ingresos y 20,40 ms en Egresos, con tres consultas SQL por respuesta. MySQL recorrió en orden inverso los índices de fecha y leyó 60 movimientos para obtener las 51 filas que usa el paginador. El cálculo de los totales globales se ejecutó por separado.
+- Reportes y MySQL coincidieron en $52.602,66 COP para cada tipo de movimiento confirmado. La línea base sin paginación de este mismo ensayo tardó 139,24 ms en Ingresos y 102,90 ms en Egresos. El cambio de paginación impide atribuir toda la diferencia al índice.
 
-Se implementó el módulo de presupuestos y el de reportes/análisis financiero:
+### Resultados de la validación previa
 
-- **Presupuestos por categoría**, con cálculo automático de lo ejecutado (a partir de los movimientos reales) y alerta cuando se supera el monto presupuestado.
-- **Reportes por periodo**: selección de rango de fechas, con resumen de ingresos, egresos y balance.
-- **Gráficas**: Ingresos vs Egresos (barras) y Gastos por categoría (dona), generadas con Chart.js.
-- **Exportación a PDF y Excel** del reporte generado (resumen, gráficas y detalle de movimientos).
+- **Backend, MySQL y Chromium:** 21 pruebas aprobadas durante la validación. El plazo global de la suite MySQL se amplió para dar margen a sus migraciones y diez casos secuenciales. Se conservó la comprobación del tiempo de espera del pool.
+- **Cypress con la API real:** 10 de 10 casos aprobados durante la validación. La prueba responsive abre el menú en celular y consulta en Reportes el periodo de los movimientos ficticios. La prueba de emisión espera las respuestas HTTP de creación y recarga del historial antes de comprobar el contenido y el PDF.
+- **Correcciones recientes:** Chromium con la API real verificó eliminación de movimientos permitidos, protección del ingreso asociado a un pago, edición y emisión de borrador, descarga PDF, solicitudes y revocación, separación de permisos delegados, contraste del botón Aceptar, confirmación roja al desactivar y revocación de la sesión. Se comprobó en Mi cuenta la ausencia de los textos retirados.
+- **Responsive y marca:** 15 páginas en cinco resoluciones y dos alturas útiles adicionales. Las 105 vistas con API simulada cargaron el favicon oficial y no registraron desbordamiento horizontal de la página ni errores JavaScript. Inicio de sesión y Error de acceso ajustaron su altura al navegador. El botón de Error de acceso recibió foco visible con Tab y volvió al inicio con Enter. En Chat se comprobó que el compositor permanece visible tras abrir una conversación en escritorio con 640 px de altura útil. Se generaron capturas de la marca en las interfaces y en PDF con datos ficticios.
+- **Seguridad:** cero vulnerabilidades reportadas por `npm audit` en raíz y backend. Las tres bibliotecas de navegador en `vendor/` quedan fuera de esos manifiestos y sus huellas SHA-256 coincidieron con el inventario registrado. La regresión cubrió sesiones, revocación, roles, accesos delegados, privacidad de notificaciones y restricciones de planes.
 
-**Librerías externas usadas (vía CDN):** Chart.js (gráficas), jsPDF (exportación a PDF), SheetJS/xlsx (exportación a Excel).
+### Exactitud financiera y rendimiento
 
-**Archivos nuevos:** `presupuestos.html`, `js/presupuestos.js`, `reportes.html`, `js/reportes.js`.
-**Archivos modificados:** `js/app.js`, `dashboard.html`, `movimientos.html`, `proximamente.html`, `css/styles.css`.
+El comparador de rendimiento genera conjuntos ficticios de 100, 1.000 y 10.000 registros por listado y compara las respuestas antes y después del índice de rendimiento. Para cada periodo suma en MySQL únicamente los movimientos confirmados del titular y contrasta los importes exactos con Reportes. En los tres volúmenes coincidieron los ingresos y egresos por separado. Los importes fueron 521,73 COP, 5.258,22 COP y 52.602,66 COP por cada tipo de movimiento. Las demás cifras financieras comparadas se mantuvieron iguales entre las dos ejecuciones.
 
-El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia5/`.
+La medición de API registra la mediana de siete solicitudes tras un calentamiento, en loopback y con 10.000 registros ficticios por listado. Las fases 6 y 7 son referencias históricas. En los ensayos lentos MySQL ordenó 8.571 filas en Ingresos para devolver 51. En dos repeticiones con el mismo conjunto nuevo, el motor usó un recorrido inverso por el índice de fecha en ambos listados y leyó 60 filas para obtener 51. La API usa la fila adicional para saber si hay una página siguiente y envía 50. El código del controlador, el SQL y los índices son idénticos a v1.0.0. La diferencia observada en esos ensayos proviene del plan de MySQL. La información histórica disponible permite identificar el plan lento y su trabajo adicional, aunque carece de una captura de las estadísticas internas con las que el optimizador lo eligió.
 
-## Sección 6 — Backend y base de datos real
+| API con 10.000 registros | Fase 6, ms | Fase 7, ms | Ensayos lentos v1.1.0, ms | Dos repeticiones finales, ms |
+| --- | ---: | ---: | ---: | ---: |
+| Ingresos | 11,48 | 11,38 | 142,43–172,01 | 11,01 y 16,41 |
+| Egresos | 10,03 | 12,32 | 132,13–143,77 | 11,37 y 13,34 |
 
-Se construyó una API REST con Node.js, Express y MySQL, reemplazando por completo el uso de `localStorage` en el front-end:
+Los listados conservaron tres consultas SQL por petición en la medición de API, el cursor por fecha e identificador, los filtros y los totales verificables. La carga de categorías y métodos de pago comienza en paralelo en el navegador. El menú compartido ofrece WebP sin pérdida con respaldo PNG. Ambas variantes WebP tienen las mismas dimensiones y píxeles RGBA que los PNG de origen.
 
-- **Autenticación con JWT**: el login emite un token que se envía en cada petición protegida (`Authorization: Bearer`). Las contraseñas se cifran con `bcrypt` en el servidor.
-- **Endpoints por módulo**: autenticación, categorías, métodos de pago, ingresos, egresos, presupuestos, reportes y dashboard — cada uno conectado directamente a las tablas de `contasys_actualizado` (ver Sección 2).
-- **Separación por usuario**: cada usuario solo puede ver y modificar sus propios movimientos y presupuestos; esto se controla desde el servidor, tomando el `idUsuario` del token, nunca de lo que envíe el cliente.
-- **El front-end consume la API** mediante `fetch` (archivo `js/api.js`), en vez de leer y escribir directamente en `localStorage`.
+El plan lento inició por los catálogos: estimó una fila para su combinación y procesó 42. Después buscó movimientos por usuario y categoría para cada combinación, comprobó el método de pago y ordenó los resultados. El plan rápido inicia por los movimientos ordenados. Recorre el índice de fecha y busca cada categoría y método por su clave primaria hasta completar la página. Esa diferencia explica el salto de latencia sin cambiar el tamaño de la página ni la lógica financiera.
 
-**Stack del backend:** Node.js, Express, MySQL (vía `mysql2`), `bcryptjs`, `jsonwebtoken`, `cors`, `dotenv`.
+En una comparación separada de Chrome 159 a 1366 × 768, ambas versiones recibieron la misma respuesta simulada y renderizaron dos páginas de 50 movimientos. Cada navegación y su paginación hicieron seis solicitudes a la API, incluidas dos del listado. Las primeras mediciones tomaron entre 22 y 29 ms de la respuesta al pintado de la primera tabla. En la segunda página, la última ronda midió de 21 a 22 ms en v1.0.0 y de 28 a 38 ms en v1.1.0. La última ronda también registró mayor latencia de la respuesta simulada y mayor variación de tiempos de carga. Las mediciones de memoria JavaScript son instantáneas de una sesión de navegador reutilizada y no miden el consumo total.
 
-**Carpeta nueva:** `backend/` (proyecto Node.js independiente, con su propio `package.json`).
-**Archivos modificados en el front-end:** `js/api.js` (nuevo), `js/auth.js`, `js/app.js`, `js/login.js`, `js/registro.js`, `js/dashboard.js`, `js/movimientos.js`, `js/presupuestos.js`, `js/reportes.js`, `index.html`, `registro.html`.
+Con la caché deshabilitada, los recursos del frontend de los listados pasaron de 356.307 bytes en la medición inicial de v1.1.0 a 249.194 bytes después de la optimización, aproximadamente un 30 % menos. La referencia v1.0.0 usa 36.274 bytes y tenía una presentación más ligera. El costo adicional de la primera carga permanece documentado.
 
-**Cómo ejecutar el proyecto completo:**
-1. Backend: dentro de `backend/`, `npm install`, configurar `.env`, `npm run dev`.
-2. Front-end: abrir con Live Server.
-3. Ambos deben estar corriendo al mismo tiempo.
-
-El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia6/`.
-
-## Sección 7 — Funciones complementarias y diseño responsive
-
-Se completaron algunas funciones del proyecto:
-
-- **Suscripciones**: cada usuario nuevo recibe automáticamente un plan "Free" al registrarse, con posibilidad de cambiar a "Premium" desde "Mi cuenta" (simulado, sin pasarela de pago real).
-- **Notificaciones automáticas**: cuando un presupuesto es excedido, el sistema genera una notificación persistente (no solo una alerta momentánea), visible en la página "Notificaciones", sin duplicarse en consultas repetidas.
-- **Historial de actividad**: el backend registra automáticamente acciones clave (inicio de sesión, creación/edición/eliminación de movimientos, creación de presupuestos), visibles en "Mi cuenta".
-- **Diseño responsive**: el menú lateral, las tarjetas de KPIs, los formularios y las tablas se adaptan a pantallas pequeñas.
-**Archivos nuevos:** `notificaciones.html`, `js/notificaciones.js`, `cuenta.html`, `js/cuenta.js`, además de nuevos controladores y rutas en el backend (`notificacionesController`, `historialController`, `suscripcionController`).
-**Archivos modificados:** `authController.js`, `movimientosController.js`, `presupuestosController.js`, `app.js` (backend); sidebar de todas las páginas, `css/styles.css` (frontend).
-
-El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia7/`.
-
-## Sección 8 — Panel de administración, facturación y análisis financiero separado
-
-Se genero una nueva sección complementaria debido a que contasys es un proyecto más amplio de lo esperado en donde está completa los módulos que antes estaban como "Próximamente" en el menú, y separa el "Análisis financiero" de los "Reportes" como una vista independiente.
-
-- **Gestión de usuarios** (`usuarios.html`, solo rol Administrador): listado de todos los usuarios del sistema, con la posibilidad de activar o desactivar su acceso. Un usuario desactivado no puede volver a iniciar sesión. Un administrador no puede desactivar su propia cuenta.
-- **Configuración del sistema** (`configuracion.html`, solo rol Administrador): administración de las categorías financieras y los métodos de pago — creación de nuevas y activación/desactivación de las existentes, sin necesidad de modificar la base de datos manualmente.
-- **Facturación** (`facturacion.html`): generación de facturas en PDF (cliente, concepto, valor, fecha), disponible para cualquier usuario autenticado. No persiste en la base de datos, ya que "Factura" no forma parte del modelo de datos definido en la Sección 2; queda como posible extensión futura.
-- **Análisis financiero** (`analisis.html`): separado de "Reportes" como módulo propio. Mientras Reportes muestra un periodo específico elegido por el usuario, Análisis financiero muestra la vista histórica completa: tendencia mensual de ingresos vs. egresos (gráfica de línea), tasa de ahorro acumulada, y las 5 categorías de mayor gasto histórico.
-- **Control de acceso por rol reforzado**: todos los endpoints nuevos usan el middleware `requiereRol("Administrador")` del backend (creado en la Sección 6, usado por primera vez aquí), de modo que la restricción no depende solo de ocultar botones en la interfaz, sino que el servidor rechaza la petición aunque alguien intente acceder directamente a la API.
-
-**Archivos nuevos (backend):** `usuariosController.js`, `analisisController.js`, sus rutas correspondientes, y las funciones de creación/activación agregadas a `categoriasController.js` y `metodosPagoController.js`.
-**Archivos nuevos (frontend):** `usuarios.html`, `configuracion.html`, `facturacion.html`, `analisis.html`, y sus respectivos `.js`.
-**Archivos modificados:** sidebar de todas las páginas, `app.js` (backend).
-
-El detalle completo de las pruebas ejecutadas está documentado en el informe entregado, y las capturas de evidencia se encuentran en `evidencias/evidencia8/`.
-
-## Sección 9 — Chat entre usuarios y modelo de planes
-
-- **Chat interno** (`mensajes.html`): los usuarios activos pueden escribirse entre sí desde la página. Incluye lista de contactos, contador de mensajes no leídos, marcado automático como leído al abrir la conversación y actualización cada 5 segundos. Usa la tabla `Mensaje` definida en la Sección 2, incluido su trigger que impide enviarse mensajes a uno mismo.
-- **Modelo freemium y premium** (`cuenta.html`): el plan **Free** es gratuito y se asigna a todos los usuarios al registrarse. El plan **Premium** es de pago ($19.900 COP/mes) y exige una confirmación explícita antes de contratarse. El cobro es simulado.
-
-**Archivos nuevos:** `mensajesController.js`, `mensajesRoutes.js` (backend); `mensajes.html`, `js/mensajes.js` (frontend).
-**Archivos modificados:** `app.js` (backend), `cuenta.html`, `js/cuenta.js`, sidebar de todas las páginas, `css/styles.css`.
-
-Las capturas de evidencia se encuentran en `evidencias/evidencia9/`.
+Se registraron además 16 cargas en Chrome 159 a 1366 × 768 con API simulada local y gráficas con datos ficticios. Tras la primera visita de cada página, la mediana del evento `load` fue 85,1 ms en Inicio de sesión, 79,7 ms en Dashboard, 313,7 ms en Reportes y 98,4 ms en Análisis. La evidencia registra también recursos, solicitudes de API y memoria JavaScript observada en la misma sesión. El evento `load` mide la carga del documento y sus recursos, mientras que el ensayo espera aparte a que Chart.js haya creado las gráficas. Los recursos en caché y la reutilización del navegador limitan la comparación de transferencia y memoria. Las fases anteriores no aportan una referencia equivalente de navegador.

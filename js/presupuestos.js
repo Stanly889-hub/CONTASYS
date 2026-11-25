@@ -1,6 +1,9 @@
 let sesionUsuario = exigirSesion();
 let editandoId = null;
 let guardandoPresupuesto = false;
+let peticionPresupuestos;
+const formularioPresupuesto = document.getElementById("presupuestoForm");
+const tituloFormulario = document.getElementById("tituloFormulario");
 
 function primerDiaDelMes() {
     let d = new Date();
@@ -15,9 +18,7 @@ function ultimoDiaDelMes() {
 async function iniciar() {
     if (!sesionUsuario) return;
 
-    document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
-    aplicarPermisosPorRol(sesionUsuario.rol);
-    document.querySelector('[data-page="presupuestos"]').classList.add("active");
+    iniciarMarcoOperacion(sesionUsuario, "presupuestos");
 
     document.getElementById("fechaInicio").value = primerDiaDelMes();
     document.getElementById("fechaFin").value = ultimoDiaDelMes();
@@ -26,6 +27,7 @@ async function iniciar() {
         await cargarCategorias();
         await renderizarTabla();
     } catch (error) {
+        estadoListado(error.message, "error");
         mostrarNotificacion(error.message, "error");
     }
 }
@@ -49,9 +51,10 @@ async function cargarCategorias() {
     select.append(gIngreso, gEgreso);
 }
 
-document.getElementById("presupuestoForm").addEventListener("submit", async function (e) {
+formularioPresupuesto.addEventListener("submit", async function (e) {
     e.preventDefault();
     if (guardandoPresupuesto) return;
+    avisoFormulario(this);
 
     let datos = {
         nombrePresupuesto: document.getElementById("nombrePresupuesto").value.trim(),
@@ -63,11 +66,11 @@ document.getElementById("presupuestoForm").addEventListener("submit", async func
     };
 
     if (!datos.nombrePresupuesto || !datos.idCategoria || !datos.fechaInicio || !datos.fechaFin) {
-        mostrarNotificacion("Completa todos los campos", "error");
+        avisoFormulario(this, "Completa todos los campos");
         return;
     }
     if (!datos.montoPresupuesto || datos.montoPresupuesto <= 0) {
-        mostrarNotificacion("El monto debe ser mayor a cero", "error");
+        avisoFormulario(this, "El monto debe ser mayor a cero");
         return;
     }
 
@@ -87,7 +90,7 @@ document.getElementById("presupuestoForm").addEventListener("submit", async func
         }
         renderizarTabla();
     } catch (error) {
-        mostrarNotificacion(error.message, "error");
+        avisoFormulario(this, error.message);
     } finally {
         guardandoPresupuesto = false;
         if (e.submitter) e.submitter.disabled = false;
@@ -95,13 +98,19 @@ document.getElementById("presupuestoForm").addEventListener("submit", async func
 });
 
 async function renderizarTabla() {
+    peticionPresupuestos?.abort();
+    peticionPresupuestos = new AbortController();
+    const { signal } = peticionPresupuestos;
+    estadoListado("Cargando presupuestos…", "carga");
     let presupuestos;
     try {
-        presupuestos = await apiFetch("/presupuestos");
+        presupuestos = await apiFetch("/presupuestos", { signal });
     } catch (error) {
-        mostrarNotificacion(error.message, "error");
+        if (!signal.aborted) estadoListado(error.message, "error");
         return;
     }
+    if (signal.aborted) return;
+    estadoListado("");
 
     let tabla = document.getElementById("tablaPresupuestos");
     tabla.innerHTML = "";
@@ -109,60 +118,60 @@ async function renderizarTabla() {
     if (presupuestos.length === 0) {
         let fila = document.createElement("tr");
         let celda = document.createElement("td");
-        celda.colSpan = 7;
-        celda.style.textAlign = "center";
+        celda.className = "cs-card cs-budget-empty";
         celda.textContent = "Aún no tienes presupuestos registrados.";
         fila.appendChild(celda);
         tabla.appendChild(fila);
         return;
     }
 
-    presupuestos.forEach(p => {
-        let fila = document.createElement("tr");
-        if (p.excedido) fila.classList.add("fila-excedida");
+    const hoy = fechaLocalISO();
+    presupuestos.forEach(p => tabla.appendChild(tarjetaPresupuesto(p, hoy)));
+}
 
-        [p.nombrePresupuesto, `${p.categoria} (${p.tipo})`, `${p.fechaInicio} a ${p.fechaFin}`, formatoCOP(p.montoPresupuesto), formatoCOP(p.ejecutado)]
-            .forEach(valor => {
-                let td = document.createElement("td");
-                td.textContent = valor;
-                fila.appendChild(td);
-            });
-
-        let celdaProgreso = document.createElement("td");
-        let barraContenedor = document.createElement("div");
-        barraContenedor.className = "barra-contenedor";
-        let barra = document.createElement("div");
-        barra.className = "barra-progreso" + (p.excedido ? " excedido" : "");
-        barra.style.width = Math.min(p.porcentaje, 100) + "%";
-        barraContenedor.appendChild(barra);
-        let textoPorcentaje = document.createElement("span");
-        textoPorcentaje.className = "texto-porcentaje";
-        const indicacion = p.excedido ? " · Límite superado" : p.metaAlcanzada ? " · Meta alcanzada"
-            : p.limiteAlcanzado ? " · Límite alcanzado" : p.alertaPreventiva ? " · Alerta preventiva" : "";
-        textoPorcentaje.textContent = p.porcentaje + "%" + indicacion;
-        const saldo = document.createElement("div");
-        saldo.textContent = `${p.tipo === "Ingreso" ? "Diferencia frente a la meta" : "Disponible"}: ${formatoCOP(p.disponible)}`;
-        celdaProgreso.append(barraContenedor, textoPorcentaje, saldo);
-        fila.appendChild(celdaProgreso);
-
-        let celdaAcciones = document.createElement("td");
-        let btnEditar = document.createElement("button");
-        btnEditar.textContent = "Editar";
-        btnEditar.className = "btn-accion btn-editar";
-        btnEditar.onclick = () => editarPresupuesto(p);
-        let btnEliminar = document.createElement("button");
-        btnEliminar.textContent = "Eliminar";
-        btnEliminar.className = "btn-accion btn-eliminar";
-        btnEliminar.onclick = () => eliminarPresupuestoUI(p.idPresupuesto);
-        celdaAcciones.append(btnEditar, btnEliminar);
-        fila.appendChild(celdaAcciones);
-
-        tabla.appendChild(fila);
-
-    });
+function tarjetaPresupuesto(p, hoy) {
+    const fila = document.createElement("tr");
+    const celda = document.createElement("td");
+    const tarjeta = document.getElementById("plantillaPresupuesto").content.cloneNode(true);
+    const campo = nombre => tarjeta.querySelector(`[data-presupuesto="${nombre}"]`);
+    const esMeta = p.tipo === "Ingreso";
+    const fechaVisible = fecha => fecha.replace(/^(\d{4})-(\d{2})-(\d{2})$/, "$3/$2/$1");
+    const estado = p.estado !== "Activo" ? p.estado
+        : p.fechaInicio > hoy ? "Futuro" : p.fechaFin < hoy ? "Finalizado" : "Vigente";
+    const [alerta, tono] = p.excedido ? ["Límite superado", "error"]
+        : p.metaAlcanzada ? ["Meta alcanzada", "exito"]
+        : p.limiteAlcanzado ? ["Límite alcanzado", "aviso"]
+        : p.alertaPreventiva ? ["Alerta preventiva", "aviso"] : ["", ""];
+    const valores = {
+        nombre: p.nombrePresupuesto,
+        categoria: p.categoria,
+        tipo: esMeta ? "Meta de ingresos" : "Límite de egresos",
+        estado,
+        periodo: `${fechaVisible(p.fechaInicio)} a ${fechaVisible(p.fechaFin)}`,
+        monto: formatoCOP(p.montoPresupuesto),
+        ejecutado: formatoCOP(p.ejecutado),
+        "saldo-label": esMeta ? "Diferencia frente a la meta" : "Disponible",
+        saldo: formatoCOP(p.disponible),
+        porcentaje: p.porcentaje + "%",
+        alerta
+    };
+    for (const [nombre, valor] of Object.entries(valores)) campo(nombre).textContent = valor;
+    campo("estado").dataset.estado = estado;
+    campo("alerta").hidden = !alerta;
+    tarjeta.querySelector("article").dataset.tono = tono;
+    tarjeta.querySelector("article").dataset.tipo = esMeta ? "ingreso" : "egreso";
+    fila.classList.toggle("fila-excedida", Boolean(p.excedido));
+    const barra = tarjeta.querySelector(".barra-progreso");
+    barra.style.width = Math.max(0, Math.min(p.porcentaje, 100)) + "%";
+    barra.classList.toggle("excedido", Boolean(p.excedido));
+    tarjeta.querySelector("footer").append(botonesOperacion(() => editarPresupuesto(p), () => eliminarPresupuestoUI(p.idPresupuesto), true));
+    celda.appendChild(tarjeta);
+    fila.appendChild(celda);
+    return fila;
 }
 
 function editarPresupuesto(p) {
+    avisoFormulario(formularioPresupuesto);
     editandoId = p.idPresupuesto;
     document.getElementById("nombrePresupuesto").value = p.nombrePresupuesto;
     seleccionarCatalogoHistorico(document.getElementById("categoria"), p.idCategoria, p.categoria);
@@ -173,10 +182,13 @@ function editarPresupuesto(p) {
 
     document.getElementById("btnGuardarPresupuesto").textContent = "Actualizar";
     document.getElementById("btnCancelarPresupuesto").style.display = "inline-block";
+    enfocarEdicion(tituloFormulario, "Editar presupuesto");
 }
 
 function cancelarEdicion() {
     editandoId = null;
+    avisoFormulario(formularioPresupuesto);
+    tituloFormulario.textContent = "Nuevo presupuesto";
     document.getElementById("presupuestoForm").reset();
     document.querySelectorAll("#presupuestoForm [data-historico]").forEach(opcion => opcion.remove());
     document.getElementById("fechaInicio").value = primerDiaDelMes();
@@ -186,7 +198,7 @@ function cancelarEdicion() {
 }
 
 async function eliminarPresupuestoUI(id) {
-    let confirmado = confirm("¿Seguro que deseas eliminar este presupuesto?");
+    const confirmado = await confirmarEliminacion("¿Seguro que deseas eliminar este presupuesto?");
     if (!confirmado) return;
 
     try {

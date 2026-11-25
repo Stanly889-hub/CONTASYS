@@ -21,7 +21,7 @@
 
 La prueba de datos del PDF con doble se repite entre suites y no representa un caso único adicional. La ejecución final de Cypress usó `contasys_prueba_e2e_681e7cc75a` y la plantilla de permisos. MySQL rechazó `DELETE` sobre Usuario y `ALTER`. `SHOW GRANTS` confirmó que carecía de privilegios globales, `DROP` y `GRANT OPTION`. No se intentó borrar un esquema. Al finalizar, la cuenta temporal quedó bloqueada.
 
-La ejecución inicial detectó desbordamiento de facturación a 768 px y un selector inexistente en el caso de presupuesto. Se ajustó el dimensionamiento del menú lateral al aplicar el breakpoint y se corrigió el selector del test. Las capturas de ambos fallos y la ejecución final se conservaron.
+La ejecución inicial detectó desbordamiento de facturación a 768 px y un selector inexistente en el caso de presupuesto. Se ajustó el dimensionamiento del menú lateral al aplicar el breakpoint y se corrigió el selector del test. La ejecución final queda documentada aquí. Las capturas originales de ambos fallos se conservan en el archivo local de evidencias.
 
 - [Matriz por módulos](MATRIZ.md)
 - [Ejecución real de Cypress con rutas locales anonimizadas](cypress/ejecucion-final-publica.txt)

@@ -81,6 +81,8 @@ async function principal() {
     try {
         if (modo === "antes") await db.query(`CREATE DATABASE \`${esquema}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
         await db.changeUser({ database: esquema });
+        const [[{ activo }]] = await db.query("SELECT DATABASE() AS activo");
+        if (activo !== esquema) throw new Error("La conexión de medición no usa el esquema aislado");
         if (modo === "antes") {
             for (const f of ["CONTASYS_PRODUCCION", "MIGRACION_ROLES_PREMIUM", "MIGRACION_SESIONES", "MIGRACION_PROTEGER_USUARIOS",
                 "MIGRACION_PROTEGER_VINCULOS", "MIGRACION_ALERTAS_PRESUPUESTO", "MIGRACION_TIPO_CATEGORIA", "MIGRACION_FACTURACION",
@@ -93,6 +95,8 @@ async function principal() {
         process.env.JWT_SECRET = randomBytes(32).toString("hex");
         process.env.CORS_ORIGIN = "";
         pool = require("../src/config/db");
+        const [[{ activo: esquemaApi }]] = await pool.query("SELECT DATABASE() AS activo");
+        if (esquemaApi !== esquema) throw new Error("La API de medición no usa el esquema aislado");
         const consultas = [];
         for (const metodo of ["query", "execute"]) {
             const original = pool[metodo].bind(pool);
@@ -152,6 +156,17 @@ async function principal() {
                 }
             }
         }
+        const [[totalesSql]] = await db.execute(
+            `SELECT
+                (SELECT COALESCE(SUM(monto), 0.00) FROM Ingreso
+                 WHERE idUsuario = 1 AND estadoTransaccion = 'Confirmada' AND fecha BETWEEN ? AND ?) AS ingresos,
+                (SELECT COALESCE(SUM(monto), 0.00) FROM Egreso
+                 WHERE idUsuario = 1 AND estadoTransaccion = 'Confirmada' AND fecha BETWEEN ? AND ?) AS egresos`,
+            [inicio, hoy, inicio, hoy]
+        );
+        const { ingresos, egresos } = salida.financiera.reportes;
+        assert.deepEqual({ ingresos, egresos }, totalesSql, "El reporte debe coincidir con los movimientos confirmados en MySQL");
+        salida.confirmadosMySQL = totalesSql;
         const cpu = process.cpuUsage();
         const inicioConcurrente = performance.now();
         await Promise.all(Array.from({ length: 8 }, () => medir(rutas.movimientos)));

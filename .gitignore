@@ -16,9 +16,30 @@ cypress/downloads/
 cypress/screenshots/
 cypress/videos/
 
+# Instrucciones, conversaciones y archivos locales de asistentes de desarrollo
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.codex/
+.claude/
+.gemini/
+.github/copilot-instructions.md
+.github/instructions/*.instructions.md
+.cursorrules
+.cursor/rules/
+.aider*
+*.prompt.md
+/prompts/
+/registros-agentes/
+/conversaciones-ia/
+
 # Evidencias privadas que se conservan solo en el equipo local
 /evidencias/Secci*/
 /evidencias/fase7/cypress/ejecucion-final.txt
+/evidencias/fase7/cypress/primer-fallo-*.png
+/evidencias/fase7/exportaciones/*-vista.png
 
 # Archivos del sistema operativo y del editor
 .DS_Store

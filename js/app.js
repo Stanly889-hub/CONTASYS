@@ -50,9 +50,27 @@ function seleccionarCatalogoHistorico(select, id, nombre) {
 function mostrarNotificacion(mensaje, tipo) {
     let div = document.createElement("div");
     div.className = "notificacion " + tipo;
+    div.setAttribute("role", tipo === "error" ? "alert" : "status");
     div.textContent = mensaje;
     document.body.appendChild(div);
     setTimeout(() => div.remove(), 3000);
+}
+
+function iniciarEnvioFormulario(formulario) {
+    const boton = formulario.querySelector('button[type="submit"]');
+    const contenido = [...boton.childNodes];
+    const indicador = document.createElement("span");
+    indicador.className = "cs-spinner";
+    indicador.setAttribute("aria-hidden", "true");
+    formulario.setAttribute("aria-busy", "true");
+    boton.disabled = true;
+    boton.replaceChildren(indicador, boton.dataset.loadingLabel);
+
+    return () => {
+        boton.replaceChildren(...contenido);
+        boton.disabled = false;
+        formulario.removeAttribute("aria-busy");
+    };
 }
 function crearPaginador(ancla, cargar, limite = 50) {
     const contenedor = document.createElement("div");

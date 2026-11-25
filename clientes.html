@@ -1,71 +1,57 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Clientes - CONTASYS</title>
-<link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0F172A">
+    <title>Clientes | CONTASYS</title>
+    <link rel="icon" href="css/marca/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/corporativo.css">
+    <link rel="stylesheet" href="css/operaciones.css">
+    <link rel="stylesheet" href="css/comunicacion.css">
 </head>
-<body>
-
-<div class="dashboard-container">
-
-    <aside class="sidebar">
-        <h2>CONTASYS</h2>
-        <ul>
-            <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
-            <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
-            <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
-            <li data-page="reportes"><a href="reportes.html">📊 Reportes</a></li>
-            <li data-page="mensajes"><a href="mensajes.html">💬 Chat</a></li>
-            <li data-page="cuenta"><a href="cuenta.html">📁 Mi cuenta</a></li>
-            <li data-page="facturacion"><a href="facturacion.html">🧾 Facturación</a></li>
-            <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
-            <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
-            <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
-            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
-            <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
-            <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
-        </ul>
-    </aside>
-
-    <main class="main-content">
-        <header class="topbar">
-            <h1>Clientes</h1>
-            <div class="user">
-                👤 <span id="nombreUsuarioActual">Usuario</span>
-                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+<body class="cs-ui cs-dashboard cs-modulo cs-comunicacion">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="menuFinanciero"></aside>
+        <main class="main-content">
+            <header class="topbar"></header>
+            <div class="cs-dashboard-content">
+                <div class="cs-module-hero">
+                    <div class="cs-module-hero-mark"><svg class="ui-icon" width="18" height="18" aria-hidden="true"><use href="css/iconos.svg#grupo"></use></svg></div>
+                    <div><h1>Clientes</h1><p>Gestiona las solicitudes y el acceso autorizado a tus clientes.</p></div>
+                </div>
+                <div class="com-clientes" hidden>
+                <section class="cs-card form-section cs-module-form" aria-labelledby="tituloSolicitud">
+                    <div class="cs-module-section-title"><span class="cs-kpi-icon"><svg class="ui-icon" width="18" height="18" aria-hidden="true"><use href="css/iconos.svg#grupo"></use></svg></span><div><h2 id="tituloSolicitud">Solicitar vinculación</h2><p>Envía una solicitud a un cliente activo.</p></div></div>
+                    <form id="formCliente">
+                        <label class="cs-module-field">Correo del cliente<input type="email" id="correoCliente" placeholder="nombre@ejemplo.com" required></label>
+                        <button type="submit" class="btn-exportar cs-button cs-button-primary">Solicitar acceso</button>
+                    </form>
+                    <p class="com-plan" id="notaLimiteClientes" hidden></p>
+                    <p class="com-help">El Emprendedor acepta o rechaza las solicitudes recibidas en <strong>Mi cuenta → Accesos de contadores</strong>. El acceso financiero autorizado es de solo lectura.</p>
+                    <p id="infoClienteActivo" class="com-plan" hidden></p>
+                </section>
+                <section class="cs-card cs-module-ledger" aria-labelledby="tituloClientes">
+                    <div class="cs-module-section-title"><div><h2 id="tituloClientes">Clientes y solicitudes enviadas</h2><p>Consulta el estado de cada vinculación.</p></div></div>
+                    <p id="estadoListado" class="cs-status cs-module-loading" role="status">Cargando clientes…</p>
+                    <div class="cs-module-scroll cs-table-scroll com-clientes-scroll" tabindex="0" role="region" aria-labelledby="tituloClientes">
+                        <table><thead><tr><th scope="col">Cliente</th><th scope="col">Correo</th><th scope="col">Estado</th><th scope="col">Acciones</th></tr></thead><tbody id="tablaClientes"></tbody></table>
+                    </div>
+                </section>
+                </div>
+                <dialog class="cs-module-dialog" id="confirmacionOperacion" aria-labelledby="tituloConfirmacion" aria-describedby="textoConfirmacion">
+                    <form method="dialog"><h2 id="tituloConfirmacion">Quitar vínculo</h2><p id="textoConfirmacion"></p>
+                    <div class="cs-module-actions"><button class="cs-button cs-button-secondary" value="cancelar" autofocus>Cancelar</button><button class="cs-button cs-button-danger" value="eliminar">Quitar</button></div></form>
+                </dialog>
             </div>
-        </header>
-
-        <section class="form-section">
-            <h2>Agregar cliente</h2>
-            <p class="nota-simulada" id="notaLimiteClientes"></p>
-            <form id="formCliente">
-                <input type="email" id="correoCliente" placeholder="Correo del cliente (Emprendedor)" required
-                       style="width:100%;max-width:380px;padding:10px;margin:8px 0;border:1px solid #ccc;border-radius:6px;">
-                <br>
-                <button type="submit" class="btn-exportar">Solicitar acceso</button>
-            </form>
-            <p class="nota-simulada">El cliente debe aceptar la solicitud en su sección “Mi cuenta”. Tendrás acceso de solo lectura a sus ingresos, egresos, presupuestos, reportes y análisis.</p>
-            <p id="infoClienteActivo" style="display:none;"></p>
-        </section>
-
-        <section class="table-section">
-            <h2>Mis clientes</h2>
-            <table>
-                <thead>
-                    <tr><th>Cliente</th><th>Correo</th><th>Estado</th><th>Acciones</th></tr>
-                </thead>
-                <tbody id="tablaClientes"></tbody>
-            </table>
-        </section>
-    </main>
-</div>
-
-<script src="js/auth.js"></script>
-<script src="js/api.js"></script>
-<script src="js/app.js"></script>
-<script src="js/clientes.js"></script>
+        </main>
+    </div>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/operaciones-ui.js"></script>
+    <script src="js/comunicacion-ui.js"></script>
+    <script src="js/clientes.js"></script>
 </body>
 </html>

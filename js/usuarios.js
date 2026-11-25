@@ -9,12 +9,9 @@ async function iniciar() {
         return;
     }
 
-    document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
-    aplicarPermisosPorRol(sesionUsuario.rol);
-    document.querySelector('[data-page="usuarios"]').classList.add("active");
-
-    await cargarEstadisticas();
-    await renderizarTabla();
+    iniciarMarcoOperacion(sesionUsuario, "usuarios");
+    document.querySelector("[data-panel-administrador]").hidden = false;
+    await Promise.all([cargarEstadisticas(), renderizarTabla()]);
 }
 
 async function cargarEstadisticas() {
@@ -29,44 +26,59 @@ async function cargarEstadisticas() {
     contenedor.innerHTML = "";
 
     [
-        ["Usuarios", `${est.totalUsuarios} (${est.usuariosActivos} activos)`],
-        ["Administradores", est.porRol.Administrador || 0],
-        ["Contadores", est.porRol.Contador || 0],
-        ["Emprendedores", est.porRol.Emprendedor || 0],
-        ["Plan Premium", est.porPlan.Premium],
-        ["Plan Free", est.porPlan.Free]
-    ].forEach(([titulo, valor]) => {
+        ["Usuarios", est.totalUsuarios, "grupo", `${est.usuariosActivos} activos`],
+        ["Administradores", est.porRol.Administrador || 0, "ajustes"],
+        ["Contadores", est.porRol.Contador || 0, "reporte"],
+        ["Emprendedores", est.porRol.Emprendedor || 0, "persona"],
+        ["Plan Premium", est.porPlan.Premium, "grafica"],
+        ["Plan Free", est.porPlan.Free, "billetera"]
+    ].forEach(([titulo, valor, icono, detalle]) => {
         let tarjeta = document.createElement("div");
-        tarjeta.className = "kpi";
+        tarjeta.className = "kpi cs-card";
         let h = document.createElement("h3");
         h.textContent = titulo;
         let p = document.createElement("p");
         p.textContent = valor;
-        tarjeta.append(h, p);
+        const marca = document.createElement("span");
+        marca.className = "cs-kpi-icon";
+        marca.innerHTML = iconoOperacion(icono);
+        const datos = document.createElement("div");
+        datos.append(h, p);
+        if (detalle) {
+            const subtitulo = document.createElement("small");
+            subtitulo.textContent = detalle;
+            datos.append(subtitulo);
+        }
+        tarjeta.append(marca, datos);
         contenedor.appendChild(tarjeta);
     });
 }
 
 async function renderizarTabla() {
+    estadoAdministracion("estadoListado", "Cargando usuarios…");
     let usuarios;
     try {
         usuarios = await apiFetch("/usuarios");
     } catch (error) {
+        estadoAdministracion("estadoListado", error.message, true);
         mostrarNotificacion(error.message, "error");
         return;
     }
+    estadoAdministracion("estadoListado", "");
 
     let tabla = document.getElementById("tablaUsuarios");
     tabla.innerHTML = "";
+    if (!usuarios.length) vacioAdministracion(tabla, 8, "No hay usuarios registrados.");
 
     usuarios.forEach(u => {
         let fila = document.createElement("tr");
 
-        [`${u.nombre} ${u.apellido}`, u.documento, u.correo, u.rol, u.estado, u.fechaRegistro].forEach(valor => {
-            let td = document.createElement("td");
-            td.textContent = valor;
-            fila.appendChild(td);
-        });
+        fila.insertCell().append(personaAdministracion(u));
+        fila.insertCell().textContent = u.documento;
+        fila.insertCell().textContent = u.correo;
+        fila.insertCell().append(etiquetaAdministracion(u.rol));
+        fila.insertCell().append(etiquetaAdministracion(u.estado));
+        fila.insertCell().textContent = fechaComunicacion(u.fechaRegistro);
 
         // Columna "Cambiar rol": lista desplegable (no se puede cambiar el rol propio).
         let celdaRol = document.createElement("td");
@@ -74,6 +86,7 @@ async function renderizarTabla() {
             celdaRol.textContent = "—";
         } else {
             let selector = document.createElement("select");
+            selector.setAttribute("aria-label", `Rol de ${u.nombre} ${u.apellido}`);
             ["Administrador", "Contador", "Emprendedor"].forEach(rol => {
                 let opcion = document.createElement("option");
                 opcion.value = rol;
@@ -92,9 +105,10 @@ async function renderizarTabla() {
             celdaAcciones.textContent = "— (tu cuenta)";
         } else {
             let boton = document.createElement("button");
+            boton.type = "button";
             boton.textContent = u.estado === "Activo" ? "Desactivar" : "Activar";
-            boton.className = "btn-accion " + (u.estado === "Activo" ? "btn-eliminar" : "btn-editar");
-            boton.onclick = () => cambiarEstado(u.idUsuario, u.estado === "Activo" ? "Inactivo" : "Activo");
+            boton.className = "btn-accion cs-button cs-button-secondary " + (u.estado === "Activo" ? "btn-eliminar" : "btn-editar");
+            boton.onclick = () => confirmarCambioEstado(u);
             celdaAcciones.appendChild(boton);
         }
 
@@ -103,8 +117,34 @@ async function renderizarTabla() {
     });
 }
 
+async function confirmarCambioEstado(usuario) {
+    const desactivar = usuario.estado === "Activo";
+    const accion = desactivar ? "Desactivar" : "Activar";
+    const dialogo = document.getElementById("confirmacionOperacion");
+    const titulo = document.getElementById("tituloConfirmacion");
+    const icono = document.getElementById("iconoDesactivacion");
+    const boton = dialogo.querySelector('[value="eliminar"]');
+    const nombre = `${usuario.nombre} ${usuario.apellido}`;
+    dialogo.toggleAttribute("data-desactivacion", desactivar);
+    icono.hidden = !desactivar;
+    titulo.textContent = `${accion} usuario`;
+    boton.textContent = accion;
+    let confirmado;
+    try {
+        confirmado = await confirmarEliminacion(desactivar
+            ? `¿Desactivar la cuenta de ${nombre}? Perderá el acceso y sus sesiones se cerrarán.`
+            : `¿Activar la cuenta de ${nombre}?`);
+    } finally {
+        dialogo.removeAttribute("data-desactivacion");
+        icono.hidden = true;
+        titulo.textContent = "Confirmar acción";
+        boton.textContent = "Confirmar";
+    }
+    if (confirmado) await cambiarEstado(usuario.idUsuario, desactivar ? "Inactivo" : "Activo");
+}
+
 async function cambiarRol(usuario, nuevoRol) {
-    if (!confirm(`¿Cambiar el rol de ${usuario.nombre} ${usuario.apellido} a ${nuevoRol}?`)) {
+    if (!await confirmarEliminacion(`¿Cambiar el rol de ${usuario.nombre} ${usuario.apellido} a ${nuevoRol}?`)) {
         renderizarTabla();
         return;
     }
@@ -129,7 +169,7 @@ async function cambiarEstado(idUsuario, nuevoEstado) {
             body: JSON.stringify({ estado: nuevoEstado })
         });
         mostrarNotificacion(`Usuario ${nuevoEstado === "Activo" ? "activado" : "desactivado"}`, "ok");
-        renderizarTabla();
+        await Promise.all([cargarEstadisticas(), renderizarTabla()]);
     } catch (error) {
         mostrarNotificacion(error.message, "error");
     }

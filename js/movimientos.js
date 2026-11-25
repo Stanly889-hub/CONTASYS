@@ -4,30 +4,36 @@ const params = new URLSearchParams(window.location.search);
 const tipoActual = params.get("tipo") === "egreso" ? "egreso" : "ingreso";
 const nombreTipo = tipoActual === "ingreso" ? "Ingresos" : "Egresos";
 const endpointBase = tipoActual === "ingreso" ? "/ingresos" : "/egresos";
+const tituloFormulario = document.getElementById("tituloFormulario");
+const formularioMovimiento = document.getElementById("movimientoForm");
 
 let editandoId = null;
 let guardandoMovimiento = false;
-const navegarMovimientos = crearPaginador(document.getElementById("tablaMovimientos").closest("table"), cargarPaginaMovimientos);
+const navegarMovimientos = crearPaginador(document.querySelector(".cs-module-scroll"), cargarPaginaMovimientos);
 
 async function iniciar() {
     if (!sesionUsuario) return;
 
-    document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
-    aplicarPermisosPorRol(sesionUsuario.rol);
-
-    let paginaActiva = tipoActual === "ingreso" ? "ingresos" : "egresos";
-    document.querySelector(`[data-page="${paginaActiva}"]`).classList.add("active");
-
+    iniciarMarcoOperacion(sesionUsuario, nombreTipo.toLowerCase());
+    document.body.dataset.tipoMovimiento = tipoActual;
+    document.title = `${nombreTipo} | CONTASYS`;
     document.getElementById("tituloPagina").textContent = nombreTipo;
-    document.getElementById("tituloFormulario").textContent = `Registrar ${nombreTipo.toLowerCase()}`;
-    document.getElementById("tituloTabla").textContent = nombreTipo;
+    document.getElementById("descripcionMovimiento").textContent = tipoActual === "ingreso"
+        ? "Registra y administra las entradas de dinero de tu negocio"
+        : "Registra y controla las salidas de dinero de tu negocio";
+    const flecha = `css/iconos.svg#${tipoActual === "ingreso" ? "entrada" : "salida"}`;
+    for (const icono of document.querySelectorAll(".cs-module-hero-mark use, .cs-module-kpi:not(.cs-module-kpi-pending) use")) {
+        icono.setAttribute("href", flecha);
+    }
+    tituloFormulario.textContent = `Registrar ${tipoActual}`;
+    document.getElementById("tituloTabla").textContent = `Historial de ${nombreTipo.toLowerCase()}`;
     document.getElementById("fecha").value = fechaLocalISO();
 
     try {
-        await cargarCategorias();
-        await cargarMetodosPago();
+        await Promise.all([cargarCategorias(), cargarMetodosPago()]);
         await renderizarTabla();
     } catch (error) {
+        estadoListado(error.message, "error");
         mostrarNotificacion(error.message, "error");
     }
 }
@@ -76,8 +82,16 @@ async function renderizarTabla() {
 }
 
 async function cargarPaginaMovimientos(ruta, signal) {
-    const { registros: movimientos, siguiente, totales, categoriasHistoricas = [] } = await apiFetch(ruta, { signal });
+    estadoListado("Cargando movimientos…", "carga");
+    let datos;
+    try {
+        datos = await apiFetch(ruta, { signal });
+    } catch (error) {
+        if (!signal.aborted) estadoListado(error.message, "error");
+        throw error;
+    }
     if (signal.aborted) return;
+    const { registros: movimientos, siguiente, totales, categoriasHistoricas = [] } = datos;
     let tabla = document.getElementById("tablaMovimientos");
     tabla.innerHTML = "";
     const filtroCategoria = document.getElementById("filtroCategoria");
@@ -90,8 +104,8 @@ async function cargarPaginaMovimientos(ruta, signal) {
     if (movimientos.length === 0) {
         let fila = document.createElement("tr");
         let celda = document.createElement("td");
-        celda.colSpan = 6;
-        celda.style.textAlign = "center";
+        celda.colSpan = 7;
+        celda.className = "cs-table-empty";
         celda.textContent = "No hay movimientos que coincidan.";
         fila.appendChild(celda);
         tabla.appendChild(fila);
@@ -103,36 +117,37 @@ async function cargarPaginaMovimientos(ruta, signal) {
         }
         let fila = document.createElement("tr");
 
-        [m.fecha, m.categoria, m.metodoPago, m.descripcion, `${formatoCOP(m.monto)} · ${m.estadoTransaccion}`].forEach(valor => {
+        [m.fecha, m.descripcion, formatoCOP(m.monto), m.estadoTransaccion, m.categoria, m.metodoPago].forEach((valor, indice) => {
             let td = document.createElement("td");
-            td.textContent = valor;
+            if (indice === 3) {
+                const etiqueta = document.createElement("span");
+                etiqueta.className = "cs-pill cs-module-state";
+                etiqueta.dataset.estado = valor;
+                etiqueta.textContent = valor;
+                td.appendChild(etiqueta);
+            } else {
+                td.textContent = valor;
+            }
             fila.appendChild(td);
         });
 
         let celdaAcciones = document.createElement("td");
-        let btnEditar = document.createElement("button");
-        btnEditar.textContent = "Editar";
-        btnEditar.className = "btn-accion btn-editar";
-        btnEditar.onclick = () => editarMovimiento(m);
-
-        let btnEliminar = document.createElement("button");
-        btnEliminar.textContent = "Eliminar";
-        btnEliminar.className = "btn-accion btn-eliminar";
-        btnEliminar.onclick = () => eliminarMovimientoUI(m.id);
-
-        celdaAcciones.append(btnEditar, btnEliminar);
+        celdaAcciones.append(botonesOperacion(() => editarMovimiento(m), () => eliminarMovimientoUI(m.id)));
         fila.appendChild(celdaAcciones);
         tabla.appendChild(fila);
     });
 
-    document.getElementById("totalFiltrado").textContent =
-        `Confirmado: ${formatoCOP(totales.confirmado)} · Pendiente: ${formatoCOP(totales.pendiente)}`;
+    document.getElementById("importeConfirmado").textContent = formatoCOP(totales.confirmado);
+    document.getElementById("importePendiente").textContent = formatoCOP(totales.pendiente);
+    document.getElementById("totalFiltrado").hidden = false;
+    estadoListado("");
     return siguiente;
 }
 
-document.getElementById("movimientoForm").addEventListener("submit", async function (e) {
+formularioMovimiento.addEventListener("submit", async function (e) {
     e.preventDefault();
     if (guardandoMovimiento) return;
+    avisoFormulario(this);
 
     let datos = {
         monto: document.getElementById("monto").value,
@@ -144,11 +159,11 @@ document.getElementById("movimientoForm").addEventListener("submit", async funct
     };
 
     if (!datos.monto || datos.monto <= 0) {
-        mostrarNotificacion("El monto debe ser mayor a cero", "error");
+        avisoFormulario(this, "El monto debe ser mayor a cero");
         return;
     }
     if (!datos.descripcion || !datos.fecha || !datos.idCategoria || !datos.idMetodoPago) {
-        mostrarNotificacion("Completa todos los campos", "error");
+        avisoFormulario(this, "Completa todos los campos");
         return;
     }
 
@@ -167,7 +182,7 @@ document.getElementById("movimientoForm").addEventListener("submit", async funct
         }
         renderizarTabla();
     } catch (error) {
-        mostrarNotificacion(error.message, "error");
+        avisoFormulario(this, error.message);
     } finally {
         guardandoMovimiento = false;
         document.getElementById("btnGuardar").disabled = false;
@@ -175,6 +190,7 @@ document.getElementById("movimientoForm").addEventListener("submit", async funct
 });
 
 function editarMovimiento(m) {
+    avisoFormulario(formularioMovimiento);
     editandoId = m.id;
     document.getElementById("monto").value = m.monto;
     document.getElementById("fecha").value = m.fecha;
@@ -185,11 +201,13 @@ function editarMovimiento(m) {
 
     document.getElementById("btnGuardar").textContent = "Actualizar";
     document.getElementById("btnCancelar").style.display = "inline-block";
-    document.getElementById("tituloFormulario").scrollIntoView({ behavior: "smooth" });
+    enfocarEdicion(tituloFormulario, `Editar ${tipoActual}`);
 }
 
 function cancelarEdicion() {
     editandoId = null;
+    avisoFormulario(formularioMovimiento);
+    tituloFormulario.textContent = `Registrar ${tipoActual}`;
     document.getElementById("movimientoForm").reset();
     document.querySelectorAll("#movimientoForm [data-historico]").forEach(opcion => opcion.remove());
     document.getElementById("fecha").value = fechaLocalISO();
@@ -198,7 +216,7 @@ function cancelarEdicion() {
 }
 
 async function eliminarMovimientoUI(id) {
-    let confirmado = confirm("¿Seguro que deseas eliminar este movimiento?");
+    const confirmado = await confirmarEliminacion("¿Seguro que deseas eliminar este movimiento?");
     if (!confirmado) return;
 
     try {
@@ -206,7 +224,9 @@ async function eliminarMovimientoUI(id) {
         mostrarNotificacion("Movimiento eliminado", "ok");
         renderizarTabla();
     } catch (error) {
-        mostrarNotificacion(error.message, "error");
+        mostrarNotificacion(error.status === 500
+            ? "No se pudo eliminar el movimiento. Pide al administrador que revise la compatibilidad del esquema financiero."
+            : error.message, "error");
     }
 }
 

@@ -1,0 +1,106 @@
+.cs-access-error {
+    color: var(--cs-ink);
+    background:
+        radial-gradient(ellipse at 0 100%, #0b50ba 0%, transparent 43%),
+        radial-gradient(ellipse at 92% 2%, #0f397a 0%, transparent 59%),
+        linear-gradient(135deg, #071c41, var(--cs-navy) 90%);
+}
+
+.cs-access-error .error-container {
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: clamp(1.1rem, 4vmin, 2.75rem);
+}
+
+.cs-access-error .access-error-waves {
+    position: absolute;
+    inset: 0 auto auto 0;
+    z-index: -1;
+    display: block;
+    width: clamp(10rem, 26vw, 32rem);
+    max-width: 62%;
+    max-height: 45%;
+    pointer-events: none;
+}
+.cs-access-error .access-error-waves-bottom {
+    inset: auto 0 0 auto;
+    transform: rotate(180deg);
+}
+
+.cs-access-error .error-box {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    width: min(100%, clamp(35rem, 48vw, 56rem));
+    display: grid;
+    justify-items: center;
+    padding: clamp(1.9rem, 5vmin, 3.55rem) clamp(1.15rem, 5.5vw, 5.75rem) clamp(2.7rem, 8vmin, 5.2rem);
+    border-top: clamp(6px, 1.2vmin, 12px) solid transparent;
+    border-radius: clamp(1.35rem, 2.7vmin, 2rem);
+    background: linear-gradient(145deg, var(--cs-bg), #e8f0fc) padding-box,
+        linear-gradient(105deg, #169cf7, var(--cs-blue) 76%, #0755f2) border-box;
+    box-shadow: 0 24px 68px rgb(2 12 32 / 38%);
+    text-align: center;
+}
+
+.cs-access-error .access-error-card-waves {
+    position: absolute;
+    z-index: -1;
+    inset: auto 0 0;
+    width: 100%;
+    height: clamp(3rem, 13vmin, 8rem);
+    pointer-events: none;
+}
+
+.cs-access-error .access-error-icon {
+    display: block;
+    width: clamp(5.1rem, 19.7vmin, 12.2rem);
+    height: auto;
+    margin-bottom: clamp(.8rem, 2.1vmin, 1.3rem);
+}
+
+.cs-access-error .error-box h1 {
+    font-size: clamp(1.85rem, 5.8vmin, 3.65rem);
+    line-height: 1.08;
+    letter-spacing: -.045em;
+}
+
+.cs-access-error .error-box p {
+    max-width: 42ch;
+    margin-top: clamp(.7rem, 1.8vmin, 1.05rem);
+    color: var(--cs-muted);
+    font-size: clamp(1rem, 2.7vmin, 1.65rem);
+    line-height: 1.38;
+    text-wrap: pretty;
+}
+
+.cs-access-error .access-error-home {
+    width: min(100%, clamp(14rem, 37vmin, 23rem));
+    min-height: 48px;
+    margin-top: clamp(1.45rem, 3.75vmin, 2.4rem);
+    padding: clamp(.7rem, 2vmin, 1.08rem) 1rem;
+    color: white;
+    background: linear-gradient(150deg, #146de1, #0341cc);
+    border-radius: clamp(.8rem, 1.75vmin, 1.2rem);
+    box-shadow: 0 9px 20px rgb(37 99 235 / 19%);
+    font-size: clamp(.96rem, 2.55vmin, 1.65rem);
+    transition: transform var(--cs-transition), background var(--cs-transition), box-shadow var(--cs-transition);
+}
+
+.cs-access-error .access-error-home:hover {
+    background: linear-gradient(150deg, #155ec6, #07349f);
+    box-shadow: 0 12px 24px rgb(37 99 235 / 25%);
+    transform: translateY(-2px);
+}
+
+.cs-access-error .access-error-home:focus-visible { outline: 3px solid var(--cs-navy); outline-offset: 4px; }
+.cs-access-error .access-error-home .ui-icon { width: 1.32em; height: 1.32em; }
+
+@media (prefers-reduced-motion: reduce) {
+    .cs-access-error .access-error-home { transition: none; }
+    .cs-access-error .access-error-home:hover { transform: none; }
+}

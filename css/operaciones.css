@@ -1,0 +1,177 @@
+.cs-modulo .cs-module-hero {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: clamp(.8rem, 1.1vw, 1rem) clamp(1.15rem, 3vw, 2rem);
+    margin-bottom: 1rem;
+    border: 1px solid #dce8fb;
+    border-radius: var(--cs-radius);
+    background: radial-gradient(ellipse at 100% 0, var(--cs-pale-blue), transparent 70%), var(--cs-paper);
+}
+.cs-module-hero h1 { font-size: clamp(1.85rem, 4vw, 2.75rem); line-height: 1.08; letter-spacing: -.045em; }
+.cs-module-hero p { margin-top: .4rem; color: var(--cs-muted); }
+.cs-module-hero-mark {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: clamp(44px, 5vw, 62px);
+    aspect-ratio: 1;
+    border-radius: 16px;
+    background: linear-gradient(145deg, var(--cs-blue), #1e40af);
+    color: white;
+    box-shadow: 0 8px 18px rgb(37 99 235 / 23%);
+}
+.cs-module-hero-mark .ui-icon { width: 52%; height: 52%; }
+.cs-modulo[data-tipo-movimiento="egreso"] .cs-module-hero-mark { color: #fde68a; }
+.cs-module-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .85rem; margin-bottom: 1rem; }
+.cs-module-kpi { display: flex; align-items: center; gap: .85rem; padding: .7rem 1rem; background: linear-gradient(125deg, #eff6ff, var(--cs-paper) 72%); }
+.cs-module-kpi-pending { background: linear-gradient(125deg, #fffbeb, var(--cs-paper) 74%); }
+.cs-module-kpi > div { min-width: 0; }
+.cs-module-kpi h2 { color: var(--cs-muted); font-size: .82rem; font-weight: 650; }
+.cs-module-kpi p { font-size: clamp(1rem, 2.3vw, 1.75rem); font-weight: 750; letter-spacing: -.034em; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; }
+.cs-module-kpi-pending .cs-kpi-icon, .cs-modulo[data-tipo-movimiento="egreso"] .cs-module-kpi .cs-kpi-icon { color: #92400e; background: #fef3c7; }
+.cs-module-workspace { display: grid; gap: 1rem; align-items: start; }
+.cs-modulo .cs-module-form { margin: 0; padding: clamp(1rem, 2vw, 1.35rem); }
+.cs-module-section-title { display: flex; align-items: start; gap: .7rem; min-width: 0; }
+.cs-module-section-title h2 { font-size: 1.13rem; line-height: 1.3; }
+.cs-module-section-title h2[tabindex] { scroll-margin-top: 90px; }
+.cs-module-section-title p { color: var(--cs-muted); font-size: .84rem; margin-top: .15rem; }
+.cs-module-fields, .cs-module-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+.cs-module-fields { margin-top: 1rem; }
+.cs-module-field { display: grid; gap: .3rem; min-width: 0; font-size: .8rem; font-weight: 650; }
+.cs-module-field > :is(input, select) {
+    width: 100%;
+    min-width: 0;
+    min-height: 43px;
+    margin: 0;
+    padding: .48rem .55rem;
+    color: var(--cs-ink);
+    border: 1px solid #cbd5e1;
+    border-radius: 9px;
+    background: var(--cs-bg);
+    font: inherit;
+    font-weight: 450;
+    transition: background var(--cs-transition), border-color var(--cs-transition);
+}
+.cs-module-field > :is(input, select):hover { border-color: #94aeca; }
+.cs-module-field > :is(input, select):focus { border-color: var(--cs-blue); background: white; }
+.cs-module-field.cs-field-wide { grid-column: 1 / -1; }
+#movimientoForm .cs-module-fields { margin-top: .7rem; row-gap: .48rem; }
+#movimientoForm .cs-module-field { gap: .2rem; }
+.cs-modulo #movimientoForm .cs-module-actions { margin-top: .7rem; }
+.cs-modulo [aria-labelledby="tituloFormulario"]:has(#movimientoForm) { padding-block: .85rem; }
+.cs-modulo .cs-module-actions { display: flex; flex-wrap: wrap; gap: .4rem; }
+.cs-modulo .cs-module-form .cs-module-actions { margin-top: 1rem; }
+.cs-modulo .cs-module-filters .cs-button { min-height: 43px; }
+.cs-modulo .cs-form-feedback { padding: .65rem .75rem; margin-top: .75rem; border-radius: 8px; color: #991b1b; background: #fef2f2; font-size: .85rem; }
+.cs-module-ledger { min-width: 0; }
+.cs-module-ledger > .cs-module-section-title { padding: 1rem 1.2rem; }
+.cs-module-filters {
+    align-items: end;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+    padding: .8rem 1.2rem;
+    border-block: 1px solid var(--cs-border);
+    background: var(--cs-bg);
+}
+.cs-module-ledger .cs-status { margin: .8rem 1.2rem; }
+.cs-module-loading::before {
+    content: "";
+    flex: none;
+    width: 1em;
+    height: 1em;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: cs-spin 700ms linear infinite;
+}
+.cs-module-scroll table { min-width: 800px; width: 100%; border-collapse: collapse; }
+.cs-module-scroll :is(th, td) { padding: .7rem .8rem; border-bottom: 1px solid var(--cs-border); text-align: left; font-size: .83rem; }
+.cs-module-scroll th { color: var(--cs-muted); background: #f2f6fc; font-weight: 700; white-space: nowrap; }
+.cs-module-scroll td:first-child, .cs-module-scroll td:nth-child(3) { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cs-module-scroll td:nth-child(3) { font-weight: 750; }
+.cs-modulo[data-tipo-movimiento="egreso"] .cs-module-scroll td:nth-child(3) { color: #92400e; }
+.cs-module-scroll tbody tr:hover { background: var(--cs-bg); }
+.cs-module-scroll :is(td, th):first-child { padding-inline-start: 1.2rem; }
+.cs-module-scroll :is(td, th):last-child { padding-inline-end: 1.2rem; }
+.cs-module-scroll:has(.cs-table-empty) table { min-width: 0; }
+.cs-module-scroll:has(.cs-table-empty) thead { display: none; }
+.cs-modulo .cs-module-scroll td.cs-table-empty, .cs-budget-empty { padding: 1.5rem 1rem; color: var(--cs-muted); text-align: center; }
+.cs-module-state, .cs-budget-card [data-presupuesto="estado"] { white-space: nowrap; background: #f1f5f9; color: var(--cs-muted); }
+.cs-modulo .cs-pill:is([data-estado="Confirmada"], [data-estado="Vigente"]) { color: #166534; background: #dcfce7; }
+.cs-modulo .cs-pill[data-estado="Pendiente"] { color: #92400e; background: #fef3c7; }
+.cs-modulo .cs-pill[data-estado="Futuro"] { color: #1e40af; background: var(--cs-pale-blue); }
+.cs-modulo .cs-pill:is([data-estado="Anulada"], [data-estado="Cancelado"]) { color: #991b1b; background: #fef2f2; }
+.cs-module-ledger .cs-row-actions { flex-wrap: nowrap; }
+.cs-modulo .cs-row-actions .cs-button { min-height: 34px; padding: .3rem .52rem; margin: 0; font-size: .76rem; }
+.cs-modulo .cs-row-actions .btn-editar { color: #1d4ed8; }
+.cs-modulo .cs-row-actions .btn-eliminar { color: #991b1b; }
+.cs-modulo .cs-row-actions .btn-eliminar:hover { background: #fef2f2; }
+.cs-module-ledger > .btn-group { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; padding: .85rem 1.2rem; margin: 0; color: var(--cs-muted); font-size: .82rem; }
+.cs-module-ledger > .btn-group button { margin: 0; border: 1px solid var(--cs-border); background: var(--cs-paper); color: #1d4ed8; font-size: .8rem; font-weight: 670; }
+.cs-module-ledger > .btn-group button:hover:not(:disabled) { background: var(--cs-pale-blue); transform: none; }
+.cs-module-ledger > .btn-group button:disabled { color: #64748b; cursor: default; transform: none; }
+.cs-module-budget-list { min-width: 0; }
+.cs-module-budget-list > .cs-module-section-title { margin-bottom: .8rem; }
+.cs-module-budget-list > .cs-status { margin-bottom: .8rem; }
+.cs-budget-grid, .cs-budget-grid td, .cs-budget-grid tr { display: block; width: 100%; min-width: 0; padding: 0; }
+.cs-budget-grid tbody { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: .8rem; }
+.cs-budget-grid td { height: 100%; }
+.cs-budget-grid .fila-excedida { background: transparent; }
+.cs-budget-grid tr:has(.cs-budget-empty) { grid-column: 1 / -1; }
+.cs-budget-card { height: 100%; display: flex; flex-direction: column; padding: 1rem; }
+.cs-budget-card header { display: flex; justify-content: space-between; align-items: start; gap: .45rem; }
+.cs-budget-card header > div { min-width: 0; }
+.cs-budget-card h3 { margin: 0; line-height: 1.2; font-size: 1rem; overflow-wrap: anywhere; }
+.cs-budget-card header p, .cs-budget-card .cs-budget-date { color: var(--cs-muted); font-size: .78rem; margin-top: .3rem; }
+.cs-budget-date { display: flex; align-items: center; gap: .35rem; }
+.cs-budget-card dl { display: grid; gap: .4rem; margin: .8rem 0; padding: .65rem; border-radius: 10px; background: var(--cs-bg); }
+.cs-budget-card dl > div { display: flex; justify-content: space-between; gap: .5rem; align-items: baseline; font-size: .77rem; }
+.cs-budget-card dt { color: var(--cs-muted); }
+.cs-budget-card dd { margin: 0; font-weight: 720; font-variant-numeric: tabular-nums; text-align: end; overflow-wrap: anywhere; }
+.cs-budget-card .cs-budget-available { border-top: 1px solid var(--cs-border); padding-top: .4rem; }
+.cs-budget-card dd { font-size: .94rem; color: var(--cs-ink); }
+.cs-budget-card .cs-budget-available dd { font-size: 1.05rem; color: #1e40af; }
+.cs-budget-card[data-tono="error"] .cs-budget-available dd { color: #991b1b; }
+.cs-budget-kind { align-self: flex-start; margin-top: .55rem; padding: .2rem .55rem; border-radius: 7px; font-size: .74rem; font-weight: 720; }
+.cs-budget-card[data-tipo="ingreso"] .cs-budget-kind { color: #1e40af; background: var(--cs-pale-blue); }
+.cs-budget-card[data-tipo="egreso"] .cs-budget-kind { color: #92400e; background: #fef3c7; }
+.cs-budget-progress { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; font-size: .8rem; color: var(--cs-muted); }
+.cs-budget-progress .texto-porcentaje { color: var(--cs-ink); font-size: .83rem; }
+.cs-budget-card .barra-contenedor { width: 100%; height: 11px; margin-top: .45rem; border-radius: 100px; background: #e9eff7; box-shadow: inset 0 1px 3px rgb(15 23 42 / 10%); overflow: hidden; }
+.cs-budget-card .barra-progreso { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cs-blue), var(--cs-light-blue)); box-shadow: inset 0 1px 0 rgb(255 255 255 / 22%); }
+.cs-budget-card[data-tono="error"] .barra-progreso { background: var(--cs-danger); }
+.cs-budget-card[data-tono="error"] { border-color: #fecaca; }
+.cs-budget-card[data-tono="aviso"] .barra-progreso { background: var(--cs-warning); }
+.cs-budget-card[data-tono="exito"] .barra-progreso { background: var(--cs-success); }
+.cs-budget-card .cs-budget-alert { margin-top: .5rem; padding: .38rem .55rem; border-radius: 7px; font-size: .75rem; font-weight: 680; }
+.cs-budget-card[data-tono="error"] .cs-budget-alert { background: #fef2f2; color: #991b1b; }
+.cs-budget-card[data-tono="aviso"] .cs-budget-alert { background: #fffbeb; color: #92400e; }
+.cs-budget-card[data-tono="exito"] .cs-budget-alert { background: #f0fdf4; color: #166534; }
+.cs-budget-card footer { margin-top: auto; padding-top: .8rem; }
+.cs-modulo .cs-module-dialog { width: min(420px, calc(100% - 2rem)); padding: 1.3rem; border: 1px solid var(--cs-border); border-radius: var(--cs-radius); color: var(--cs-ink); box-shadow: 0 24px 64px rgb(15 23 42 / 28%); }
+.cs-module-dialog::backdrop { background: rgb(15 23 42 / 58%); }
+.cs-module-dialog h2 { margin-top: .55rem; font-size: 1.2rem; }
+.cs-module-dialog p { margin: .3rem 0 1rem; color: var(--cs-muted); }
+.cs-module-dialog .cs-module-actions { justify-content: end; }
+.cs-modulo .cs-button-danger { background: #b91c1c; color: white; }
+.cs-modulo .cs-button-danger:hover { background: #991b1b; }
+.cs-modulo.modo-cliente .cs-module-workspace { grid-template-columns: minmax(0, 1fr); }
+.cs-modulo .banner-cliente { margin: 1rem clamp(1rem, 3vw, 2.5rem) 0; }
+
+@media (min-width: 1050px) {
+    .cs-module-workspace:has(.cs-module-budget-list) { grid-template-columns: minmax(280px, .57fr) minmax(0, 1fr); }
+    #movimientoForm .cs-module-fields { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #movimientoForm .cs-field-wide { grid-column: auto; }
+}
+@media (max-width: 670px) {
+    .cs-module-filters { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .cs-module-filters .cs-module-actions { align-self: end; }
+    .cs-module-scroll table { min-width: 645px; }
+    .cs-module-scroll td:nth-child(2) { max-width: 120px; overflow-wrap: anywhere; }
+}
+@media (max-width: 420px) {
+    .cs-module-kpi { align-items: flex-start; flex-direction: column; gap: .4rem; padding: .7rem; }
+    .cs-module-kpi .cs-kpi-icon { width: 30px; height: 30px; }
+    .cs-module-filters .cs-module-actions { grid-column: 1 / -1; }
+    .cs-module-filters > .cs-module-field:nth-child(3) { grid-column: 1 / -1; }
+}

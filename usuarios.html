@@ -5,42 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Usuarios - CONTASYS</title>
 <link rel="stylesheet" href="css/styles.css">
+<link rel="icon" href="css/marca/favicon.ico" type="image/x-icon">
+<link rel="stylesheet" href="css/corporativo.css">
+<link rel="stylesheet" href="css/operaciones.css">
+<link rel="stylesheet" href="css/administracion.css">
 </head>
-<body>
+<body class="cs-ui cs-dashboard cs-modulo cs-administracion">
 
 <div class="dashboard-container">
 
-    <aside class="sidebar">
-        <h2>CONTASYS</h2>
-        <ul>
-            <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
-            <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
-            <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
-            <li data-page="reportes"><a href="reportes.html">📊 Reportes</a></li>
-            <li data-page="mensajes"><a href="mensajes.html">💬 Chat</a></li>
-            <li data-page="cuenta"><a href="cuenta.html">📁 Mi cuenta</a></li>
-            <li data-page="facturacion"><a href="facturacion.html">🧾 Facturación</a></li>
-            <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
-            <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
-            <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
-            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
-            <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
-            <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
-        </ul>
-    </aside>
+    <aside class="sidebar" id="menuFinanciero"></aside>
 
     <main class="main-content">
-        <header class="topbar">
-            <h1>Usuarios</h1>
-            <div class="user">
-                👤 <span id="nombreUsuarioActual">Usuario</span>
-                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
-            </div>
-        </header>
+        <header class="topbar"></header>
+        <div class="cs-dashboard-content">
+        <div class="cs-module-hero"><div class="cs-module-hero-mark"><svg class="ui-icon" width="18" height="18" aria-hidden="true"><use href="css/iconos.svg#grupo"></use></svg></div><div><h1>Usuarios</h1><p>Administra los roles y el estado de las cuentas.</p></div></div>
 
-           <section class="kpi-cards resumen-cards" id="estadisticasUsuarios"></section>
-        <section class="table-section">
-            <table>
+           <section class="kpi-cards adm-stats" id="estadisticasUsuarios"></section>
+        <section class="cs-card cs-module-ledger adm-ledger" data-panel-administrador hidden>
+            <div class="adm-ledger-heading"><h2>Directorio de usuarios</h2><p>Consulta el estado y administra los permisos de cada cuenta.</p></div>
+            <p id="estadoListado" class="cs-status cs-module-loading" role="status">Cargando usuarios…</p>
+            <div class="cs-table-scroll cs-module-scroll" tabindex="0"><table>
                 <thead>
                     <tr>
                         <th>Nombre</th><th>Documento</th><th>Correo</th>
@@ -48,14 +33,26 @@
                     </tr>
                 </thead>
                 <tbody id="tablaUsuarios"></tbody>
-            </table>
+            </table></div>
         </section>
+        </div>
+        <dialog class="cs-module-dialog" id="confirmacionOperacion" aria-labelledby="tituloConfirmacion" aria-describedby="textoConfirmacion">
+            <form method="dialog">
+                <span class="adm-desactivacion-icono" id="iconoDesactivacion" hidden><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#desactivar"></use></svg></span>
+                <h2 id="tituloConfirmacion">Confirmar acción</h2>
+                <p id="textoConfirmacion"></p>
+                <div class="cs-module-actions"><button class="cs-button cs-button-secondary" value="cancelar" autofocus>Cancelar</button><button class="cs-button cs-button-primary" value="eliminar">Confirmar</button></div>
+            </form>
+        </dialog>
     </main>
 </div>
 
 <script src="js/auth.js"></script>
 <script src="js/api.js"></script>
 <script src="js/app.js"></script>
+<script src="js/operaciones-ui.js"></script>
+<script src="js/comunicacion-ui.js"></script>
+<script src="js/administracion-ui.js"></script>
 <script src="js/usuarios.js"></script>
 </body>
 </html>

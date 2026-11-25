@@ -1,20 +1,22 @@
 let sesionUsuario = exigirSesion();
 let cambiandoPlan = false;
-const navegarActividad = crearPaginador(document.getElementById("tablaActividad").closest("table"), cargarPaginaActividad, 10);
+const navegarActividad = crearPaginador(document.getElementById("tablaActividad").closest(".cs-table-scroll"), cargarPaginaActividad, 10);
 
 async function iniciar() {
     if (!sesionUsuario) return;
 
-    document.getElementById("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
-    aplicarPermisosPorRol(sesionUsuario.rol);
-    document.querySelector('[data-page="cuenta"]').classList.add("active");
+    iniciarMarcoOperacion(sesionUsuario, "cuenta");
 
     document.getElementById("datosNombre").textContent = `${sesionUsuario.nombre} ${sesionUsuario.apellido || ""}`;
+    document.getElementById("avatarPerfil").prepend(avatarComunicacion(sesionUsuario.nombre, sesionUsuario.apellido));
     document.getElementById("datosCorreo").textContent = sesionUsuario.correo;
     document.getElementById("datosRol").textContent = sesionUsuario.rol;
 
     await cargarSuscripcion();
     await cargarAccesos();
+    if (window.location.hash === "#seccionContadores" && sesionUsuario.rol === "Emprendedor") {
+        document.getElementById("seccionContadores").scrollIntoView({ block: "start" });
+    }
     await cargarActividad();
 }
 
@@ -27,11 +29,12 @@ async function cargarSuscripcion() {
         let premiumVencido = s.tipoPlan === "Premium" && !esPremium;
 
         document.getElementById("planActual").textContent = esPremium
-            ? (s.pagoSimuladoDisponible ? "Premium · Simulación" : "Premium")
+            ? "Premium"
             : (premiumVencido ? "Free (Premium sin vigencia)" : "Free (gratuito)");
-        document.getElementById("planVigencia").textContent = premiumVencido
-            ? `Premium registrado del ${s.fechaInicio} al ${s.fechaFin} · ${s.estado}`
-            : `Vigente del ${s.fechaInicio} al ${s.fechaFin}`;
+        const simulacion = document.getElementById("estadoSimulacionPlan");
+        simulacion.textContent = s.pagoSimuladoDisponible ? "Simulación habilitada" : "Simulación no disponible";
+        simulacion.dataset.habilitada = String(Boolean(s.pagoSimuladoDisponible));
+        simulacion.hidden = false;
 
         document.getElementById("tarjetaFree").classList.toggle("plan-activo", !esPremium);
         document.getElementById("tarjetaPremium").classList.toggle("plan-activo", esPremium);
@@ -46,6 +49,7 @@ async function cargarSuscripcion() {
         renovar.onclick = () => cambiarPlan("Premium", true);
     } catch (error) {
         document.getElementById("planActual").textContent = "Sin suscripción";
+        document.getElementById("btnCambiarPlan").textContent = "Cambio de plan no disponible";
     }
 }
 
@@ -59,11 +63,16 @@ async function cargarAccesos() {
     seccion.style.display = "block";
 
     let accesos;
+    estadoAdministracion("estadoAccesos", "Cargando accesos…");
     try {
-        accesos = await apiFetch("/vinculos");
+        accesos = await apiFetch("/vinculos?como=cliente");
     } catch (error) {
+        estadoAdministracion("estadoAccesos", error.status === 500
+            ? "No se pudieron cargar las solicitudes. Pide al administrador que compruebe la compatibilidad del esquema de vinculaciones."
+            : error.message, true);
         return;
     }
+    estadoAdministracion("estadoAccesos", "");
 
     let tabla = document.getElementById("tablaContadores");
     tabla.innerHTML = "";
@@ -85,19 +94,27 @@ async function cargarAccesos() {
             : a.estado === "Suspendido" ? "Suspendido. Requiere tu autorización"
             : "Rechazado";
 
-        [`${a.nombre} ${a.apellido}`, a.correo, estadoTexto].forEach(valor => {
-            let td = document.createElement("td");
-            td.textContent = valor;
-            fila.appendChild(td);
-        });
+        fila.insertCell().append(personaAdministracion(a));
+        fila.insertCell().textContent = a.correo;
+        const estado = fila.insertCell();
+        estado.append(etiquetaAdministracion(estadoTexto, a.estado));
+        if (a.estado === "Aceptado") {
+            const permiso = document.createElement("small");
+            permiso.className = "adm-permiso";
+            permiso.textContent = a.facturasAutorizadas ? "Lectura de facturas autorizada" : "Facturas sin acceso";
+            estado.append(permiso);
+        }
 
         let celdaAcciones = document.createElement("td");
+        const acciones = document.createElement("div");
+        acciones.className = "cs-module-actions cs-row-actions";
         const boton = (texto, clase, accion) => {
             let b = document.createElement("button");
+            b.type = "button";
             b.textContent = texto;
-            b.className = "btn-accion " + clase;
+            b.className = "btn-accion cs-button " + (texto === "Aceptar" ? "cs-button-primary " : "cs-button-secondary ") + clase;
             b.onclick = accion;
-            celdaAcciones.appendChild(b);
+            acciones.appendChild(b);
         };
 
         if (a.estado === "Pendiente") {
@@ -111,6 +128,7 @@ async function cargarAccesos() {
             boton("Quitar", "btn-eliminar", () => revocarAcceso(a, true));
         }
 
+        celdaAcciones.append(acciones);
         fila.appendChild(celdaAcciones);
         tabla.appendChild(fila);
     });
@@ -142,7 +160,7 @@ async function responderSolicitud(a, aceptar) {
 }
 
 async function revocarAcceso(a, soloQuitar = false) {
-    if (!soloQuitar && !confirm(`¿Revocar el acceso de ${a.nombre} ${a.apellido} a tus finanzas?`)) return;
+    if (!soloQuitar && !await confirmarEliminacion(`¿Revocar el acceso de ${a.nombre} ${a.apellido} a tus finanzas?`)) return;
 
     try {
         await apiFetch(`/vinculos/${a.idVinculo}`, { method: "DELETE" });
@@ -159,7 +177,7 @@ async function cambiarPlan(nuevoPlan, renovar = false) {
         ? `¿Confirmas ${renovar ? "la renovación" : "la contratación"} simulada de Premium por $19.900 COP al mes? No se realizará ningún cobro.`
         : "Vas a cancelar tu plan Premium y volver al plan gratuito Free. ¿Confirmas?";
 
-    if (!confirm(mensaje)) return;
+    if (!await confirmarEliminacion(mensaje)) return;
 
     cambiandoPlan = true;
     try {
@@ -182,6 +200,7 @@ async function cargarPaginaActividad(ruta, signal) {
     if (signal.aborted) return;
     let tabla = document.getElementById("tablaActividad");
     tabla.innerHTML = "";
+    if (!actividad.length) vacioAdministracion(tabla, 3, "Aún no hay actividad registrada.");
 
     actividad.forEach(a => {
         let fila = document.createElement("tr");

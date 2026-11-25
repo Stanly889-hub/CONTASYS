@@ -19,9 +19,21 @@ if (sesionUsuario) {
             const lista = porId("listaContactos");
             lista.replaceChildren();
             for (const c of contactos) {
-                const item = document.createElement("div");
-                item.className = "chat-contacto" + (conversacion?.contacto.idUsuario === c.idUsuario ? " activo" : "");
-                item.textContent = `${c.nombre} ${c.apellido} (${c.rol})`;
+                const item = document.createElement("button");
+                item.type = "button";
+                item.dataset.contactoId = c.idUsuario;
+                const activo = conversacion?.contacto.idUsuario === c.idUsuario;
+                item.className = "chat-contacto" + (activo ? " activo" : "");
+                item.ariaPressed = String(activo);
+                if (typeof avatarComunicacion === "function") item.append(avatarComunicacion(c.nombre, c.apellido));
+                const datos = document.createElement("span");
+                datos.className = "com-contacto-datos";
+                const nombre = document.createElement("strong");
+                nombre.textContent = `${c.nombre} ${c.apellido}`;
+                const rol = document.createElement("small");
+                rol.textContent = c.rol;
+                datos.append(nombre, rol);
+                item.append(datos);
                 if (Number(c.noLeidos) > 0) {
                     const badge = document.createElement("span");
                     badge.className = "chat-badge";
@@ -32,7 +44,13 @@ if (sesionUsuario) {
                 lista.append(item);
             }
             if (!contactos.length) lista.textContent = "No hay otros usuarios activos.";
-        }).catch(error => mostrarNotificacion(error.message, "error")).finally(() => { peticionContactos = null; });
+        }).catch(error => {
+            const lista = porId("listaContactos");
+            if (!lista.firstElementChild || lista.firstElementChild.className === "com-empty") {
+                lista.textContent = "No se pudieron cargar los contactos.";
+            }
+            mostrarNotificacion(error.message, "error");
+        }).finally(() => { peticionContactos = null; });
         return peticionContactos;
     }
 
@@ -43,7 +61,7 @@ if (sesionUsuario) {
         texto.textContent = m.contenido;
         const hora = document.createElement("span");
         hora.className = "chat-hora";
-        hora.textContent = m.fechaEnvio;
+        hora.textContent = typeof fechaComunicacion === "function" ? fechaComunicacion(m.fechaEnvio) : m.fechaEnvio;
         burbuja.append(texto, hora);
         burbuja.dataset.orden = `${m.fechaEnvio}|${String(m.idMensaje).padStart(10, "0")}`;
         const extremo = alInicio ? panel.firstElementChild : panel.lastElementChild;
@@ -77,11 +95,15 @@ if (sesionUsuario) {
                 insertar(m, modo === "antes");
             }
             if (!actual.ids.size) panel.textContent = "Aún no hay mensajes. ¡Escribe el primero!";
+            panel.dataset.estado = actual.ids.size ? "mensajes" : "vacio";
             if (modo === "antes") panel.scrollTop += panel.scrollHeight - altura;
             else if (abajo || modo === "inicio") panel.scrollTop = panel.scrollHeight;
         } catch (error) {
             if (!actual.abort.signal.aborted) {
-                if (modo === "inicio") panel.textContent = "No se pudo cargar la conversación.";
+                if (modo === "inicio") {
+                    panel.textContent = "No se pudo cargar la conversación.";
+                    panel.dataset.estado = "error";
+                }
                 mostrarNotificacion(error.message, "error");
             }
         } finally {
@@ -94,10 +116,24 @@ if (sesionUsuario) {
         conversacion?.abort.abort();
         const actual = { contacto, abort: new AbortController(), ids: new Set(), primero: Infinity, ultimo: 0, cargando: false };
         conversacion = actual;
+        for (const item of porId("listaContactos").children) {
+            if (!item.dataset.contactoId) continue;
+            const activo = String(item.dataset.contactoId) === String(contacto.idUsuario);
+            item.className = "chat-contacto" + (activo ? " activo" : "");
+            item.ariaPressed = String(activo);
+        }
         panel.textContent = "Cargando conversación…";
+        panel.dataset.estado = "carga";
+        porId("centroChat").dataset.conversacion = "abierta";
         input.value = "";
         botonAnterior.hidden = true;
         porId("chatTitulo").textContent = `${contacto.nombre} ${contacto.apellido}`;
+        if (typeof avatarComunicacion === "function") {
+            const avatar = porId("chatAvatar");
+            avatar.textContent = avatarComunicacion(contacto.nombre, contacto.apellido).textContent;
+            avatar.hidden = false;
+            if (matchMedia("(max-width: 700px)").matches) porId("chatTitulo").focus({ preventScroll: true });
+        }
         porId("chatForm").style.display = "flex";
         await cargar(actual, "inicio");
         if (actual === conversacion) await cargarContactos(true);
@@ -122,6 +158,10 @@ if (sesionUsuario) {
     window.addEventListener("pagehide", pausar);
     window.addEventListener("pageshow", continuar);
     botonAnterior.onclick = () => cargar(conversacion, "antes");
+    porId("volverContactos").onclick = () => {
+        delete porId("centroChat").dataset.conversacion;
+        porId("listaContactos").querySelector(".activo, button")?.focus();
+    };
     porId("chatForm").addEventListener("submit", async evento => {
         evento.preventDefault();
         const actual = conversacion;
@@ -142,9 +182,7 @@ if (sesionUsuario) {
             if (evento.submitter) evento.submitter.disabled = false;
         }
     });
-    porId("nombreUsuarioActual").textContent = `${sesionUsuario.nombre} (${sesionUsuario.rol})`;
-    aplicarPermisosPorRol(sesionUsuario.rol);
-    document.querySelector('[data-page="mensajes"]').classList.add("active");
+    if (typeof iniciarMarcoOperacion === "function") iniciarMarcoOperacion(sesionUsuario, "mensajes");
     cargarContactos();
     continuar();
 }

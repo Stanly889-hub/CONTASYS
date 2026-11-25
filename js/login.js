@@ -2,6 +2,7 @@ let intentosFallidos = 0;
 
 document.getElementById("loginForm").addEventListener("submit", async function (e) {
     e.preventDefault();
+    if (this.getAttribute("aria-busy") === "true") return;
 
     let correo = document.getElementById("correo").value.trim();
     let password = document.getElementById("password").value;
@@ -11,6 +12,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         return;
     }
 
+    const terminarEnvio = iniciarEnvioFormulario(this);
     try {
         let datos = await apiFetch("/auth/login", {
             method: "POST",
@@ -21,6 +23,7 @@ document.getElementById("loginForm").addEventListener("submit", async function (
         window.location.href = "dashboard.html";
 
     } catch (error) {
+        terminarEnvio();
         // El servidor bloqueó temporalmente por demasiados intentos: mostrar su mensaje.
         if (error.status === 429) {
             mostrarNotificacion(error.message, "error");

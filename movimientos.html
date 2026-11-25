@@ -1,123 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Movimientos - CONTASYS</title>
-<link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0F172A">
+    <title>Movimientos | CONTASYS</title>
+    <link rel="icon" href="css/marca/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/corporativo.css">
+    <link rel="stylesheet" href="css/operaciones.css">
 </head>
-
-<body>
-
-<div class="dashboard-container">
-
-<aside class="sidebar">
-    <h2>CONTASYS</h2>
-    <ul>
-        <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
-        <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
-        <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
-        <li data-page="reportes"><a href="reportes.html">📊 Reportes</a></li>
-        <li data-page="mensajes"><a href="mensajes.html">💬 Chat</a></li>
-        <li data-page="cuenta"><a href="cuenta.html">📁 Mi cuenta</a></li>
-        <li data-page="facturacion"><a href="facturacion.html">🧾 Facturación</a></li>
-        <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
-        <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
-        <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
-        <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
-        <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
-        <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
-</aside>
-
-    <main class="main-content">
-
-        <header class="topbar">
-            <h1 id="tituloPagina">Movimientos</h1>
-            <div class="user">
-                👤 <span id="nombreUsuarioActual">Usuario</span>
-                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+<body class="cs-ui cs-dashboard cs-modulo">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="menuFinanciero"></aside>
+        <main class="main-content">
+            <header class="topbar"></header>
+            <div class="cs-dashboard-content">
+                <div class="cs-module-hero">
+                <div class="cs-module-hero-mark"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#billetera"></use></svg></div>
+                <div><h1 id="tituloPagina">Movimientos</h1><p id="descripcionMovimiento">Registra y administra las entradas de dinero de tu negocio</p></div>
             </div>
-        </header>
-
-        <section class="form-section">
-            <h2 id="tituloFormulario">Registrar movimiento</h2>
-
-            <form id="movimientoForm">
-                <input type="hidden" id="editandoId" value="">
-
-                <div class="row">
-                    <input type="number" id="monto" placeholder="Monto" min="0.01" max="9999999999.99" step="0.01" required>
-                    <input type="date" id="fecha" required>
-                </div>
-
-                <input type="text" id="desc" placeholder="Descripción" required>
-                <select id="estadoTransaccion" aria-label="Estado del movimiento">
-                    <option>Confirmada</option>
-                    <option>Pendiente</option>
-                    <option>Anulada</option>
-                </select>
-
-                <div class="row">
-                    <select id="categoria" required>
-                        <option value="">Selecciona categoría</option>
-                    </select>
-
-                    <select id="metodoPago" required>
-                        <option value="">Selecciona método de pago</option>
-                    </select>
-                </div>
-
-                <div class="btn-group">
-                    <button type="submit" id="btnGuardar">Guardar</button>
-                    <button type="button" id="btnCancelar" onclick="cancelarEdicion()" style="display:none;">Cancelar edición</button>
-                </div>
-            </form>
-        </section>
-
-        <section class="table-section">
-            <h2>Filtros</h2>
-
-            <div class="row filtros">
-                <input type="date" id="filtroFechaDesde">
-                <input type="date" id="filtroFechaHasta">
-                <select id="filtroCategoria">
-                    <option value="">Todas las categorías</option>
-                </select>
-                <button type="button" onclick="aplicarFiltros()">Filtrar</button>
-                <button type="button" onclick="limpiarFiltros()">Limpiar</button>
+            <section class="cs-module-summary" aria-label="Importes según los filtros" id="totalFiltrado" hidden>
+                <div class="cs-card cs-module-kpi"><span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#entrada"></use></svg></span><div><h2>Confirmado</h2><p id="importeConfirmado"></p></div></div>
+                <div class="cs-card cs-module-kpi cs-module-kpi-pending"><span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#reloj"></use></svg></span><div><h2>Pendiente</h2><p id="importePendiente"></p></div></div>
+            </section>
+            <div class="cs-module-workspace">
+                <section class="form-section cs-card cs-module-form" aria-labelledby="tituloFormulario">
+                <div class="cs-module-section-title"><span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#documento"></use></svg></span><div><h2 id="tituloFormulario" tabindex="-1">Registrar movimiento</h2><p>Completa los datos del movimiento.</p></div></div>
+                <form id="movimientoForm">
+                    <input type="hidden" id="editandoId" value="">
+                    <div class="cs-module-fields">
+                        <label class="cs-module-field" for="monto"><span>Monto (COP)</span><input id="monto" type="number" placeholder="0,00" min="0.01" max="9999999999.99" step="0.01" required></label>
+                        <label class="cs-module-field" for="fecha"><span>Fecha</span><input id="fecha" type="date" required></label>
+                        <label class="cs-module-field cs-field-wide" for="desc"><span>Descripción</span><input id="desc" type="text" placeholder="Concepto del movimiento" required></label>
+                        <label class="cs-module-field" for="categoria"><span>Categoría</span><select id="categoria" required><option value="">Selecciona categoría</option></select></label>
+                        <label class="cs-module-field" for="metodoPago"><span>Método de pago</span><select id="metodoPago" required><option value="">Selecciona método de pago</option></select></label>
+                        <label class="cs-module-field cs-field-wide" for="estadoTransaccion"><span>Estado del movimiento</span><select id="estadoTransaccion" ><option>Confirmada</option><option>Pendiente</option><option>Anulada</option></select></label>
+                    </div>
+                    <div class="cs-module-actions"><button class="cs-button cs-button-primary" type="submit" id="btnGuardar" data-loading-label="Guardando…">Guardar</button><button class="cs-button cs-button-secondary" type="button" id="btnCancelar" onclick="cancelarEdicion()" style="display:none;">Cancelar edición</button></div><p class="cs-form-feedback" role="alert" hidden></p>
+                </form>
+            </section>
+                <section class="cs-card cs-module-ledger" aria-labelledby="tituloTabla">
+                    <div class="cs-module-section-title"><span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#reporte"></use></svg></span><div><h2 id="tituloTabla">Movimientos</h2><p>Consulta los registros por fecha y categoría.</p></div></div>
+                    <div class="cs-module-filters" role="group" aria-label="Filtros">
+                        <label class="cs-module-field" for="filtroFechaDesde"><span>Desde</span><input id="filtroFechaDesde" type="date" ></label>
+                        <label class="cs-module-field" for="filtroFechaHasta"><span>Hasta</span><input id="filtroFechaHasta" type="date" ></label>
+                        <label class="cs-module-field" for="filtroCategoria"><span>Categoría</span><select id="filtroCategoria" ><option value="">Todas las categorías</option></select></label>
+                        <div class="cs-module-actions"><button class="cs-button cs-button-primary" type="button" onclick="aplicarFiltros()">Filtrar</button><button class="cs-button cs-button-secondary" type="button" onclick="limpiarFiltros()">Limpiar</button></div>
+                    </div>
+                    <p id="estadoListado" class="cs-status" role="status"><span class="cs-spinner" aria-hidden="true"></span> Cargando registros…</p>
+                    <div class="cs-table-scroll cs-module-scroll" tabindex="0" role="region" aria-labelledby="tituloTabla">
+                        <table>
+                            <thead><tr><th scope="col">Fecha</th><th scope="col">Descripción</th><th scope="col">Monto</th><th scope="col">Estado</th><th scope="col">Categoría</th><th scope="col">Método de pago</th><th scope="col">Acciones</th></tr></thead>
+                            <tbody id="tablaMovimientos"></tbody>
+                        </table>
+                    </div>
+                </section>
             </div>
-        </section>
-
-        <section class="table-section">
-            <div class="table-header">
-                <h2 id="tituloTabla">Movimientos</h2>
-                <p id="totalFiltrado"></p>
             </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Fecha</th>
-                        <th>Categoría</th>
-                        <th>Método de pago</th>
-                        <th>Descripción</th>
-                        <th>Monto</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-
-                <tbody id="tablaMovimientos"></tbody>
-            </table>
-        </section>
-
-    </main>
-
-</div>
-
-<script src="js/auth.js"></script>
-<script src="js/api.js"></script>
-<script src="js/app.js"></script>
-<script src="js/movimientos.js"></script>
-
+        </main>
+    </div>
+    <dialog class="cs-module-dialog" id="confirmacionOperacion" aria-labelledby="tituloConfirmacion" aria-describedby="textoConfirmacion">
+        <form method="dialog">
+            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#factura"></use></svg></span>
+            <h2 id="tituloConfirmacion">Confirmar eliminación</h2>
+            <p id="textoConfirmacion"></p>
+            <div class="cs-module-actions">
+                <button class="cs-button cs-button-secondary" value="cancelar" autofocus>Cancelar</button>
+                <button class="cs-button cs-button-danger" value="eliminar">Eliminar</button>
+            </div>
+        </form>
+    </dialog>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/operaciones-ui.js"></script>
+    <script src="js/movimientos.js"></script>
 </body>
 </html>

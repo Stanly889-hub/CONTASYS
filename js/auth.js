@@ -90,12 +90,27 @@ if (paginaCliente) {
 }
 
 function iniciarContadorNotificaciones() {
-    const enlace = document.querySelector('[data-page="notificaciones"] a');
-    if (!enlace) return;
-    const badge = document.createElement("span");
-    badge.className = "chat-badge";
-    badge.hidden = true;
-    enlace.append(" ", badge);
+    const enlaces = document.querySelectorAll('[data-page="notificaciones"] a, [data-notificaciones-acceso]');
+    if (!enlaces.length) return;
+    const indicadores = Array.from(enlaces, enlace => {
+        const badge = document.createElement("span");
+        badge.className = "chat-badge";
+        badge.hidden = true;
+        enlace.append(" ", badge);
+        return { enlace, badge };
+    });
+    function mostrarPendientes(pendientes) {
+        for (const { enlace, badge } of indicadores) {
+            badge.hidden = pendientes === 0;
+            badge.textContent = pendientes || "";
+            badge.setAttribute("aria-label", `${pendientes} notificaciones pendientes`);
+            if (enlace.hasAttribute("data-notificaciones-acceso")) {
+                enlace.setAttribute("aria-label", pendientes
+                    ? `Notificaciones: ${pendientes} pendientes`
+                    : "Notificaciones");
+            }
+        }
+    }
     let enCurso = false;
     let actualizarDespues = false;
     let ultima = 0;
@@ -106,11 +121,9 @@ function iniciarContadorNotificaciones() {
         enCurso = true;
         try {
             const { pendientes } = await apiFetch("/notificaciones/pendientes");
-            badge.hidden = pendientes === 0;
-            badge.textContent = pendientes || "";
-            badge.setAttribute("aria-label", `${pendientes} notificaciones pendientes`);
+            mostrarPendientes(pendientes);
         } catch {
-            badge.hidden = true;
+            mostrarPendientes(0);
         } finally {
             ultima = Date.now();
             enCurso = false;

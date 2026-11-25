@@ -1,5 +1,6 @@
 document.getElementById("registroForm").addEventListener("submit", async function (e) {
     e.preventDefault();
+    if (this.getAttribute("aria-busy") === "true") return;
 
     let nombre = document.getElementById("nombre").value.trim();
     let apellido = document.getElementById("apellido").value.trim();
@@ -22,6 +23,7 @@ document.getElementById("registroForm").addEventListener("submit", async functio
         return;
     }
 
+    const terminarEnvio = iniciarEnvioFormulario(this);
     try {
         await apiFetch("/auth/registro", {
             method: "POST",
@@ -32,6 +34,7 @@ document.getElementById("registroForm").addEventListener("submit", async functio
         setTimeout(() => { window.location.href = "index.html"; }, 1500);
 
     } catch (error) {
+        terminarEnvio();
         mostrarNotificacion(error.message, "error");
     }
 });

@@ -1,97 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Presupuestos - CONTASYS</title>
-<link rel="stylesheet" href="css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0F172A">
+    <title>Presupuestos | CONTASYS</title>
+    <link rel="icon" href="css/marca/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/corporativo.css">
+    <link rel="stylesheet" href="css/operaciones.css">
 </head>
-<body>
-
-<div class="dashboard-container">
-
-    <aside class="sidebar">
-        <h2>CONTASYS</h2>
-        <ul>
-            <li data-page="dashboard"><a href="dashboard.html">🏠 Dashboard</a></li>
-            <li data-page="ingresos"><a href="movimientos.html?tipo=ingreso">💰 Ingresos</a></li>
-            <li data-page="egresos"><a href="movimientos.html?tipo=egreso">💸 Egresos</a></li>
-            <li data-page="reportes"><a href="reportes.html">📊 Reportes</a></li>
-            <li data-page="mensajes"><a href="mensajes.html">💬 Chat</a></li>
-            <li data-page="cuenta"><a href="cuenta.html">📁 Mi cuenta</a></li>
-            <li data-page="facturacion"><a href="facturacion.html">🧾 Facturación</a></li>
-            <li data-page="presupuestos"><a href="presupuestos.html">📅 Presupuestos</a></li>
-            <li data-page="analisis"><a href="analisis.html">📈 Análisis financiero</a></li>
-            <li data-page="notificaciones"><a href="notificaciones.html">🔔 Notificaciones</a></li>
-            <li data-rol="Contador" data-page="clientes"><a href="clientes.html">🤝 Clientes</a></li>
-            <li data-rol="Administrador" data-page="usuarios"><a href="usuarios.html">👥 Usuarios</a></li>
-            <li data-rol="Administrador" data-page="configuracion"><a href="configuracion.html">⚙ Configuración</a></li>
-        </ul>
-    </aside>
-
-    <main class="main-content">
-
-        <header class="topbar">
-            <h1>Presupuestos</h1>
-            <div class="user">
-                👤 <span id="nombreUsuarioActual">Usuario</span>
-                <button onclick="cerrarSesion()" class="btn-logout">Cerrar sesión</button>
+<body class="cs-ui cs-dashboard cs-modulo">
+    <div class="dashboard-container">
+        <aside class="sidebar" id="menuFinanciero"></aside>
+        <main class="main-content">
+            <header class="topbar"></header>
+            <div class="cs-dashboard-content">
+                <div class="cs-module-hero">
+                <div class="cs-module-hero-mark"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#billetera"></use></svg></div>
+                <div><h1 id="tituloPagina">Presupuestos</h1><p>Consulta cuánto has ejecutado y cuánto queda disponible en cada periodo.</p></div>
             </div>
-        </header>
-
-        <section class="form-section">
-            <h2>Nuevo presupuesto</h2>
-            <form id="presupuestoForm">
-                <input type="text" id="nombrePresupuesto" placeholder="Nombre del presupuesto" maxlength="100" required>
-
-                <div class="row">
-                    <select id="categoria" required>
-                        <option value="">Selecciona categoría</option>
-                    </select>
-                    <input type="number" id="montoPresupuesto" placeholder="Monto presupuestado" min="0.01" max="9999999999.99" step="0.01" required>
-                </div>
-
-                <div class="row">
-                    <input type="date" id="fechaInicio" required>
-                    <input type="date" id="fechaFin" required>
-                </div>
-                <select id="estadoPresupuesto" aria-label="Estado del presupuesto">
-                    <option>Activo</option>
-                    <option>Finalizado</option>
-                    <option>Cancelado</option>
-                </select>
-
-                <div class="btn-group">
-                    <button type="submit" id="btnGuardarPresupuesto">Guardar</button>
-                    <button type="button" id="btnCancelarPresupuesto" onclick="cancelarEdicion()" style="display:none;">Cancelar edición</button>
-                </div>
-            </form>
-        </section>
-
-        <section class="table-section">
-            <h2>Mis presupuestos</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Categoría</th>
-                        <th>Periodo</th>
-                        <th>Presupuestado</th>
-                        <th>Ejecutado</th>
-                        <th>Progreso</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tablaPresupuestos"></tbody>
-            </table>
-        </section>
-
-    </main>
-</div>
-
-<script src="js/auth.js"></script>
-<script src="js/api.js"></script>
-<script src="js/app.js"></script>
-<script src="js/presupuestos.js"></script>
+            <div class="cs-module-workspace">
+                <section class="form-section cs-card cs-module-form" aria-labelledby="tituloFormulario">
+                <div class="cs-module-section-title"><span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#documento"></use></svg></span><div><h2 id="tituloFormulario" tabindex="-1">Nuevo presupuesto</h2><p>Define una meta de ingresos o un límite de egresos.</p></div></div>
+                <form id="presupuestoForm">
+                    <div class="cs-module-fields">
+                        <label class="cs-module-field cs-field-wide" for="nombrePresupuesto"><span>Nombre del presupuesto</span><input id="nombrePresupuesto" type="text" placeholder="Nombre del presupuesto" maxlength="100" required></label>
+                        <label class="cs-module-field cs-field-wide" for="categoria"><span>Categoría</span><select id="categoria" required><option value="">Selecciona categoría</option></select></label>
+                        <label class="cs-module-field" for="montoPresupuesto"><span>Monto (COP)</span><input id="montoPresupuesto" type="number" placeholder="0,00" min="0.01" max="9999999999.99" step="0.01" required></label>
+                        <label class="cs-module-field" for="estadoPresupuesto"><span>Estado del presupuesto</span><select id="estadoPresupuesto"><option>Activo</option><option>Finalizado</option><option>Cancelado</option></select></label>
+                        <label class="cs-module-field" for="fechaInicio"><span>Fecha inicial</span><input id="fechaInicio" type="date" required></label>
+                        <label class="cs-module-field" for="fechaFin"><span>Fecha final</span><input id="fechaFin" type="date" required></label>
+                    </div>
+                    <div class="cs-module-actions"><button class="cs-button cs-button-primary" type="submit" id="btnGuardarPresupuesto" data-loading-label="Guardando…">Guardar</button><button class="cs-button cs-button-secondary" type="button" id="btnCancelarPresupuesto" onclick="cancelarEdicion()" style="display:none;">Cancelar edición</button></div><p class="cs-form-feedback" role="alert" hidden></p>
+                </form>
+            </section>
+                <section class="cs-module-budget-list" aria-labelledby="tituloTabla">
+                    <div class="cs-module-section-title"><span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#billetera"></use></svg></span><div><h2 id="tituloTabla">Mis presupuestos</h2><p>Seguimiento de metas y límites por categoría.</p></div></div>
+                    <p id="estadoListado" class="cs-status" role="status"><span class="cs-spinner" aria-hidden="true"></span> Cargando registros…</p>
+                    <table class="cs-budget-grid" role="presentation"><tbody id="tablaPresupuestos"></tbody></table>
+                </section>
+            </div>
+            <template id="plantillaPresupuesto">
+                <article class="cs-card cs-budget-card">
+                    <header><div><h3 data-presupuesto="nombre"></h3><p data-presupuesto="categoria"></p></div><span class="cs-pill" data-presupuesto="estado"></span></header>
+                    <span class="cs-budget-kind" data-presupuesto="tipo"></span>
+                    <p class="cs-budget-date"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#reloj"></use></svg> <span data-presupuesto="periodo"></span></p>
+                    <dl>
+                        <div><dt>Presupuestado</dt><dd data-presupuesto="monto"></dd></div>
+                        <div><dt>Ejecutado</dt><dd data-presupuesto="ejecutado"></dd></div>
+                        <div class="cs-budget-available"><dt data-presupuesto="saldo-label"></dt><dd data-presupuesto="saldo"></dd></div>
+                    </dl>
+                    <div class="cs-budget-progress"><span>Ejecución</span><strong class="texto-porcentaje" data-presupuesto="porcentaje"></strong></div>
+                    <div class="barra-contenedor" aria-hidden="true"><div class="barra-progreso"></div></div>
+                    <p class="cs-budget-alert" data-presupuesto="alerta" hidden></p>
+                    <footer class="cs-module-actions"></footer>
+                </article>
+            </template>
+            </div>
+        </main>
+    </div>
+    <dialog class="cs-module-dialog" id="confirmacionOperacion" aria-labelledby="tituloConfirmacion" aria-describedby="textoConfirmacion">
+        <form method="dialog">
+            <span class="cs-kpi-icon"><svg class="ui-icon" aria-hidden="true"><use href="css/iconos.svg#factura"></use></svg></span>
+            <h2 id="tituloConfirmacion">Confirmar eliminación</h2>
+            <p id="textoConfirmacion"></p>
+            <div class="cs-module-actions">
+                <button class="cs-button cs-button-secondary" value="cancelar" autofocus>Cancelar</button>
+                <button class="cs-button cs-button-danger" value="eliminar">Eliminar</button>
+            </div>
+        </form>
+    </dialog>
+    <script src="js/auth.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/operaciones-ui.js"></script>
+    <script src="js/presupuestos.js"></script>
 </body>
 </html>

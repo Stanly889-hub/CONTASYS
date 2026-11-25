@@ -1,0 +1,107 @@
+.cs-administracion .adm-profile-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+.cs-administracion :is(.adm-profile,.adm-security) { padding: 1.15rem; min-width: 0; }
+.cs-administracion h2 { font-size: 1.12rem; }
+.adm-profile .adm-persona { margin-top: .7rem; font-size: 1.16rem; }
+.adm-persona { display: flex; min-width: 0; align-items: center; gap: .55rem; }
+.adm-persona strong { overflow-wrap: anywhere; }
+.adm-persona .com-avatar {
+    display: grid; place-items: center; flex: none; width: 36px; height: 36px;
+    border-radius: 11px; color: #1e40af; background: var(--cs-pale-blue); font-size: .8rem; font-weight: 750;
+}
+.adm-profile .com-avatar {
+    width: 50px; height: 50px; border-radius: 15px; font-size: 1.05rem;
+    color: #173579; background: linear-gradient(145deg, #eff6ff, #bfdbfe);
+    border: 1px solid #bfdbfe; box-shadow: 0 3px 9px rgb(37 99 235 / 12%);
+}
+.adm-profile dl { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: .8rem 0 0; }
+.adm-profile dt { color: var(--cs-muted); font-size: .78rem; }
+.adm-profile dd { margin: 0; font-weight: 650; overflow-wrap: anywhere; }
+.adm-security p, .adm-ledger-heading p, .adm-ledger > .nota-simulada { color: var(--cs-muted); font-size: .85rem; }
+.adm-security .cs-module-actions, .adm-plan-actual { margin-top: .65rem; }
+.adm-security a { text-decoration: none; }
+.adm-suscripcion .planes-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); }
+.adm-suscripcion .plan-tarjeta { min-width: 0; margin: 0; border: 1px solid var(--cs-border); box-shadow: var(--cs-shadow); padding: 1.1rem; border-radius: 14px; }
+.adm-suscripcion .plan-tarjeta.plan-activo { outline: 2px solid var(--cs-blue); outline-offset: 2px; }
+.adm-suscripcion #tarjetaPremium { background: linear-gradient(130deg,#183779,#1d4ed8); color: white; }
+.adm-suscripcion #tarjetaPremium :is(h3,.plan-precio,li) { color: white; }
+.adm-suscripcion #tarjetaPremium .plan-precio strong { font-size: clamp(1.65rem, 2.8vw, 2.45rem); line-height: 1.1; letter-spacing: -.035em; }
+.adm-suscripcion #tarjetaPremium .plan-precio span { color: #dbeafe; font-size: .85rem; }
+.adm-simulacion { display: inline-block; padding: .12rem .48rem; margin-inline-start: .25rem; border-radius: 100px; background: #f1f5f9; color: var(--cs-muted); font-size: .72rem; font-weight: 680; }
+.adm-simulacion[data-habilitada="true"] { color: #1e40af; background: #eff6ff; }
+.adm-suscripcion .plan-tarjeta h3 { display: flex; align-items: center; gap: .45rem; flex-wrap: wrap; margin: 0 0 .4rem; }
+.adm-plan-badge { display: none; border-radius: 100px; padding: .2rem .5rem; background: var(--cs-pale-blue); color: #1e40af; font-size: .72rem; }
+.plan-activo .adm-plan-badge { display: inline-block; }
+.adm-suscripcion .plan-beneficios { list-style: none; padding: 0; margin-bottom: 0; }
+.adm-suscripcion .plan-beneficios li { display: flex; gap: .55rem; margin-top: .35rem; }
+.adm-suscripcion .plan-beneficios li::before { content: "✓"; color: #166534; flex: none; }
+.adm-suscripcion #tarjetaPremium .plan-beneficios li::before { color: #bfdbfe; }
+.adm-suscripcion .nota-simulada { color: var(--cs-muted); font-size: .8rem; margin-top: .65rem; }
+.adm-ledger { margin-top: 1rem; }
+.adm-ledger > h2, .adm-ledger > .nota-simulada, .adm-ledger-heading { padding: .75rem 1rem .3rem; }
+.adm-ledger > .nota-simulada { padding-top: 0; }
+.cs-administracion .adm-ledger .cs-module-scroll table { min-width: 630px; }
+.cs-administracion [data-panel-administrador] .cs-module-scroll table { min-width: 870px; table-layout: fixed; }
+.cs-administracion [data-panel-administrador] .cs-module-scroll :is(th, td) { padding-inline: .5rem; white-space: normal; overflow-wrap: anywhere; }
+.cs-administracion [data-panel-administrador] th:nth-child(1) { width: 16%; }
+.cs-administracion [data-panel-administrador] th:nth-child(2) { width: 11%; }
+.cs-administracion [data-panel-administrador] th:nth-child(3) { width: 17%; }
+.cs-administracion [data-panel-administrador] th:nth-child(4) { width: 13%; }
+.cs-administracion [data-panel-administrador] th:nth-child(5) { width: 8%; }
+.cs-administracion [data-panel-administrador] th:nth-child(6) { width: 10%; }
+.cs-administracion [data-panel-administrador] th:nth-child(7) { width: 15%; }
+.cs-administracion [data-panel-administrador] th:nth-child(8) { width: 10%; }
+.cs-administracion .adm-ledger .cs-module-scroll table:has(.cs-table-empty) { min-width: 0; }
+.adm-ledger td select { width: 100%; min-width: 0; background: var(--cs-paper); color: var(--cs-ink); border: 1px solid var(--cs-border); border-radius: 8px; padding: .32rem .25rem; font-size: .8rem; }
+.cs-administracion .adm-ledger td .cs-module-actions { flex-wrap: wrap; }
+.adm-etiqueta { color: var(--cs-muted); background: #f1f5f9; }
+.adm-etiqueta:is([data-variante="Activo"],[data-variante="Activa"],[data-variante="Aceptado"],[data-variante="Ingreso"]) { color: #166534; background: #dcfce7; }
+.adm-etiqueta:is([data-variante="Pendiente"],[data-variante="Suspendido"],[data-variante="Egreso"]) { color: #92400e; background: #fef3c7; }
+.adm-etiqueta[data-variante="Rechazado"] { color: #991b1b; background: #fef2f2; }
+.adm-etiqueta[data-variante="Administrador"] { color: #3730a3; background: #e0e7ff; }
+.adm-etiqueta[data-variante="Contador"] { color: #1e40af; background: var(--cs-pale-blue); }
+.adm-etiqueta[data-variante="Emprendedor"] { color: #115e59; background: #ccfbf1; }
+.adm-permiso { display: block; color: var(--cs-muted); margin-top: .28rem; }
+#seccionContadores { scroll-margin-top: 82px; }
+#seccionContadores .cs-row-actions .cs-button-primary {
+    align-items: center;
+    justify-content: center;
+    padding: .38rem .7rem;
+    background: var(--cs-blue);
+    color: #fff;
+    line-height: 1.25;
+}
+#seccionContadores .cs-row-actions .cs-button-primary:hover { background: #1d4ed8; }
+.cs-administracion .cs-module-dialog[data-desactivacion] { border-color: #fecaca; }
+.cs-module-dialog[data-desactivacion] .adm-desactivacion-icono {
+    display: grid; place-items: center; width: 42px; height: 42px; margin-bottom: .55rem;
+    border-radius: 12px; background: #fee2e2; color: #b91c1c;
+}
+.cs-administracion .cs-module-dialog[data-desactivacion] button[value="eliminar"] { background: #dc2626; color: white; }
+.cs-administracion .cs-module-dialog[data-desactivacion] button[value="eliminar"]:hover { background: #b91c1c; }
+.cs-administracion .adm-stats { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: .7rem; }
+.cs-administracion .adm-stats .kpi { display: flex; align-items: center; gap: .6rem; min-width: 0; min-height: 0; padding: .6rem .75rem; background: linear-gradient(140deg, #eff6ff, var(--cs-paper) 72%); }
+.cs-administracion .adm-stats .kpi:nth-child(3n + 2) { background: linear-gradient(140deg, #eef2ff, var(--cs-paper) 72%); }
+.cs-administracion .adm-stats .kpi:nth-child(3n) { background: linear-gradient(140deg, #f0fdfa, var(--cs-paper) 72%); }
+.cs-administracion .adm-stats .kpi > div { min-width: 0; }
+.cs-administracion .adm-stats .cs-kpi-icon { width: 31px; height: 31px; }
+.cs-administracion .adm-stats h3 { margin: 0; font-size: .8rem; }
+.cs-administracion .adm-stats .kpi p { font-size: clamp(1.1rem, 1.9vw, 1.65rem); line-height: 1.15; }
+.cs-administracion .adm-stats small { display: block; color: var(--cs-muted); font-size: .72rem; }
+.adm-catalogos { display: grid; gap: 1rem; }
+.adm-catalogos .cs-module-form { container-type: inline-size; }
+.adm-catalogos form, .adm-catalogos .row { display: grid; gap: .6rem; margin-top: .65rem; }
+.adm-catalogos .row { grid-template-columns: repeat(2,minmax(0,1fr)); margin: 0; }
+.adm-catalogos form button { justify-self: start; }
+.adm-catalogos .adm-ledger { margin: 0; }
+.adm-catalogos .adm-ledger .cs-module-scroll :is(th, td) { padding-block: .48rem; }
+@container (max-width: 420px) {
+    .adm-catalogos .row { grid-template-columns: minmax(0, 1fr); }
+}
+@media (min-width: 1120px) {
+    .adm-catalogos { grid-template-columns: minmax(285px, .55fr) minmax(0, 1fr); align-items: start; }
+    .adm-catalogos .adm-ledger .cs-module-scroll table { min-width: 490px; }
+}
+@media (max-width: 680px) {
+    .cs-administracion .adm-profile-grid, .adm-suscripcion .planes-grid { grid-template-columns: minmax(0,1fr); }
+    .cs-administracion .adm-stats { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
