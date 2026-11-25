@@ -1,3 +1,0 @@
-﻿-- Archivo histórico. Usa CONTASYS_PRODUCCION.sql y las migraciones sobre un esquema de pruebas vacío.
--- Los datos de demostración están en pruebas/DATOS_DEMO.sql.
--- Consulta el README del backend para instrucciones.

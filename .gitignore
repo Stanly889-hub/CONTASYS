@@ -36,10 +36,8 @@ GEMINI.md
 /conversaciones-ia/
 
 # Evidencias privadas que se conservan solo en el equipo local
-/evidencias/Secci*/
-/evidencias/fase7/cypress/ejecucion-final.txt
-/evidencias/fase7/cypress/primer-fallo-*.png
-/evidencias/fase7/exportaciones/*-vista.png
+/evidencias/
+/docs/capturas/
 
 # Archivos del sistema operativo y del editor
 .DS_Store

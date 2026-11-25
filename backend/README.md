@@ -1,4 +1,4 @@
-# CONTASYS - Backend (Sección 6 a 9)
+# Backend de CONTASYS
 
 API REST con Node.js, Express y MySQL. Los datos de negocio se almacenan en MySQL. El navegador conserva el JWT en `localStorage`.
 
@@ -31,7 +31,7 @@ API REST con Node.js, Express y MySQL. Los datos de negocio se almacenan en MySQ
 
 6. Deberías ver en la consola: `CONTASYS API escuchando en http://localhost:3000`
 
-## Fase 1. Seguridad y autenticación
+## Seguridad y autenticación
 
 ### Despliegue de autenticación
 
@@ -58,7 +58,7 @@ El JWT se conserva en `localStorage` para mantener el flujo actual. Los scripts 
 
 El limitador local conserva hasta 10.000 claves de IP y correo, expira las entradas y devuelve `429` cuando se alcanza el cupo aplicable. En instalaciones con varias réplicas conviene compartir ese estado.
 
-## Fase 2. Base de datos
+## Base de datos
 
 ### Instalación nueva en MySQL Workbench
 
@@ -104,7 +104,7 @@ Desde la terminal de Visual Studio Code, en `backend/`, ejecuta primero `node sc
 
 ### Cuenta MySQL de la aplicación
 
-La configuración local revisada utiliza `root` con privilegios globales. La transición a una cuenta específica se realiza por separado. En **Users and Privileges**, crea una cuenta nueva limitada al host real del backend y asígnale un secreto propio. Deja vacía la sección de privilegios administrativos y aplica únicamente estos permisos en el esquema de CONTASYS:
+En **Users and Privileges**, crea una cuenta nueva limitada al host real del backend y asígnale un secreto propio. Deja vacía la sección de privilegios administrativos y aplica únicamente estos permisos en el esquema de CONTASYS:
 
 | Permiso | Objetos |
 |---|---|
@@ -115,18 +115,7 @@ La configuración local revisada utiliza `root` con privilegios globales. La tra
 
 Otorga estos permisos por tabla o vista. Evita asignar permisos de escritura a todo el esquema, roles amplios o `GRANT OPTION`. En Workbench puedes usar una pestaña SQL con sentencias como `GRANT SELECT, INSERT, UPDATE ON nombre_esquema.Usuario TO 'contasys_app'@'localhost';`, ajustando el destino y el host. Verifica los permisos efectivos con `SHOW GRANTS`. Prueba la cuenta en un esquema independiente antes de actualizar `DB_USER` y `DB_PASSWORD` en el entorno de despliegue. Conserva una cuenta operativa separada para ejecutar DDL y depurar sesiones. Las vistas y triggers deben mantener un definidor válido con los permisos que requieren.
 
-### Pruebas de regresión
-
-Desde `backend/`, ejecuta `npm.cmd test` en PowerShell. Para incluir la prueba HTTP y MySQL:
-
-```powershell
-$env:CONTASYS_PRUEBA_MYSQL = '1'
-npm.cmd test
-```
-
-Usa una cuenta MySQL autorizada para crear esquemas de prueba. La suite instala el esquema completo en dos bases nuevas con prefijos `contasys_prueba_auth_` y `contasys_prueba_demo_`. Todas las escrituras se dirigen a esas bases aleatorias, cuyos nombres se muestran para inspección.
-
-## Fase 3. Criterios financieros
+## Criterios financieros
 
 - Dashboard, reportes, análisis y presupuestos solo usan movimientos confirmados para sus importes reales. Los pendientes se presentan aparte y los anulados permanecen identificados en las listas y el detalle del reporte.
 - El dashboard conserva su alcance de todas las fechas. Reportes usa el rango inclusivo elegido, incluso si se consulta un periodo futuro. Análisis usa la fecha actual de MySQL como cierre para ambos planes. Free comienza el primer día del mes de hace dos meses y Premium cubre todo el historial hasta ese cierre. En consulta delegada, análisis conserva el plan del contador.
@@ -135,7 +124,7 @@ Usa una cuenta MySQL autorizada para crear esquemas de prueba. La suite instala 
 - Las altas y ediciones validan fechas, montos, estados y catálogos. Una edición puede conservar su referencia histórica a una categoría o método desactivado. Una categoría incompatible sigue siendo inválida. En una edición por API, omitir el estado conserva el estado anterior.
 La fase 3 no requirió migración adicional. Las pruebas verifican API y MySQL en esquemas aislados y los datos entregados a los exportadores del navegador con dobles de prueba.
 
-## Fase 4. Presupuestos, clientes y notificaciones
+## Presupuestos, clientes y notificaciones
 
 ### Cupo y alertas
 
@@ -155,7 +144,7 @@ El cupo y las alertas de presupuestos dependen del plan del propietario. Anális
 
 Sobre una base con las fases anteriores aplicadas, selecciona el esquema en Workbench, pausa las escrituras y aplica `MIGRACION_ALERTAS_PRESUPUESTO.sql` seguida de `MIGRACION_TIPO_CATEGORIA.sql`. La segunda se ejecuta una sola vez. Los tipos de categorías existentes quedan fijos para proteger el historial. Para un tipo diferente se crea una categoría nueva. La activación y desactivación de catálogos siguen disponibles. Actualiza los permisos por tabla si usas la cuenta de aplicación y publica juntos frontend y backend.
 
-## Fase 5. Facturación y suscripciones
+## Facturación y suscripciones
 
 La factura es un documento comercial interno o de demostración académica. Su consecutivo `FAC-` pertenece a la cuenta emisora. El módulo funciona con ambos planes. El receptor se captura en el documento y es independiente de las relaciones contador-cliente.
 
@@ -187,7 +176,7 @@ Para ejecutar la comprobación móvil a 375 px y la descarga binaria, usa Node.j
 
 Para probar el PDF con una factura realmente corregida, define `CONTASYS_FACTURA_CORREGIDA` con una ruta JSON temporal. Ejecuta primero la suite con `CONTASYS_PRUEBA_MYSQL=1`, sin las variables del navegador. La integración guarda allí la factura ficticia recuperada después de la corrección. Después ejecuta `node --test test/facturas-ui.test.js` con las variables de Chromium y jsPDF, manteniendo la ruta JSON.
 
-## Fase 6. Rendimiento y estabilidad
+## Rendimiento y estabilidad
 
 - Movimientos, facturas, notificaciones e historial admiten `limite` de 1 a 100 y un `cursor` devuelto como `siguiente`. Conserva el mismo filtro al usar el cursor. La interfaz solicita 50 filas, o 10 en el historial. Movimientos y facturas conservan sus indicadores globales. Los consumidores previos pueden omitir los parámetros para conservar sus respuestas originales. La tabla de reportes dibuja 100 filas por página y la API sigue devolviendo el detalle completo para exportar.
 - Chat carga primero los mensajes recientes y admite `antes` o `despues` con IDs. La interfaz pausa el sondeo al quedar oculta, descarta respuestas al cambiar de contacto y evita sondeos superpuestos. Los contactos se refrescan como máximo cada 20 segundos en el sondeo periódico. Los envíos a una cuenta inactiva son rechazados.
@@ -205,19 +194,19 @@ El trabajo es optativo. `CONTASYS_ALERTAS_INTERVALO_MS=0` lo desactiva. Para act
 
 El esquema base se ejecuta una vez sobre un esquema vacío. Las migraciones de protección de usuarios, protección de vínculos, tipo de categoría, conciliación y rendimiento también se aplican una vez. Los scripts de creación con `IF NOT EXISTS` pueden repetirse sobre estructuras compatibles.
 
-Los [resultados de rendimiento](../evidencias/rendimiento-fase6/RESULTADOS.md) documentan las comparaciones y enlazan el directorio de evidencias. Para reproducirlas, mide primero la revisión previa desde `backend/` con `node scripts/medir-rendimiento.js antes 100 linea-base.json`. Cambia a la revisión nueva y ejecuta `node scripts/medir-rendimiento.js despues 100 linea-base.json`. Repite para 1.000 y 10.000 con archivos distintos. El script crea esquemas aislados con prefijo `contasys_prueba_perf_`, verifica ese prefijo antes de ejecutar el después y exige igualdad de los resultados financieros.
+Consulta [Rendimiento](../docs/RENDIMIENTO.md) para las mediciones y [Pruebas](../docs/PRUEBAS.md) para los comandos de regresión.
 
 ### Dependencias y riesgos pendientes
 
-Los hallazgos de la fase 6 se abordaron en la fase 7. Consulta los [resultados de seguridad y dependencias](../evidencias/fase7/SEGURIDAD.md).
+Los hallazgos de la fase 6 se abordaron en la fase 7. Consulta los [resultados de seguridad y dependencias](../docs/SEGURIDAD.md).
 
-## Fase 7. Instalación y verificación final
+## Instalación y verificación final
 
 - Se usa el lockfile reconstruido con `npm ci`. El navegador sirve jsPDF, SheetJS y Chart.js desde `vendor/`, con sus licencias.
 - La plantilla [PERMISOS_CONTASYS_APP.sql](../database/PERMISOS_CONTASYS_APP.sql) se aplica a una cuenta nueva, con los nombres del esquema, usuario y host reemplazados. El script de Cypress la prueba en MySQL de forma aislada. La cuenta operativa se reserva para migraciones, respaldo y mantenimiento.
 - `npm.cmd run test:e2e` desde la raíz ejecuta Cypress con Chrome y una API real. `npm.cmd run test:e2e:open` abre el modo visual. Para las pruebas de Node, ejecuta `npm.cmd test` desde `backend/`. Con `CONTASYS_PRUEBA_MYSQL=1` se incluyen las integraciones que crean esquemas ficticios.
-- El JWT con `localStorage` sigue vigente. El [diseño de cookies y CSRF](../evidencias/fase7/SEGURIDAD.md) requiere aprobación y coordinación del despliegue.
-- La fase 7 no añade una migración de esquema. Aplica los pasos pendientes en orden y consulta la [guía de actualización y respaldo](../evidencias/fase7/INSTALACION_RESPALDO.md).
+- El JWT con `localStorage` sigue vigente. El [diseño de cookies y CSRF](../docs/SEGURIDAD.md) requiere aprobación y coordinación del despliegue.
+- La fase 7 no añade una migración de esquema. Aplica los pasos pendientes en orden y consulta la [guía de actualización y respaldo](../docs/INSTALACION_Y_RESPALDO.md).
 
 ## Comprobar la API
 

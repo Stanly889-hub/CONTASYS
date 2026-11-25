@@ -1,8 +1,8 @@
-# Seguridad y dependencias · Fase 7
+# Seguridad
 
 ## Dependencias verificadas
 
-Se reconstruyó el lockfile del backend a partir del inventario instalado y se resolvieron solo cambios dirigidos. Se ejecutó `npm ci` en dos directorios limpios. La raíz instaló 171 paquetes y el backend 119. En la instalación limpia se reutilizó el binario Cypress 16.3.0 de la caché, que luego pasó su verificación de arranque. Las auditorías JSON de esas instalaciones están en [seguridad](seguridad/).
+Se reconstruyó el lockfile del backend a partir del inventario instalado y se resolvieron solo cambios dirigidos. Se ejecutó `npm ci` en dos directorios limpios. La raíz instaló 171 paquetes y el backend 119. En la instalación limpia se reutilizó el binario Cypress 16.3.0 de la caché, que luego pasó su verificación de arranque. Estos resultados corresponden a la fase 7.
 
 | Dependencia | Resultado |
 |---|---|
@@ -24,7 +24,7 @@ Las auditorías de npm informaron cero avisos de los lockfiles. Las bibliotecas 
 
 La API conserva el JWT de la sesión en `localStorage`, expira y revoca sesiones en MySQL y consulta el rol y estado vigente. Los tests ejercitan revocación, desactivación, rol actualizado, plan y acceso delegado. Los datos visibles de los módulos revisados se insertan con `textContent`; los usos de `innerHTML` encontrados vacían elementos o insertan texto HTML fijo. Los filtros financieros y de sesión usan parámetros SQL y el identificador de usuario autenticado o delegado autorizado. Se añadieron encabezados contra MIME sniffing y frames en la API, y se desactivó el identificador de Express.
 
-La verificación local consultó el secreto sin mostrarlo. Está configurado, mide al menos 32 bytes y difiere del valor de `.env.example` en HEAD. Eso no certifica su procedencia ni descarta una divulgación histórica. Si fue compartido, procede programar su rotación con autorización. `.env`, variantes locales, respaldos y descargas de pruebas están excluidos de Git. Los extractos y capturas de esta fase usan datos ficticios.
+Los archivos de entorno y los respaldos se conservan fuera del repositorio. Consulta [Pruebas](PRUEBAS.md) para la verificación de v1.1.0.
 
 ## Diseño propuesto de cookies y CSRF
 

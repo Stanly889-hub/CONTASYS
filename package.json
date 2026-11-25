@@ -1,8 +1,7 @@
 {
   "name": "contasys",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Sistema de gestión contable y financiera para pequeños negocios: control de ingresos y egresos, presupuestos, reportes y usuarios con distintos roles (Administrador, Contador, Emprendedor).",
-  "main": "index.js",
   "scripts": {
     "test": "npm run test:e2e",
     "test:e2e": "node backend/scripts/probar-integral.js",

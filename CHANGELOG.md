@@ -2,7 +2,7 @@
 
 ## CONTASYS v1.1.0
 
-Versión candidata para publicación académica.
+Versión académica publicada.
 
 ### Identidad e interfaces
 
@@ -32,8 +32,8 @@ Versión candidata para publicación académica.
 - Con 10.000 registros ficticios por listado, las medianas paginadas fueron 25,48 ms en Ingresos y 20,40 ms en Egresos. Reportes y MySQL coincidieron en $52.602,66 COP por cada tipo de movimiento confirmado. Las auditorías npm de raíz y backend reportaron cero vulnerabilidades.
 - Facturación de uso interno o demostrativo. La simulación de suscripciones se reserva para entornos de prueba. Continúan pendientes la edición de perfil y contraseña desde Mi cuenta, la búsqueda y paginación de usuarios y la edición de catálogos.
 - La sesión sigue usando el almacenamiento local del navegador y la revocación en el servidor. La transición a cookies seguras está documentada como trabajo pendiente en la [guía del backend](backend/README.md).
-- La revisión de accesibilidad cubrió aspectos básicos de teclado, foco, contraste y movimiento reducido. La primera navegación del rediseño transfiere más recursos que v1.0.0. MySQL puede elegir planes distintos con la misma consulta. Los resultados y condiciones de rendimiento están en el [README](README.md).
+- La revisión de accesibilidad cubrió aspectos básicos de teclado, foco, contraste y movimiento reducido. La primera navegación del rediseño transfiere más recursos que v1.0.0. MySQL puede elegir planes distintos con la misma consulta. Los resultados y condiciones de rendimiento están en [Rendimiento](docs/RENDIMIENTO.md).
 
 ## v1.0.0
 
-Versión de referencia para seguridad, finanzas, facturación, rendimiento y pruebas. Consulta el [informe técnico de fase 7](evidencias/fase7/INFORME.md).
+Versión de referencia para seguridad, finanzas, facturación, rendimiento y pruebas. Consulta los [resultados históricos de las pruebas](docs/PRUEBAS.md#resultados-históricos-de-la-fase-7).
